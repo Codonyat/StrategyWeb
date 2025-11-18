@@ -3,6 +3,10 @@
 ## Overview
 Strategy.sol is an ERC20 token contract with the symbol **MONSTR**, backed by MON (Monad's native currency). The contract implements a sophisticated tokenomics system with lottery and auction mechanics.
 
+## Development Guidelines
+- **Prefer simplicity**: When possible, use simple, straightforward solutions instead of over-engineered ones
+- Keep implementations minimal and easy to understand
+
 ## Key Mechanics
 
 ### Minting & Redemption
@@ -88,17 +92,69 @@ Source: `c:/Users/nilga/Repos/Etherium/src/Strategy.sol`
 ## Website Integration
 The contract ABI and configuration are located in:
 - `src/config/abi.js` - Full contract ABI
-- `src/config/contract.js` - Contract configuration (uses env variables)
+- `src/config/contract.js` - **All configuration indexed by chain ID** (network, tokens, branding, colors, links)
 - `.env.example` - Environment variable template
 
 Set your environment variables in `.env`:
 ```
 VITE_CONTRACT_ADDRESS=0x...
-VITE_RPC_URL=https://...
 VITE_CHAIN_ID=10143          # Testnet: 10143, Mainnet: 143
-VITE_CHAIN_NAME=Monad Testnet
+# VITE_RPC_URL=https://...   # Optional - uses network default if not specified
 ```
 
-## Network Information
+### Network Configuration
+The `VITE_CHAIN_ID` automatically configures:
+- Chain name (e.g., "Monad Testnet" or "Monad Mainnet")
+- Token symbols (MONSTR, MON, WMON)
+- Default RPC URL
+- Explorer URL
+- Coin image paths (based on chain ID)
+
+Supported networks:
 - **Monad Testnet**: Chain ID 10143
 - **Monad Mainnet**: Chain ID 143
+
+### Coin Images
+Coin/token logos are organized by chain ID in the `public/coins/` directory:
+
+```
+public/coins/
+├── 143/          # Monad Mainnet
+│   ├── monstr.svg
+│   ├── mon.svg
+│   └── wmon.svg
+└── 10143/        # Monad Testnet
+    ├── monstr.svg
+    ├── mon.svg
+    └── wmon.svg
+```
+
+The theme automatically loads the correct images based on `VITE_CHAIN_ID`. Images should be:
+- **Format**: SVG (recommended) or PNG
+- **Naming**: Lowercase token symbol (e.g., `monstr.svg`, `mon.svg`, `wmon.svg`)
+- See `public/coins/README.md` for more details
+
+### Configuration Structure
+All configuration is centralized in `src/config/contract.js` and indexed by chain ID. Each network config includes:
+
+**Network Info:**
+- `chainId`, `chainName`, `rpcUrl`, `explorerUrl`
+
+**Token Info:**
+- `strategyCoin` - { symbol, name, logo } (e.g., MONSTR)
+- `nativeCoin` - { symbol, name, logo } (e.g., MON)
+- `wrappedCoin` - { symbol, name, logo } (e.g., WMON)
+
+**Branding:**
+- `tagline`, `platformName`
+
+**Colors:**
+- `colors` - Complete color palette for the UI
+
+**Links & Treasury:**
+- `links` - External links (docs, repository, twitter, discord)
+- `treasury` - Treasury wallet address
+
+The `theme` export provides access to all these configs. Simply change `VITE_CHAIN_ID` to switch between networks - everything updates automatically.
+- to memorize
+- to memorize

@@ -1,24 +1,29 @@
-import { WalletConnect } from './components/WalletConnect'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import Landing from './pages/Landing';
+import Auctions from './pages/Auctions';
+import Lottery from './pages/Lottery';
+import Stats from './pages/Stats';
+import HowItWorks from './pages/HowItWorks';
+import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Strategy Coin</h1>
-        <p>Welcome to Strategy Coin - Your Strategic Investment</p>
-      </header>
-
-      <main className="App-main">
-        <WalletConnect />
-
-        <section className="info-section">
-          <h2>About Strategy Coin</h2>
-          <p>Your strategic approach to cryptocurrency investment</p>
-        </section>
+    <BrowserRouter>
+      <Header />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/auctions" element={<Auctions />} />
+          <Route path="/lottery" element={<Lottery />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+        </Routes>
       </main>
-    </div>
-  )
+      <Footer />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

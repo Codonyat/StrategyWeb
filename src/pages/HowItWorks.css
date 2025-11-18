@@ -1,0 +1,252 @@
+.how-it-works-page {
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.how-it-works-page .page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Intro Section */
+.intro-section {
+  margin-bottom: 3rem;
+}
+
+.intro-section .page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.intro-text {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Collapsible Sections */
+.collapsible-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.collapsible-section {
+  background: var(--background-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.collapsible-section:hover {
+  border-color: var(--border-light);
+}
+
+.section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.section-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.section-header.open {
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--primary-accent);
+  min-width: 30px;
+  text-align: center;
+}
+
+.section-body {
+  padding: 1.5rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Content */
+.section-content {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.section-content p {
+  margin-bottom: 1rem;
+}
+
+.section-content h4 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.section-content ul,
+.section-content ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.section-content li {
+  margin-bottom: 0.5rem;
+}
+
+.section-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section-content code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--primary-accent-light);
+}
+
+.highlight {
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid var(--primary-accent);
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+}
+
+/* Warning Box */
+.warning {
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid var(--error);
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+}
+
+.risk-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.risk-list li {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.risk-list li::before {
+  content: '⚠';
+  position: absolute;
+  left: 0;
+  color: var(--error);
+}
+
+/* Fee Table */
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.fee-table th,
+.fee-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.fee-table th {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.fee-table td {
+  color: var(--text-secondary);
+}
+
+/* FAQ Items */
+.faq-item {
+  margin-bottom: 2rem;
+}
+
+.faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.faq-item h4 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.faq-item p {
+  margin-bottom: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .how-it-works-page .page-container {
+    padding: 0 1rem;
+  }
+
+  .intro-section .page-title {
+    font-size: 2rem;
+  }
+
+  .intro-text {
+    font-size: 1rem;
+  }
+
+  .section-header {
+    font-size: 1.125rem;
+    padding: 1.25rem;
+  }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  .section-content {
+    font-size: 0.9375rem;
+  }
+
+  .fee-table {
+    font-size: 0.875rem;
+  }
+
+  .fee-table th,
+  .fee-table td {
+    padding: 0.5rem;
+  }
+}
