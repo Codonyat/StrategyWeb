@@ -102,6 +102,76 @@
   gap: var(--spacing-md);
 }
 
+/* Custom Wallet Connect Button - Matches CTA design system */
+.wallet-connect-btn {
+  padding: 0.5rem 1.25rem;
+  background: var(--color-background-card);
+  border: 2px solid var(--color-border-light);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  position: relative;
+  overflow: hidden;
+  color: var(--color-text-primary);
+}
+
+.wallet-connect-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.wallet-connect-btn:hover {
+  border-color: var(--color-success);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+}
+
+.wallet-connect-btn:hover::before {
+  opacity: 0.1;
+}
+
+/* Connected State - Darker pill with subtle green ring */
+.wallet-connected-btn {
+  padding: 0.5rem 1.25rem;
+  background: var(--color-background-light);
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  color: var(--color-text-primary);
+}
+
+.wallet-connected-btn:hover {
+  border-color: rgba(0, 255, 136, 0.5);
+  background: var(--color-background-card);
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+}
+
+.wallet-address-display {
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  color: var(--color-text-primary);
+}
+
 /* Mobile Menu Toggle */
 .menu-toggle {
   display: none;
@@ -214,8 +284,22 @@
   .logo-subtitle {
     display: none;
   }
-  
+
   .status-chips {
     margin-right: 0.5rem;
+  }
+
+  /* Simplify wallet button on very small screens */
+  .wallet-connect-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .wallet-connected-btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .wallet-address-display {
+    font-size: 0.8rem;
   }
 }

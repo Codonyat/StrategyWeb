@@ -14,7 +14,8 @@
       "Bash(then cat C:/Users/nilga/Repos/StrategyWeb/.env)",
       "Bash(else echo \"No .env file found\")",
       "Bash(fi)",
-      "Bash(C:/Users/nilga/Repos/StrategyWeb/.env)"
+      "Bash(C:/Users/nilga/Repos/StrategyWeb/.env)",
+      "WebFetch(domain:docs.monad.xyz)"
     ],
     "deny": [],
     "ask": []
