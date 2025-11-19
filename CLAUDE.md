@@ -7,6 +7,13 @@ Strategy.sol is an ERC20 token contract with the symbol **MONSTR**, backed by MO
 - **Prefer simplicity**: When possible, use simple, straightforward solutions instead of over-engineered ones
 - Keep implementations minimal and easy to understand
 
+## RPC and Chain ID Usage
+**IMPORTANT**: The app uses different RPC/chain configurations for queries vs transactions:
+- **Read queries** (e.g., `useReadContract`, `useBalance`): Use the internal RPC URL and chain ID from `.env` (`VITE_CHAIN_ID` and `VITE_RPC_URL` or network defaults). These queries work WITHOUT wallet connection.
+- **Write transactions** (e.g., `useWriteContract`): Use the wallet's configured RPC and chain ID. The wallet must be connected and on the correct network to sign transactions.
+
+This separation allows the app to display protocol stats and data regardless of wallet connection state or which chain the wallet is connected to.
+
 ## Key Mechanics
 
 ### Minting & Redemption

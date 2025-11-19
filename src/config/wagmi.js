@@ -1,6 +1,6 @@
-import { http, createConfig } from 'wagmi';
-import { injected } from 'wagmi/connectors';
+import { http } from 'wagmi';
 import { CONTRACT_CONFIG } from './contract';
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 
 // Define custom Monad chains
 export const monadTestnet = {
@@ -30,12 +30,11 @@ export const monadMainnet = {
 // Get the current chain based on config
 const currentChain = CONTRACT_CONFIG.chainId === 143 ? monadMainnet : monadTestnet;
 
-// Create wagmi config
-export const config = createConfig({
+// Create wagmi config with RainbowKit
+export const config = getDefaultConfig({
+  appName: 'MONSTR Strategy',
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // Get from https://cloud.walletconnect.com
   chains: [currentChain],
-  connectors: [
-    injected(), // MetaMask, Coinbase Wallet, etc.
-  ],
   transports: {
     [currentChain.id]: http(CONTRACT_CONFIG.rpcUrl),
   },

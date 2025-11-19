@@ -39,8 +39,32 @@
   object-fit: contain;
 }
 
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .logo-text {
   color: var(--color-text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.logo-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Status Chips Container */
+.status-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
 }
 
 /* Desktop Navigation */
@@ -151,6 +175,13 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .status-chips {
+    gap: 0.4rem;
+    margin-left: 0.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .nav-desktop {
     display: none;
@@ -166,5 +197,25 @@
 
   .header-content {
     padding: 0 var(--spacing-sm);
+  }
+
+  .status-chips {
+    order: -1;
+    margin-left: auto;
+    margin-right: 1rem;
+  }
+  
+  .logo-text-container {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-subtitle {
+    display: none;
+  }
+  
+  .status-chips {
+    margin-right: 0.5rem;
   }
 }

@@ -8,7 +8,13 @@
       "Bash(cat:*)",
       "WebFetch(domain:punk.auction)",
       "WebFetch(domain:www.megaeth.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(tasklist:*)",
+      "Bash(if [ -f C:/Users/nilga/Repos/StrategyWeb/.env ])",
+      "Bash(then cat C:/Users/nilga/Repos/StrategyWeb/.env)",
+      "Bash(else echo \"No .env file found\")",
+      "Bash(fi)",
+      "Bash(C:/Users/nilga/Repos/StrategyWeb/.env)"
     ],
     "deny": [],
     "ask": []

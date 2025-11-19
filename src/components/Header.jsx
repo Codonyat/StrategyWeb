@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { WalletConnect } from './WalletConnect';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { StatusChip } from './StatusChip';
+import { DisplayFormattedNumber } from './DisplayFormattedNumber';
+import { useProtocolStats } from '../hooks/useProtocolStats';
 import { theme } from '../config/contract';
 import './Header.css';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { tvl, backingRatio, isMintingPeriod, isLoading, hasError, error } = useProtocolStats();
 
   const navItems = [
     { path: '/auctions', label: 'Auctions' },
@@ -26,8 +30,52 @@ export function Header() {
             alt={theme.strategyCoin.name}
             className="logo-icon"
           />
-          <span className="logo-text">Monad Strategy</span>
+          <div className="logo-text-container">
+            <span className="logo-text">Monstr</span>
+            <span className="logo-subtitle">Monad Strategy</span>
+          </div>
         </Link>
+
+        {/* Status Chips - Only show when data is available or loading */}
+        {!hasError && (
+          <div className="status-chips">
+            {isLoading ? (
+              <StatusChip 
+                label="" 
+                value="Loading..." 
+                type="default" 
+              />
+            ) : (
+            <>
+              {isMintingPeriod && (
+                <StatusChip 
+                  label="" 
+                  value="Minting" 
+                  type="minting" 
+                />
+              )}
+              <StatusChip 
+                label="TVL" 
+                value={
+                  <>
+                    <DisplayFormattedNumber num={tvl} significant={3} /> {theme.nativeCoin.symbol}
+                  </>
+                } 
+                type="default" 
+              />
+              <StatusChip 
+                label="Backing" 
+                value={
+                  <>
+                    <DisplayFormattedNumber num={backingRatio} significant={3} />x
+                  </>
+                } 
+                type="active" 
+              />
+              </>
+            )}
+          </div>
+        )}
 
         {/* Desktop Navigation */}
         <nav className="nav-desktop">
@@ -44,7 +92,7 @@ export function Header() {
 
         {/* Wallet Connect */}
         <div className="header-right">
-          <WalletConnect />
+          <ConnectButton />
           <button
             className="menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

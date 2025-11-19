@@ -65,7 +65,7 @@ const NETWORK_CONFIGS = {
   10143: {
     // Network info
     chainName: 'Monad Testnet',
-    rpcUrl: 'https://rpc.testnet.monad.xyz',
+    rpcUrl: 'https://testnet-rpc.monad.xyz',
     explorerUrl: 'https://testnet.monadscan.com/',
 
     // Token info
