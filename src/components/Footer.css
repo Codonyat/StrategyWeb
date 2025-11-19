@@ -60,16 +60,37 @@
 }
 
 .copy-button {
-  background: none;
-  border: none;
+  background: var(--color-background);
+  border: 2px solid var(--color-border-light);
+  border-radius: 6px;
   cursor: pointer;
   padding: var(--spacing-xs);
   font-size: 1rem;
-  transition: transform var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.copy-button:hover::before {
+  opacity: 0.1;
 }
 
 .copy-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  border-color: var(--color-success);
 }
 
 .copy-button:active {

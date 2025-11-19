@@ -1,34 +1,37 @@
 :root {
   /* Typography */
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* Theme Colors - Override these for different coin pairs */
-  --color-background: #0a0a0a;
+  /* Theme Colors - Bold, vibrant palette inspired by punk.auction */
+  --color-background: #0d0d0d;
   --color-background-light: #1a1a1a;
-  --color-background-card: #151515;
+  --color-background-card: #1f1f1f;
 
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-primary-light: #818cf8;
+  --color-primary: #ff3864;
+  --color-primary-hover: #ff1a4d;
+  --color-primary-light: #ff5b7f;
 
-  --color-secondary: #8b5cf6;
-  --color-secondary-hover: #7c3aed;
-  --color-secondary-light: #a78bfa;
+  --color-secondary: #00d4ff;
+  --color-secondary-hover: #00b8e6;
+  --color-secondary-light: #33ddff;
+
+  --color-accent: #ffd700;
+  --color-accent-hover: #ffed4e;
 
   --color-text-primary: #ffffff;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #606060;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #707070;
 
   --color-border: #2a2a2a;
-  --color-border-light: #3a3a3a;
-  --color-border-hover: #4a4a4a;
+  --color-border-light: #404040;
+  --color-border-hover: #555555;
 
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  --color-success: #00ff88;
+  --color-error: #ff3864;
+  --color-warning: #ffd700;
+  --color-info: #00d4ff;
 
   /* Aliases for component compatibility */
   --background: var(--color-background);
@@ -97,4 +100,131 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 1rem 2rem;
+  background: var(--color-background-card);
+  border: 2px solid var(--color-border-light);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn:hover::before {
+  opacity: 0.1;
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3);
+}
+
+.btn:active {
+  transform: translateY(-1px) scale(1.0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button Variants */
+.btn-primary {
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.4);
+}
+
+.btn-secondary {
+  border-color: var(--color-secondary);
+}
+
+.btn-secondary:hover::before {
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-secondary-hover);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+}
+
+.btn-success {
+  border-color: var(--color-success);
+}
+
+.btn-success:hover::before {
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+}
+
+.btn-success:hover {
+  border-color: var(--color-success);
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+}
+
+.btn-error {
+  border-color: var(--color-error);
+}
+
+.btn-error:hover::before {
+  background: linear-gradient(135deg, var(--color-error), var(--color-warning));
+}
+
+.btn-error:hover {
+  border-color: var(--color-error);
+  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.4);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+.btn-full {
+  width: 100%;
 }

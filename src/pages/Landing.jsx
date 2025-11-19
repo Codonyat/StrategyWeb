@@ -5,9 +5,55 @@ import './Landing.css';
 
 export default function Landing() {
   const [showStrategy, setShowStrategy] = useState(false);
+  const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
+  const [animationTimeout, setAnimationTimeout] = useState(null);
 
   const handleCoinClick = () => {
     setShowStrategy(!showStrategy);
+  };
+
+  const handleDepositHover = () => {
+    // Clear any ongoing animation
+    if (animationTimeout) {
+      clearTimeout(animationTimeout);
+      setAnimationTimeout(null);
+    }
+
+    // Only animate if not already showing MONSTR or if currently animating
+    if (!showStrategy || hoverState === 'withdraw') {
+      setHoverState('deposit');
+      // After animation completes, update the permanent state
+      const timeout = setTimeout(() => {
+        setShowStrategy(true);
+        setHoverState(null);
+        setAnimationTimeout(null);
+      }, 1200);
+      setAnimationTimeout(timeout);
+    }
+  };
+
+  const handleWithdrawHover = () => {
+    // Clear any ongoing animation
+    if (animationTimeout) {
+      clearTimeout(animationTimeout);
+      setAnimationTimeout(null);
+    }
+
+    // Only animate if not already showing MON or if currently animating
+    if (showStrategy || hoverState === 'deposit') {
+      setHoverState('withdraw');
+      // After animation completes, update the permanent state
+      const timeout = setTimeout(() => {
+        setShowStrategy(false);
+        setHoverState(null);
+        setAnimationTimeout(null);
+      }, 1200);
+      setAnimationTimeout(timeout);
+    }
+  };
+
+  const handleButtonLeave = () => {
+    // Don't reset on leave - let the animation complete
   };
 
   return (
@@ -16,7 +62,7 @@ export default function Landing() {
       <section className="hero-section">
         <div className="hero-wrapper">
           <p className="hero-subtitle">
-            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, and as fees accumulate the guaranteed floor price rises.
+            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only floor price.
           </p>
 
           <div className="hero-content-grid">
@@ -24,7 +70,7 @@ export default function Landing() {
             <div className="hero-left">
               <div className="coin-area">
               <div
-                className={`coin-container ${showStrategy ? 'flipped' : ''}`}
+                className={`coin-container ${showStrategy ? 'flipped' : ''} ${hoverState === 'deposit' ? 'hover-deposit' : ''} ${hoverState === 'withdraw' ? 'hover-withdraw' : ''}`}
                 onClick={handleCoinClick}
               >
                 <div className="coin-face coin-native">
@@ -44,11 +90,19 @@ export default function Landing() {
               </div>
 
               <div className="coin-actions">
-                <button className="action-btn deposit-btn">
+                <button
+                  className="action-btn deposit-btn"
+                  onMouseEnter={handleDepositHover}
+                  onMouseLeave={handleButtonLeave}
+                >
                   <span className="action-line">Deposit {theme.nativeCoin.symbol}</span>
                   <span className="action-line">Mint {theme.strategyCoin.symbol}</span>
                 </button>
-                <button className="action-btn withdraw-btn">
+                <button
+                  className="action-btn withdraw-btn"
+                  onMouseEnter={handleWithdrawHover}
+                  onMouseLeave={handleButtonLeave}
+                >
                   <span className="action-line">Burn {theme.strategyCoin.symbol}</span>
                   <span className="action-line">Withdraw {theme.nativeCoin.symbol}</span>
                 </button>
@@ -123,36 +177,49 @@ export default function Landing() {
 
       {/* Mini Explainer Section */}
       <section className="explainer-section">
-        <h2 className="section-title">How it works in 4 steps</h2>
-        <div className="steps-grid">
+        <div className="explainer-content">
+          <h2 className="section-title">How it works</h2>
+          <div className="steps-grid">
           <div className="step-card">
             <div className="step-number">1</div>
-            <h3 className="step-title">Deposit {theme.nativeCoin.symbol}</h3>
-            <p className="step-description">
-              Mint {theme.strategyCoin.symbol} by depositing {theme.nativeCoin.symbol} into the contract
-            </p>
+            <div className="step-content">
+              <h3 className="step-title">Deposit {theme.nativeCoin.symbol} to mint</h3>
+              <p className="step-description">
+                Mint {theme.strategyCoin.symbol} 1:1 during first 3 days
+              </p>
+            </div>
+            <div className="step-arrow">→</div>
           </div>
           <div className="step-card">
             <div className="step-number">2</div>
-            <h3 className="step-title">Join the auction</h3>
-            <p className="step-description">
-              Bid on daily auctions to win {theme.strategyCoin.symbol} tokens
-            </p>
+            <div className="step-content">
+              <h3 className="step-title">Backing increases daily</h3>
+              <p className="step-description">
+                1% fee on transfers grows backing over time
+              </p>
+            </div>
+            <div className="step-arrow">→</div>
           </div>
           <div className="step-card">
             <div className="step-number">3</div>
-            <h3 className="step-title">Build lottery weight</h3>
-            <p className="step-description">
-              Your token balance gives you weight in the daily lottery
-            </p>
+            <div className="step-content">
+              <h3 className="step-title">No-loss lottery daily</h3>
+              <p className="step-description">
+                Daily raffle of fees to random holders
+              </p>
+            </div>
+            <div className="step-arrow">→</div>
           </div>
           <div className="step-card">
             <div className="step-number">4</div>
-            <h3 className="step-title">Backing creates a floor</h3>
-            <p className="step-description">
-              Redeem tokens anytime for your share of the backing pool
-            </p>
+            <div className="step-content">
+              <h3 className="step-title">Withdraw {theme.nativeCoin.symbol} anytime</h3>
+              <p className="step-description">
+                Burn tokens to redeem at backing ratio
+              </p>
+            </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -176,10 +243,10 @@ export default function Landing() {
 
       {/* Deep Link Buttons */}
       <section className="deep-links">
-        <Link to="/stats" className="link-button">
+        <Link to="/stats" className="btn btn-secondary">
           View stats →
         </Link>
-        <Link to="/how-it-works" className="link-button">
+        <Link to="/how-it-works" className="btn btn-secondary">
           Read how it works →
         </Link>
       </section>

@@ -5,7 +5,10 @@
       "Bash(npm install)",
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:punk.auction)",
+      "WebFetch(domain:www.megaeth.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

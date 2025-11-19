@@ -22,7 +22,7 @@ export function Footer() {
         <div className="footer-section">
           <h3 className="footer-title">Strategy Coin</h3>
           <p className="footer-description">
-            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, and as fees accumulate the guaranteed floor price rises.
+            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only floor price.
           </p>
         </div>
 

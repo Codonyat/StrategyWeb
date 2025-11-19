@@ -21,7 +21,12 @@ export function Header() {
     <header className="header">
       <div className="header-content">
         <Link to="/" className="header-logo">
-          <span className="logo-text">{theme.strategyCoin.symbol}</span>
+          <img
+            src={theme.strategyCoin.logoSmall || theme.strategyCoin.logo}
+            alt={theme.strategyCoin.name}
+            className="logo-icon"
+          />
+          <span className="logo-text">Monad Strategy</span>
         </Link>
 
         {/* Desktop Navigation */}
