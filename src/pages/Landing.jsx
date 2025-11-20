@@ -113,59 +113,60 @@ export default function Landing() {
             <div className="hero-right">
             <div className="transactions-list">
               {/* Mock data - replace with real contract data */}
-              <div className="transaction-item mint">
-                <div className="tx-header">
-                  <span className="tx-type">Mint</span>
-                  <span className="tx-time">2 min ago</span>
-                </div>
-                <div className="tx-details">
-                  <span className="tx-address">0x1a2b...3c4d</span>
-                  <span className="tx-amount">+1,250 MONSTR</span>
-                </div>
+              <div className="transaction-row mint">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">MINT</span>
+                <span className="tx-address">0x1a2b...3c4d</span>
+                <span className="tx-time">2 min ago</span>
+                <span className="tx-amount">+1,250 MONSTR</span>
               </div>
 
-              <div className="transaction-item burn">
-                <div className="tx-header">
-                  <span className="tx-type">Burn</span>
-                  <span className="tx-time">5 min ago</span>
-                </div>
-                <div className="tx-details">
-                  <span className="tx-address">0x5e6f...7g8h</span>
-                  <span className="tx-amount">-800 MONSTR</span>
-                </div>
+              <div className="transaction-row burn">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">BURN</span>
+                <span className="tx-address">0x5e6f...7g8h</span>
+                <span className="tx-time">5 min ago</span>
+                <span className="tx-amount">-800 MONSTR</span>
               </div>
 
-              <div className="transaction-item mint">
-                <div className="tx-header">
-                  <span className="tx-type">Mint</span>
-                  <span className="tx-time">12 min ago</span>
-                </div>
-                <div className="tx-details">
-                  <span className="tx-address">0x9i0j...1k2l</span>
-                  <span className="tx-amount">+3,500 MONSTR</span>
-                </div>
+              <div className="transaction-row mint">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">MINT</span>
+                <span className="tx-address">0x9i0j...1k2l</span>
+                <span className="tx-time">12 min ago</span>
+                <span className="tx-amount">+3,500 MONSTR</span>
               </div>
 
-              <div className="transaction-item burn">
-                <div className="tx-header">
-                  <span className="tx-type">Burn</span>
-                  <span className="tx-time">18 min ago</span>
-                </div>
-                <div className="tx-details">
-                  <span className="tx-address">0x3m4n...5o6p</span>
-                  <span className="tx-amount">-2,100 MONSTR</span>
-                </div>
+              <div className="transaction-row burn">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">BURN</span>
+                <span className="tx-address">0x3m4n...5o6p</span>
+                <span className="tx-time">18 min ago</span>
+                <span className="tx-amount">-2,100 MONSTR</span>
               </div>
 
-              <div className="transaction-item mint">
-                <div className="tx-header">
-                  <span className="tx-type">Mint</span>
-                  <span className="tx-time">25 min ago</span>
-                </div>
-                <div className="tx-details">
-                  <span className="tx-address">0x7q8r...9s0t</span>
-                  <span className="tx-amount">+950 MONSTR</span>
-                </div>
+              <div className="transaction-row mint fade">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">MINT</span>
+                <span className="tx-address">0x7q8r...9s0t</span>
+                <span className="tx-time">25 min ago</span>
+                <span className="tx-amount">+950 MONSTR</span>
+              </div>
+
+              <div className="transaction-row burn fade">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">BURN</span>
+                <span className="tx-address">0x4u5v...6w7x</span>
+                <span className="tx-time">32 min ago</span>
+                <span className="tx-amount">-1,800 MONSTR</span>
+              </div>
+
+              <div className="transaction-row mint fade">
+                <span className="tx-indicator"></span>
+                <span className="tx-type">MINT</span>
+                <span className="tx-address">0x8y9z...0a1b</span>
+                <span className="tx-time">45 min ago</span>
+                <span className="tx-amount">+2,400 MONSTR</span>
               </div>
             </div>
           </div>

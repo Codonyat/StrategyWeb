@@ -54,6 +54,9 @@ export function Footer() {
         <div className="footer-section">
           <h4 className="footer-subtitle">Links</h4>
           <div className="footer-links">
+            <a href="/audit-report.pdf" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Audit Report
+            </a>
             {CONTRACT_CONFIG.links.docs !== '#' && (
               <a href={CONTRACT_CONFIG.links.docs} target="_blank" rel="noopener noreferrer" className="footer-link">
                 Docs

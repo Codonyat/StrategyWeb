@@ -380,119 +380,127 @@
   background: var(--color-border-hover);
 }
 
-.transaction-item {
+/* Compact ledger-style transaction rows */
+.transaction-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.75rem var(--spacing-sm);
   background: var(--color-background-card);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: var(--spacing-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  border-radius: 8px;
+  border-left: 2px solid transparent;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
+  cursor: pointer;
+  min-height: 44px;
 }
 
-.transaction-item:nth-child(even) {
-  background: rgba(31, 31, 31, 0.6);
+.transaction-row + .transaction-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.transaction-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  transition: width 0.2s ease;
-}
-
-.transaction-item.mint::before {
-  background: var(--color-success);
-}
-
-.transaction-item.burn::before {
-  background: var(--color-error);
-}
-
-.transaction-item:hover {
-  border-color: var(--color-border-light);
-  background: var(--color-background-light);
-  transform: translateX(4px);
-}
-
-.transaction-item:hover::before {
-  width: 5px;
-}
-
-.tx-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tx-type {
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.tx-type::before {
-  content: '';
+/* Colored dot indicator */
+.tx-indicator {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.transaction-item.mint .tx-type {
+.transaction-row.mint .tx-indicator {
+  background: var(--color-success);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+
+.transaction-row.burn .tx-indicator {
+  background: var(--color-error);
+  box-shadow: 0 0 8px rgba(255, 56, 100, 0.4);
+}
+
+/* Colored border on hover */
+.transaction-row.mint {
+  border-left-color: transparent;
+}
+
+.transaction-row.burn {
+  border-left-color: transparent;
+}
+
+.transaction-row.mint:hover {
+  border-left-color: var(--color-success);
+  background: rgba(0, 255, 136, 0.03);
+}
+
+.transaction-row.burn:hover {
+  border-left-color: var(--color-error);
+  background: rgba(255, 56, 100, 0.03);
+}
+
+.transaction-row:hover {
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+}
+
+/* Type label */
+.tx-type {
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 42px;
+}
+
+.transaction-row.mint .tx-type {
   color: var(--color-success);
 }
 
-.transaction-item.mint .tx-type::before {
-  background: var(--color-success);
-  box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
-}
-
-.transaction-item.burn .tx-type {
+.transaction-row.burn .tx-type {
   color: var(--color-error);
 }
 
-.transaction-item.burn .tx-type::before {
-  background: var(--color-error);
-  box-shadow: 0 0 6px rgba(255, 56, 100, 0.5);
-}
-
-.tx-time {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.tx-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
+/* Address */
 .tx-address {
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
-  flex: 1;
+  transition: all 0.2s ease;
 }
 
+.transaction-row:hover .tx-address {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+}
+
+/* Time */
+.tx-time {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Amount - right aligned, bold */
 .tx-amount {
   font-weight: 700;
-  font-size: 0.875rem;
-  color: var(--color-text-primary);
+  font-size: 0.8rem;
   text-align: right;
   font-family: 'Space Grotesk', 'Inter', monospace;
   letter-spacing: 0.01em;
-  min-width: fit-content;
+  white-space: nowrap;
+}
+
+.transaction-row.mint .tx-amount {
+  color: var(--color-success);
+}
+
+.transaction-row.burn .tx-amount {
+  color: var(--color-error);
+}
+
+/* Progressive fade for older entries */
+.transaction-row.fade {
+  opacity: 0.6;
+  filter: blur(0.3px);
 }
 
 /* Action Buttons */
