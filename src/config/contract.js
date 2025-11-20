@@ -75,6 +75,20 @@ export const CONTRACT_CONFIG = {
   // Treasury address
   treasury: requiredEnvVars.VITE_TREASURY_ADDRESS,
 
+  // Token configuration
+  strategyCoin: {
+    symbol: 'MONSTR',
+    name: 'Monster Strategy',
+  },
+  nativeCoin: {
+    symbol: 'MON',
+    name: 'Monad',
+  },
+  wrappedCoin: {
+    symbol: 'WMON',
+    name: 'Wrapped Monad',
+  },
+
   // External links (optional)
   links: {
     docs: import.meta.env.VITE_LINK_DOCS || '#',

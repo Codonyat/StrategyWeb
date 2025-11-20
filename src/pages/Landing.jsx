@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { MintModal } from '../components/MintModal';
+import { BurnModal } from '../components/BurnModal';
 import './Landing.css';
 
 export default function Landing() {
   const [showStrategy, setShowStrategy] = useState(false);
   const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
   const [animationTimeout, setAnimationTimeout] = useState(null);
+  const [isMintModalOpen, setIsMintModalOpen] = useState(false);
+  const [isBurnModalOpen, setIsBurnModalOpen] = useState(false);
 
   const handleCoinClick = () => {
     setShowStrategy(!showStrategy);
@@ -93,6 +97,7 @@ export default function Landing() {
                   className="action-btn deposit-btn"
                   onMouseEnter={handleDepositHover}
                   onMouseLeave={handleButtonLeave}
+                  onClick={() => setIsMintModalOpen(true)}
                 >
                   <span className="action-line">Deposit MON</span>
                   <span className="action-line">Mint MONSTR</span>
@@ -101,6 +106,7 @@ export default function Landing() {
                   className="action-btn withdraw-btn"
                   onMouseEnter={handleWithdrawHover}
                   onMouseLeave={handleButtonLeave}
+                  onClick={() => setIsBurnModalOpen(true)}
                 >
                   <span className="action-line">Burn MONSTR</span>
                   <span className="action-line">Withdraw MON</span>
@@ -218,6 +224,10 @@ export default function Landing() {
         </div>
         </div>
       </section>
+
+      {/* Modals */}
+      <MintModal isOpen={isMintModalOpen} onClose={() => setIsMintModalOpen(false)} />
+      <BurnModal isOpen={isBurnModalOpen} onClose={() => setIsBurnModalOpen(false)} />
     </div>
   );
 }
