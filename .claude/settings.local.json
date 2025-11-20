@@ -15,7 +15,15 @@
       "Bash(else echo \"No .env file found\")",
       "Bash(fi)",
       "Bash(C:/Users/nilga/Repos/StrategyWeb/.env)",
-      "WebFetch(domain:docs.monad.xyz)"
+      "WebFetch(domain:docs.monad.xyz)",
+      "Bash(find . -type f ( -name \"*.jsx\" -o -name \"*.js\" ) -exec sed -i )",
+      "Bash({} ;)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(if [ -f .env ])",
+      "Bash(then echo \"=== .env exists ===\")",
+      "Bash(else echo \"=== No .env file - copying from example ===\")",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

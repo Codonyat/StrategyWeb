@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { theme } from '../config/contract';
 import './Stats.css';
 
 export default function Stats() {
@@ -24,7 +23,7 @@ export default function Stats() {
   };
 
   const chartTabs = [
-    { id: 'price', label: `Price vs ${theme.nativeCoin.symbol}` },
+    { id: 'price', label: `Price vs $MON` },
     { id: 'floor', label: 'Floor vs Market' },
     { id: 'backing', label: 'Backing over time' },
   ];
@@ -38,22 +37,22 @@ export default function Stats() {
         <section className="page-header">
           <h1 className="page-title">Stats</h1>
           <p className="page-subtitle">
-            Market data and metrics for {theme.strategyCoin.symbol}
+            Market data and metrics for MONSTR
           </p>
         </section>
 
         {/* Top Summary Strip */}
         <section className="summary-strip">
           <div className="metric-card">
-            <div className="metric-label">{theme.strategyCoin.symbol} price</div>
+            <div className="metric-label">MONSTR price</div>
             <div className="metric-value">
-              {summaryMetrics.price} {theme.nativeCoin.symbol}
+              {summaryMetrics.price} MON
             </div>
           </div>
           <div className="metric-card">
-            <div className="metric-label">Backing per {theme.strategyCoin.symbol}</div>
+            <div className="metric-label">Backing per MONSTR</div>
             <div className="metric-value">
-              {summaryMetrics.floor} {theme.nativeCoin.symbol}
+              {summaryMetrics.floor} MON
             </div>
           </div>
           <div className="metric-card">
@@ -63,7 +62,7 @@ export default function Stats() {
           <div className="metric-card">
             <div className="metric-label">Total backing in contract</div>
             <div className="metric-value">
-              {summaryMetrics.totalBacking} {theme.nativeCoin.symbol}
+              {summaryMetrics.totalBacking} MON
             </div>
           </div>
         </section>
@@ -119,7 +118,7 @@ export default function Stats() {
             <div className="stat-box">
               <div className="stat-label">Circulating supply</div>
               <div className="stat-value">
-                {secondaryStats.circulatingSupply} {theme.strategyCoin.symbol}
+                {secondaryStats.circulatingSupply} MONSTR
               </div>
             </div>
             <div className="stat-box">
@@ -133,7 +132,7 @@ export default function Stats() {
             <div className="stat-box">
               <div className="stat-label">24h volume</div>
               <div className="stat-value">
-                {secondaryStats.volume24h} {theme.nativeCoin.symbol}
+                {secondaryStats.volume24h} MON
               </div>
             </div>
             <div className="stat-box">

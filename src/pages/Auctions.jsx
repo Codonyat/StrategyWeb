@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useWallet } from '../hooks/useWallet';
-import { theme } from '../config/contract';
 import './Auctions.css';
 
 export default function Auctions() {
@@ -45,7 +44,7 @@ export default function Auctions() {
             </span>
           </div>
           <p className="page-subtitle">
-            Bid {theme.nativeCoin.symbol} to win {theme.strategyCoin.symbol} tokens
+            Bid MON to win MONSTR tokens
           </p>
         </section>
 
@@ -74,7 +73,7 @@ export default function Auctions() {
                 <div className="info-row">
                   <span className="info-label">Leading bid</span>
                   <span className="info-value">
-                    {currentAuction.leadingBid} {theme.nativeCoin.symbol}
+                    {currentAuction.leadingBid} MON
                   </span>
                 </div>
               </div>
@@ -97,7 +96,7 @@ export default function Auctions() {
                         className="bid-input"
                         step="0.01"
                       />
-                      <span className="input-suffix">{theme.nativeCoin.symbol}</span>
+                      <span className="input-suffix">MON</span>
                     </div>
 
                     <div className="bid-helpers">
@@ -109,7 +108,7 @@ export default function Auctions() {
                     <button className="btn btn-primary btn-full">Place bid</button>
 
                     <p className="auction-rules">
-                      Minimum bid: {currentAuction.minBid} {theme.nativeCoin.symbol} (10% above current)
+                      Minimum bid: {currentAuction.minBid} MON (10% above current)
                     </p>
                   </>
                 ) : (
@@ -128,7 +127,7 @@ export default function Auctions() {
                   <div key={index} className="bid-row">
                     <span className="bid-wallet mono">{bid.wallet}</span>
                     <span className="bid-amount">
-                      {bid.amount} {theme.nativeCoin.symbol}
+                      {bid.amount} MON
                     </span>
                     <span className="bid-time">{bid.timeAgo}</span>
                   </div>
@@ -153,7 +152,7 @@ export default function Auctions() {
                 <span>#{auction.id}</span>
                 <span className="mono">{auction.winner}</span>
                 <span>
-                  {auction.amount} {theme.nativeCoin.symbol}
+                  {auction.amount} MON
                 </span>
                 <span>{auction.bidders}</span>
               </div>

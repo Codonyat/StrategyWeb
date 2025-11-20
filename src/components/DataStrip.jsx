@@ -1,7 +1,6 @@
 import { useReadContract, useBalance } from 'wagmi';
 import { formatEther, parseAbi } from 'viem';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
-import { theme } from '../config/contract';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import './DataStrip.css';
 
@@ -149,7 +148,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Supply</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={supply} significant={3} /> {theme.strategyCoin.symbol}
+            <DisplayFormattedNumber num={supply} significant={3} /> MONSTR
           </span>
         </span>
 
@@ -158,7 +157,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Reserve</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={monReserve} significant={3} /> {theme.nativeCoin.symbol}
+            <DisplayFormattedNumber num={monReserve} significant={3} /> MON
           </span>
         </span>
 
@@ -174,7 +173,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Pool</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={lotteryPoolAmount} significant={3} /> {theme.strategyCoin.symbol}
+            <DisplayFormattedNumber num={lotteryPoolAmount} significant={3} /> MONSTR
           </span>
         </span>
 
@@ -183,7 +182,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Last auction</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={lastAuctionProceeds} significant={3} /> {theme.nativeCoin.symbol}
+            <DisplayFormattedNumber num={lastAuctionProceeds} significant={3} /> MON
           </span>
         </span>
 

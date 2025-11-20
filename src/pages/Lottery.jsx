@@ -1,5 +1,4 @@
 import { useWallet } from '../hooks/useWallet';
-import { theme } from '../config/contract';
 import './Lottery.css';
 
 export default function Lottery() {
@@ -64,7 +63,7 @@ export default function Lottery() {
             <div className="prize-info">
               <div className="prize-label">Current prize pool</div>
               <div className="prize-value">
-                {lotteryData.prizePool} {theme.nativeCoin.symbol}
+                {lotteryData.prizePool} MON
               </div>
               <div className="prize-note">Funded by protocol fees</div>
             </div>
@@ -81,7 +80,7 @@ export default function Lottery() {
                   <div>
                     <div className="alert-title">You have unclaimed prizes!</div>
                     <div className="alert-amount">
-                      {lotteryData.unclaimedAmount} {theme.nativeCoin.symbol}
+                      {lotteryData.unclaimedAmount} MON
                     </div>
                   </div>
                 </div>
@@ -91,9 +90,9 @@ export default function Lottery() {
 
             <div className="user-stats-grid">
               <div className="user-stat">
-                <div className="stat-label">Your {theme.strategyCoin.symbol} balance</div>
+                <div className="stat-label">Your MONSTR balance</div>
                 <div className="stat-value">
-                  {lotteryData.userBalance} {theme.strategyCoin.symbol}
+                  {lotteryData.userBalance} MONSTR
                 </div>
               </div>
               <div className="user-stat">
@@ -117,7 +116,7 @@ export default function Lottery() {
         {/* Summary Metrics */}
         <section className="summary-metrics">
           <div className="metric-card">
-            <div className="metric-value">{summaryMetrics.totalPaidOut} {theme.nativeCoin.symbol}</div>
+            <div className="metric-value">{summaryMetrics.totalPaidOut} MON</div>
             <div className="metric-label">Total prizes paid out</div>
           </div>
           <div className="metric-card">
@@ -125,7 +124,7 @@ export default function Lottery() {
             <div className="metric-label">Completed rounds</div>
           </div>
           <div className="metric-card">
-            <div className="metric-value">{summaryMetrics.largestPrize} {theme.nativeCoin.symbol}</div>
+            <div className="metric-value">{summaryMetrics.largestPrize} MON</div>
             <div className="metric-label">Largest single prize</div>
           </div>
         </section>
@@ -144,7 +143,7 @@ export default function Lottery() {
                 <span>#{entry.round}</span>
                 <span className="mono">{entry.winner}</span>
                 <span>
-                  {entry.prize} {theme.nativeCoin.symbol}
+                  {entry.prize} MON
                 </span>
               </div>
             ))}

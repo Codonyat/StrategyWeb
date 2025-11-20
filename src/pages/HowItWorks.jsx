@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { theme } from '../config/contract';
+import { CONTRACT_CONFIG } from '../config/contract';
 import './HowItWorks.css';
 
 export default function HowItWorks() {
@@ -12,25 +12,25 @@ export default function HowItWorks() {
   const sections = [
     {
       id: 'strategy',
-      title: `${theme.strategyCoin.symbol} and ${theme.nativeCoin.symbol}`,
+      title: `$MONSTR and $MON`,
       content: (
         <div className="section-content">
           <p>
-            <strong>{theme.strategyCoin.symbol}</strong> is a Strategy Coin backed by{' '}
-            <strong>{theme.nativeCoin.symbol}</strong>, the native currency of the Monad blockchain.
+            <strong>MONSTR</strong> is a Strategy Coin backed by{' '}
+            <strong>MON</strong>, the native currency of the Monad blockchain.
           </p>
           <p>
-            Every {theme.strategyCoin.symbol} token is backed by a proportional amount of{' '}
-            {theme.nativeCoin.symbol} held in the smart contract. This creates a price floor -
+            Every MONSTR token is backed by a proportional amount of{' '}
+            MON held in the smart contract. This creates a price floor -
             the minimum value each token can be redeemed for.
           </p>
           <ul>
             <li>
-              Users deposit {theme.nativeCoin.symbol} to mint {theme.strategyCoin.symbol}
+              Users deposit MON to mint MONSTR
             </li>
             <li>
-              During the first 24 hours: 1 {theme.nativeCoin.symbol} = 1{' '}
-              {theme.strategyCoin.symbol}
+              During the first 24 hours: 1 MON = 1{' '}
+              MONSTR
             </li>
             <li>After minting period: proportional to backing ratio</li>
             <li>All operations have a 1% fee that funds the lottery and auction systems</li>
@@ -44,23 +44,23 @@ export default function HowItWorks() {
       content: (
         <div className="section-content">
           <p>
-            The backing mechanism ensures every {theme.strategyCoin.symbol} token has intrinsic
+            The backing mechanism ensures every MONSTR token has intrinsic
             value.
           </p>
           <h4>How it works:</h4>
           <ol>
             <li>
-              Users deposit {theme.nativeCoin.symbol} into the smart contract
+              Users deposit MON into the smart contract
             </li>
             <li>
-              {theme.strategyCoin.symbol} tokens are minted proportionally
+              MONSTR tokens are minted proportionally
             </li>
             <li>
-              The contract calculates backing per token: Total {theme.nativeCoin.symbol} ÷ Total{' '}
-              {theme.strategyCoin.symbol}
+              The contract calculates backing per token: Total MON ÷ Total{' '}
+              MONSTR
             </li>
             <li>
-              Users can burn {theme.strategyCoin.symbol} anytime to redeem their share of backing
+              Users can burn MONSTR anytime to redeem their share of backing
             </li>
           </ol>
           <p className="highlight">
@@ -85,13 +85,13 @@ export default function HowItWorks() {
               Auctions run every 25 hours (to rotate timing across different timezones)
             </li>
             <li>
-              Bidders use {theme.wrappedCoin.symbol} (wrapped {theme.nativeCoin.symbol}) to prevent DoS attacks
+              Bidders use WMON (wrapped MON) to prevent DoS attacks
             </li>
             <li>Minimum bid: 50% of redemption value</li>
             <li>Each new bid must be 10% higher than the previous bid</li>
-            <li>Previous bidders receive instant {theme.wrappedCoin.symbol} refunds</li>
+            <li>Previous bidders receive instant WMON refunds</li>
             <li>
-              Winner receives {theme.strategyCoin.symbol} tokens funded by the auction pool
+              Winner receives MONSTR tokens funded by the auction pool
             </li>
           </ul>
           <p>
@@ -172,7 +172,7 @@ export default function HowItWorks() {
           </table>
           <h4>Fee-free minting:</h4>
           <p>
-            Users can optionally lock community tokens to mint {theme.strategyCoin.symbol} without
+            Users can optionally lock community tokens to mint MONSTR without
             fees during the minting period. Requirements:
           </p>
           <ul>
@@ -238,7 +238,7 @@ export default function HowItWorks() {
           <div className="faq-item">
             <h4>Can I redeem my tokens anytime?</h4>
             <p>
-              Yes! You can burn your {theme.strategyCoin.symbol} tokens anytime to receive your
+              Yes! You can burn your MONSTR tokens anytime to receive your
               proportional share of the backing pool (minus the 1% fee).
             </p>
           </div>
@@ -261,17 +261,17 @@ export default function HowItWorks() {
           </div>
 
           <div className="faq-item">
-            <h4>Why use {theme.wrappedCoin.symbol} for auctions?</h4>
+            <h4>Why use WMON for auctions?</h4>
             <p>
-              {theme.wrappedCoin.symbol} prevents DoS attacks from malicious bidders who could reject refunds and block
-              the auction. With {theme.wrappedCoin.symbol}, refunds are instant and guaranteed.
+              WMON prevents DoS attacks from malicious bidders who could reject refunds and block
+              the auction. With WMON, refunds are instant and guaranteed.
             </p>
           </div>
 
           <div className="faq-item">
             <h4>What is the treasury address?</h4>
             <p>
-              Treasury: <code>{theme.treasury}</code>
+              Treasury: <code>{CONTRACT_CONFIG.treasury}</code>
             </p>
             <p>Receives unclaimed prizes after 7 days.</p>
           </div>
@@ -287,8 +287,8 @@ export default function HowItWorks() {
         <section className="intro-section">
           <h1 className="page-title">How It Works</h1>
           <p className="intro-text">
-            {theme.strategyCoin.symbol} is a Strategy Coin that combines{' '}
-            {theme.nativeCoin.symbol} backing with daily auctions and lottery mechanics. The
+            MONSTR is a Strategy Coin that combines{' '}
+            MON backing with daily auctions and lottery mechanics. The
             backing creates a guaranteed price floor, while auctions and lottery distribute
             protocol fees to participants.
           </p>

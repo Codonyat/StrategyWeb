@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { theme } from '../config/contract';
 import './Landing.css';
 
 export default function Landing() {
@@ -62,7 +61,7 @@ export default function Landing() {
       <section className="hero-section">
         <div className="hero-wrapper">
           <p className="hero-subtitle">
-            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only price.
+            100% backed by MON, withdraw anytime, up-only price.
           </p>
 
           <div className="hero-content-grid">
@@ -75,15 +74,15 @@ export default function Landing() {
               >
                 <div className="coin-face coin-native">
                   <img
-                    src={theme.nativeCoin.logo}
-                    alt={theme.nativeCoin.name}
+                    src={"/coins/mon.png"}
+                    alt={"MON"}
                     className="coin-image"
                   />
                 </div>
                 <div className="coin-face coin-strategy">
                   <img
-                    src={theme.strategyCoin.logo}
-                    alt={theme.strategyCoin.name}
+                    src={"/coins/monstr.png"}
+                    alt={"MONSTR"}
                     className="coin-image"
                   />
                 </div>
@@ -95,16 +94,16 @@ export default function Landing() {
                   onMouseEnter={handleDepositHover}
                   onMouseLeave={handleButtonLeave}
                 >
-                  <span className="action-line">Deposit {theme.nativeCoin.symbol}</span>
-                  <span className="action-line">Mint {theme.strategyCoin.symbol}</span>
+                  <span className="action-line">Deposit MON</span>
+                  <span className="action-line">Mint MONSTR</span>
                 </button>
                 <button
                   className="action-btn withdraw-btn"
                   onMouseEnter={handleWithdrawHover}
                   onMouseLeave={handleButtonLeave}
                 >
-                  <span className="action-line">Burn {theme.strategyCoin.symbol}</span>
-                  <span className="action-line">Withdraw {theme.nativeCoin.symbol}</span>
+                  <span className="action-line">Burn MONSTR</span>
+                  <span className="action-line">Withdraw MON</span>
                 </button>
               </div>
               </div>
@@ -122,7 +121,7 @@ export default function Landing() {
                 </div>
                 <div className="tx-details">
                   <span className="tx-address">0x1a2b...3c4d</span>
-                  <span className="tx-amount">+1,250 {theme.strategyCoin.symbol}</span>
+                  <span className="tx-amount">+1,250 MONSTR</span>
                 </div>
               </div>
 
@@ -133,7 +132,7 @@ export default function Landing() {
                 </div>
                 <div className="tx-details">
                   <span className="tx-address">0x5e6f...7g8h</span>
-                  <span className="tx-amount">-800 {theme.strategyCoin.symbol}</span>
+                  <span className="tx-amount">-800 MONSTR</span>
                 </div>
               </div>
 
@@ -144,7 +143,7 @@ export default function Landing() {
                 </div>
                 <div className="tx-details">
                   <span className="tx-address">0x9i0j...1k2l</span>
-                  <span className="tx-amount">+3,500 {theme.strategyCoin.symbol}</span>
+                  <span className="tx-amount">+3,500 MONSTR</span>
                 </div>
               </div>
 
@@ -155,7 +154,7 @@ export default function Landing() {
                 </div>
                 <div className="tx-details">
                   <span className="tx-address">0x3m4n...5o6p</span>
-                  <span className="tx-amount">-2,100 {theme.strategyCoin.symbol}</span>
+                  <span className="tx-amount">-2,100 MONSTR</span>
                 </div>
               </div>
 
@@ -166,7 +165,7 @@ export default function Landing() {
                 </div>
                 <div className="tx-details">
                   <span className="tx-address">0x7q8r...9s0t</span>
-                  <span className="tx-amount">+950 {theme.strategyCoin.symbol}</span>
+                  <span className="tx-amount">+950 MONSTR</span>
                 </div>
               </div>
             </div>
@@ -183,9 +182,9 @@ export default function Landing() {
           <div className="step-card" tabIndex="0">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3 className="step-title">Deposit {theme.nativeCoin.symbol} to mint</h3>
+              <h3 className="step-title">Deposit MON to mint</h3>
               <p className="step-description">
-                <strong>Mint {theme.strategyCoin.symbol}</strong> 1:1 during first 3 days
+                <strong>Mint MONSTR</strong> 1:1 during first 3 days
               </p>
             </div>
           </div>
@@ -210,7 +209,7 @@ export default function Landing() {
           <div className="step-card" tabIndex="0">
             <div className="step-number">4</div>
             <div className="step-content">
-              <h3 className="step-title">Withdraw {theme.nativeCoin.symbol} anytime</h3>
+              <h3 className="step-title">Withdraw MON anytime</h3>
               <p className="step-description">
                 <strong>Withdraw</strong> by burning tokens at backing ratio
               </p>

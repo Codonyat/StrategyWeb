@@ -4,8 +4,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { StatusChip } from './StatusChip';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { DataStrip } from './DataStrip';
+import { AnimatedLogo } from './AnimatedLogo';
 import { useProtocolStats } from '../hooks/useProtocolStats';
-import { theme } from '../config/contract';
 import './Header.css';
 
 export function Header() {
@@ -27,11 +27,7 @@ export function Header() {
       <header className="header">
         <div className="header-content">
         <Link to="/" className="header-logo">
-          <img
-            src={theme.strategyCoin.logoSmall || theme.strategyCoin.logo}
-            alt={theme.strategyCoin.name}
-            className="logo-icon"
-          />
+          <AnimatedLogo />
           <div className="logo-text-container">
             <span className="logo-text">Monstr</span>
             <span className="logo-subtitle">Monad Strategy</span>

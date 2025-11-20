@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { theme, CONTRACT_ADDRESS } from '../config/contract';
+import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import './Footer.css';
 
 export function Footer() {
@@ -22,7 +22,7 @@ export function Footer() {
         <div className="footer-section">
           <h3 className="footer-title">Strategy Coin</h3>
           <p className="footer-description">
-            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only floor price.
+            100% backed by MON, withdraw anytime, up-only floor price.
           </p>
         </div>
 
@@ -43,23 +43,23 @@ export function Footer() {
         <div className="footer-section">
           <h4 className="footer-subtitle">Links</h4>
           <div className="footer-links">
-            {theme.links.docs && (
-              <a href={theme.links.docs} target="_blank" rel="noopener noreferrer" className="footer-link">
+            {CONTRACT_CONFIG.links.docs !== '#' && (
+              <a href={CONTRACT_CONFIG.links.docs} target="_blank" rel="noopener noreferrer" className="footer-link">
                 Docs
               </a>
             )}
-            {theme.links.repository && (
-              <a href={theme.links.repository} target="_blank" rel="noopener noreferrer" className="footer-link">
+            {CONTRACT_CONFIG.links.repository !== '#' && (
+              <a href={CONTRACT_CONFIG.links.repository} target="_blank" rel="noopener noreferrer" className="footer-link">
                 Code
               </a>
             )}
-            {theme.links.twitter && (
-              <a href={theme.links.twitter} target="_blank" rel="noopener noreferrer" className="footer-link">
+            {CONTRACT_CONFIG.links.twitter !== '#' && (
+              <a href={CONTRACT_CONFIG.links.twitter} target="_blank" rel="noopener noreferrer" className="footer-link">
                 Twitter
               </a>
             )}
-            {theme.links.discord && (
-              <a href={theme.links.discord} target="_blank" rel="noopener noreferrer" className="footer-link">
+            {CONTRACT_CONFIG.links.discord !== '#' && (
+              <a href={CONTRACT_CONFIG.links.discord} target="_blank" rel="noopener noreferrer" className="footer-link">
                 Discord
               </a>
             )}

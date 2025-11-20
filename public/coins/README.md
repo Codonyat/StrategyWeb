@@ -1,34 +1,19 @@
 # Coin Images
 
-This directory contains coin/token logos organized by chain ID.
+This directory contains coin/token logos for MONSTR and MON.
 
-## Directory Structure
+## Files
 
-```
-coins/
-├── 143/          # Monad Mainnet
-│   ├── monstr.svg           # Large logo (512x512px)
-│   ├── monstr-icon.svg      # Small icon (128x128px)
-│   ├── mon.svg
-│   ├── mon-icon.svg
-│   ├── wmon.svg
-│   └── wmon-icon.svg
-└── 10143/        # Monad Testnet
-    ├── monstr.svg
-    ├── monstr-icon.svg
-    ├── mon.svg
-    ├── mon-icon.svg
-    ├── wmon.svg
-    └── wmon-icon.svg
-```
+- `monstr.png` - Main MONSTR token logo
+- `monstr-icon.png` - Small MONSTR icon
+- `mon.png` - Main MON token logo
+- `mon-icon.png` - Small MON icon
 
 ## Adding Coin Images
 
-1. Place your coin images in the appropriate chain ID directory
-2. Provide two versions of each token logo:
-   - **Large logo**: `{token}.svg` (e.g., `monstr.svg`) - 512x512px for hero sections, coin flip
-   - **Small icon**: `{token}-icon.svg` (e.g., `monstr-icon.svg`) - 128x128px for inline use, headers
-3. Images are automatically loaded based on `VITE_CHAIN_ID` environment variable
+1. Provide two versions of each token logo:
+   - **Large logo**: `{token}.png` (e.g., `monstr.png`) - For hero sections, coin flip
+   - **Small icon**: `{token}-icon.png` (e.g., `monstr-icon.png`) - For inline use, headers
 
 ## File Formats & Sizes
 
@@ -44,20 +29,20 @@ coins/
 
 ## Usage in Code
 
-The configuration includes full paths to images:
+The configuration includes paths to images:
 
 ```javascript
 import { theme } from './config/contract';
 
 // Large logos (hero sections, coin flip)
-theme.strategyCoin.logo      // → /coins/10143/monstr.svg
-theme.nativeCoin.logo        // → /coins/10143/mon.svg
-theme.wrappedCoin.logo       // → /coins/10143/wmon.svg
+theme.strategyCoin.logo      // → /coins/monstr.png
+theme.nativeCoin.logo        // → /coins/mon.png
+theme.wrappedCoin.logo       // → /coins/mon.png
 
 // Small icons (inline text, headers, buttons)
-theme.strategyCoin.logoSmall // → /coins/10143/monstr-icon.svg
-theme.nativeCoin.logoSmall   // → /coins/10143/mon-icon.svg
-theme.wrappedCoin.logoSmall  // → /coins/10143/wmon-icon.svg
+theme.strategyCoin.logoSmall // → /coins/monstr-icon.png
+theme.nativeCoin.logoSmall   // → /coins/mon-icon.png
+theme.wrappedCoin.logoSmall  // → /coins/mon-icon.png
 ```
 
 **Example usage:**
@@ -68,9 +53,3 @@ theme.wrappedCoin.logoSmall  // → /coins/10143/wmon-icon.svg
 // Small icon inline with text
 <img src={theme.nativeCoin.logoSmall} className="inline-icon" />
 ```
-
-## Notes
-
-- Switching networks (changing `VITE_CHAIN_ID`) automatically loads images from the corresponding directory
-- If an image is missing, the browser will show a broken image icon
-- Consider using the same design across both networks for consistency

@@ -1,4 +1,3 @@
-import { theme } from '../config/contract';
 import './StatusChip.css';
 
 export function StatusChip({ label, value, type = 'default' }) {
