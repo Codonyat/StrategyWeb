@@ -1,0 +1,116 @@
+.data-strip {
+  width: 100%;
+  background: linear-gradient(180deg,
+    rgba(88, 51, 181, 0.18) 0%,
+    rgba(88, 51, 181, 0.22) 100%
+  );
+  border-top: 1px solid rgba(138, 43, 226, 0.35);
+  border-bottom: 1px solid rgba(138, 43, 226, 0.35);
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+/* Glass texture with subtle noise */
+.data-strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px
+    );
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.data-strip-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.4rem var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.ticker-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.02em;
+}
+
+.ticker-value {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-family: 'Space Grotesk', 'Inter', monospace;
+  letter-spacing: 0.01em;
+}
+
+.ticker-separator {
+  color: rgba(255, 255, 255, 0.15);
+  font-weight: 400;
+  padding: 0 0.35rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .data-strip-content {
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .ticker-label {
+    font-size: 0.7rem;
+  }
+
+  .ticker-value {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .data-strip-content {
+    padding: 0.5rem var(--spacing-md);
+    gap: 0.5rem;
+  }
+
+  .ticker-separator {
+    padding: 0 0.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-strip-content {
+    padding: 0.5rem var(--spacing-sm);
+    font-size: 0.7rem;
+  }
+
+  .ticker-label {
+    font-size: 0.65rem;
+  }
+
+  .ticker-value {
+    font-size: 0.7rem;
+  }
+
+  .ticker-item {
+    gap: 0.25rem;
+  }
+}

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { StatusChip } from './StatusChip';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
+import { DataStrip } from './DataStrip';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { theme } from '../config/contract';
 import './Header.css';
@@ -10,7 +11,7 @@ import './Header.css';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { tvl, backingRatio, isMintingPeriod, isLoading, hasError, error } = useProtocolStats();
+  const { tvl, supply, backingRatio, isMintingPeriod, isLoading, hasError, error } = useProtocolStats();
 
   const navItems = [
     { path: '/auctions', label: 'Auctions' },
@@ -22,8 +23,9 @@ export function Header() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="header">
-      <div className="header-content">
+    <>
+      <header className="header">
+        <div className="header-content">
         <Link to="/" className="header-logo">
           <img
             src={theme.strategyCoin.logoSmall || theme.strategyCoin.logo}
@@ -48,29 +50,20 @@ export function Header() {
             ) : (
             <>
               {isMintingPeriod && (
-                <StatusChip 
-                  label="" 
-                  value="Minting" 
-                  type="minting" 
+                <StatusChip
+                  label=""
+                  value="Minting"
+                  type="minting"
                 />
               )}
-              <StatusChip 
-                label="TVL" 
+              <StatusChip
+                label="Backing"
                 value={
                   <>
-                    <DisplayFormattedNumber num={tvl} significant={3} /> {theme.nativeCoin.symbol}
+                    x<DisplayFormattedNumber num={backingRatio} significant={3} />
                   </>
-                } 
-                type="default" 
-              />
-              <StatusChip 
-                label="Backing" 
-                value={
-                  <>
-                    <DisplayFormattedNumber num={backingRatio} significant={3} />x
-                  </>
-                } 
-                type="active" 
+                }
+                type="active"
               />
               </>
             )}
@@ -167,6 +160,10 @@ export function Header() {
           ))}
         </nav>
       )}
-    </header>
+      </header>
+
+      {/* Data Strip */}
+      <DataStrip />
+    </>
   );
 }

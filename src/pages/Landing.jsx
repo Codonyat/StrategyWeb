@@ -62,7 +62,7 @@ export default function Landing() {
       <section className="hero-section">
         <div className="hero-wrapper">
           <p className="hero-subtitle">
-            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only floor price.
+            100% backed by {theme.nativeCoin.symbol}, withdraw anytime, up-only price.
           </p>
 
           <div className="hero-content-grid">
@@ -180,75 +180,44 @@ export default function Landing() {
         <div className="explainer-content">
           <h2 className="section-title">How it works</h2>
           <div className="steps-grid">
-          <div className="step-card">
+          <div className="step-card" tabIndex="0">
             <div className="step-number">1</div>
             <div className="step-content">
               <h3 className="step-title">Deposit {theme.nativeCoin.symbol} to mint</h3>
               <p className="step-description">
-                Mint {theme.strategyCoin.symbol} 1:1 during first 3 days
+                <strong>Mint {theme.strategyCoin.symbol}</strong> 1:1 during first 3 days
               </p>
             </div>
-            <div className="step-arrow">→</div>
           </div>
-          <div className="step-card">
+          <div className="step-card" tabIndex="0">
             <div className="step-number">2</div>
             <div className="step-content">
               <h3 className="step-title">Backing increases daily</h3>
               <p className="step-description">
-                1% fee on transfers grows backing over time
+                1% <strong>fee</strong> on transfers grows <strong>backing</strong> over time
               </p>
             </div>
-            <div className="step-arrow">→</div>
           </div>
-          <div className="step-card">
+          <div className="step-card" tabIndex="0">
             <div className="step-number">3</div>
             <div className="step-content">
               <h3 className="step-title">No-loss lottery daily</h3>
               <p className="step-description">
-                Daily raffle of fees to random holders
+                Daily <strong>lottery</strong> raffle of fees to random holders
               </p>
             </div>
-            <div className="step-arrow">→</div>
           </div>
-          <div className="step-card">
+          <div className="step-card" tabIndex="0">
             <div className="step-number">4</div>
             <div className="step-content">
               <h3 className="step-title">Withdraw {theme.nativeCoin.symbol} anytime</h3>
               <p className="step-description">
-                Burn tokens to redeem at backing ratio
+                <strong>Withdraw</strong> by burning tokens at backing ratio
               </p>
             </div>
           </div>
         </div>
         </div>
-      </section>
-
-      {/* Quick Stats Strip */}
-      <section className="quick-stats">
-        <div className="stats-container">
-          <div className="stat-card">
-            <span className="stat-label">Backing per {theme.strategyCoin.symbol}</span>
-            <span className="stat-value">0.000 {theme.nativeCoin.symbol}</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-label">Total backing</span>
-            <span className="stat-value">0 {theme.nativeCoin.symbol}</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-label">Total supply</span>
-            <span className="stat-value">0 {theme.strategyCoin.symbol}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Deep Link Buttons */}
-      <section className="deep-links">
-        <Link to="/stats" className="btn btn-secondary">
-          View stats →
-        </Link>
-        <Link to="/how-it-works" className="btn btn-secondary">
-          Read how it works →
-        </Link>
       </section>
     </div>
   );

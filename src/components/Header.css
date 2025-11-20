@@ -9,12 +9,12 @@
 .header-content {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-xl);
   height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-2xl);
 }
 
 .header-logo {
@@ -50,13 +50,17 @@
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1;
+  letter-spacing: 0.03em;
+  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .logo-subtitle {
   color: var(--color-text-secondary);
-  font-size: 0.75rem;
-  font-weight: 400;
+  font-size: 0.7rem;
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 /* Status Chips Container */
@@ -64,7 +68,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-left: 1rem;
+  margin-left: 2rem;
 }
 
 /* Desktop Navigation */
@@ -124,16 +128,19 @@
 
 .nav-link {
   text-decoration: none;
-  color: var(--color-text-secondary);
-  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8125rem;
   font-weight: 500;
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: 9999px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   position: relative;
-  background: var(--color-background-card);
+  background: rgba(31, 31, 31, 0.6);
   border: 1px solid transparent;
+  letter-spacing: 0.05em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  opacity: 0.7;
 }
 
 .nav-link:hover {
@@ -141,14 +148,23 @@
   border-color: var(--color-success);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 255, 136, 0.25);
+  opacity: 1;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline-offset: 2px;
+  border-color: var(--color-success);
+  opacity: 1;
 }
 
 .nav-link.active {
   color: var(--color-text-primary);
   background-color: var(--color-background-card);
-  border: 1px solid rgba(0, 255, 136, 0.5);
-  box-shadow: 0 2px 12px rgba(0, 255, 136, 0.3),
-              0 0 0 1px rgba(0, 255, 136, 0.2);
+  border: 1px solid rgba(0, 255, 136, 0.6);
+  box-shadow: 0 3px 16px rgba(0, 255, 136, 0.4),
+              0 0 0 1px rgba(0, 255, 136, 0.3);
+  opacity: 1;
 }
 
 .nav-link.active::after {
@@ -161,9 +177,9 @@
   height: 2px;
   background: linear-gradient(90deg,
     transparent,
-    rgba(0, 255, 136, 0.5) 20%,
-    rgba(0, 255, 136, 0.7) 50%,
-    rgba(0, 255, 136, 0.5) 80%,
+    rgba(0, 255, 136, 0.6) 20%,
+    rgba(0, 255, 136, 0.8) 50%,
+    rgba(0, 255, 136, 0.6) 80%,
     transparent
   );
   filter: blur(2px);
@@ -173,6 +189,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  margin-left: auto;
 }
 
 /* Custom Wallet Connect Button - Matches CTA design system */
@@ -191,6 +208,7 @@
   position: relative;
   overflow: hidden;
   color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .wallet-connect-btn::before {
@@ -216,6 +234,12 @@
   opacity: 0.1;
 }
 
+.wallet-connect-btn:focus-visible {
+  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline-offset: 2px;
+  border-color: var(--color-success);
+}
+
 /* Connected State - Darker pill with subtle green ring */
 .wallet-connected-btn {
   padding: 0.5rem 1.25rem;
@@ -237,6 +261,12 @@
   border-color: rgba(0, 255, 136, 0.5);
   background: var(--color-background-card);
   box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+}
+
+.wallet-connected-btn:focus-visible {
+  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline-offset: 2px;
+  border-color: rgba(0, 255, 136, 0.6);
 }
 
 .wallet-address-display {
