@@ -129,6 +129,9 @@
   transition: all var(--transition-fast);
   width: fit-content;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .footer-link::after {

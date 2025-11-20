@@ -3,279 +3,193 @@ import { CONTRACT_CONFIG } from '../config/contract';
 import './HowItWorks.css';
 
 export default function HowItWorks() {
-  const [openSection, setOpenSection] = useState('strategy');
+  const [openQuestion, setOpenQuestion] = useState(null);
 
-  const toggleSection = (sectionId) => {
-    setOpenSection(openSection === sectionId ? null : sectionId);
+  const toggleQuestion = (questionId) => {
+    setOpenQuestion(openQuestion === questionId ? null : questionId);
   };
 
-  const sections = [
+  const faqs = [
     {
-      id: 'strategy',
-      title: `$MONSTR and $MON`,
-      content: (
-        <div className="section-content">
+      id: 'what-is-monstr',
+      question: 'What is MONSTR?',
+      answer: (
+        <>
           <p>
-            <strong>MONSTR</strong> is a Strategy Coin backed by{' '}
-            <strong>MON</strong>, the native currency of the Monad blockchain.
+            MONSTR is a Strategy Coin backed by MON, the native currency of the Monad blockchain.
+            Every MONSTR token is backed by a proportional amount of MON held in the smart contract,
+            creating a guaranteed price floor.
           </p>
-          <p>
-            Every MONSTR token is backed by a proportional amount of{' '}
-            MON held in the smart contract. This creates a price floor -
-            the minimum value each token can be redeemed for.
-          </p>
-          <ul>
-            <li>
-              Users deposit MON to mint MONSTR
-            </li>
-            <li>
-              During the first 24 hours: 1 MON = 1{' '}
-              MONSTR
-            </li>
-            <li>After minting period: proportional to backing ratio</li>
-            <li>All operations have a 1% fee that funds the lottery and auction systems</li>
-          </ul>
-        </div>
+        </>
       ),
     },
     {
-      id: 'backing',
-      title: 'Backing and Floor Price',
-      content: (
-        <div className="section-content">
+      id: 'when-mint',
+      question: 'When can I mint tokens?',
+      answer: (
+        <>
           <p>
-            The backing mechanism ensures every MONSTR token has intrinsic
-            value.
+            Minting is available during the first 3 days after contract deployment at a 1:1 ratio
+            (1 MON = 1 MONSTR). After that, minting continues but is proportional to the backing ratio.
           </p>
-          <h4>How it works:</h4>
-          <ol>
-            <li>
-              Users deposit MON into the smart contract
-            </li>
-            <li>
-              MONSTR tokens are minted proportionally
-            </li>
-            <li>
-              The contract calculates backing per token: Total MON ÷ Total{' '}
-              MONSTR
-            </li>
-            <li>
-              Users can burn MONSTR anytime to redeem their share of backing
-            </li>
-          </ol>
-          <p className="highlight">
+        </>
+      ),
+    },
+    {
+      id: 'redeem-anytime',
+      question: 'Can I redeem my tokens anytime?',
+      answer: (
+        <>
+          <p>
+            Yes! You can burn your MONSTR tokens anytime to receive your proportional share of the
+            backing pool. A 1% fee is applied on redemption.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'backing-works',
+      question: 'How does the backing mechanism work?',
+      answer: (
+        <>
+          <p>
+            The backing per token is calculated as: <strong>Total MON ÷ Total MONSTR</strong>
+          </p>
+          <p>
             This creates a guaranteed floor price - you can always redeem your tokens for their
             proportional share of the backing pool.
           </p>
-        </div>
-      ),
-    },
-    {
-      id: 'auctions',
-      title: 'Daily Auctions',
-      content: (
-        <div className="section-content">
-          <p>
-            After the initial 24-hour minting period ends, daily auctions begin. These auctions
-            distribute 50% of the daily fees collected by the protocol.
-          </p>
-          <h4>Auction mechanics:</h4>
-          <ul>
-            <li>
-              Auctions run every 25 hours (to rotate timing across different timezones)
-            </li>
-            <li>
-              Bidders use WMON (wrapped MON) to prevent DoS attacks
-            </li>
-            <li>Minimum bid: 50% of redemption value</li>
-            <li>Each new bid must be 10% higher than the previous bid</li>
-            <li>Previous bidders receive instant WMON refunds</li>
-            <li>
-              Winner receives MONSTR tokens funded by the auction pool
-            </li>
-          </ul>
-          <p>
-            Auctions must wait 1 minute into the new period before execution to ensure fair
-            participation.
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: 'lottery',
-      title: 'Lottery System',
-      content: (
-        <div className="section-content">
-          <p>
-            The lottery system automatically enters all token holders based on their balance. No
-            manual entry required!
-          </p>
-          <h4>How the lottery works:</h4>
-          <ul>
-            <li>
-              Runs every 25 hours (pseudo-day) to rotate timing
-            </li>
-            <li>
-              During minting period: lottery receives 100% of fees
-            </li>
-            <li>
-              After minting period: lottery receives 50% of fees
-            </li>
-            <li>
-              Winner selection is weighted by token balance (more tokens = better odds)
-            </li>
-            <li>
-              Uses prevrandao for random selection
-            </li>
-            <li>
-              Winners can claim prizes by calling the claim() function
-            </li>
-          </ul>
-          <h4>Prize claiming:</h4>
-          <p>
-            Unclaimed prizes are stored in a 7-slot rolling array. If a prize remains unclaimed
-            after 7 days, it's sent to the treasury beneficiary address.
-          </p>
-        </div>
+        </>
       ),
     },
     {
       id: 'fees',
-      title: 'Fee Structure',
-      content: (
-        <div className="section-content">
+      question: 'What are the fees?',
+      answer: (
+        <>
           <p>
             A 1% fee is applied to all minting, burning, and transfer operations. These fees fund
             the lottery and auction systems.
           </p>
-          <h4>Fee distribution:</h4>
-          <table className="fee-table">
-            <thead>
-              <tr>
-                <th>Period</th>
-                <th>Lottery</th>
-                <th>Auction</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>During minting period (first 24 hours)</td>
-                <td>100%</td>
-                <td>0%</td>
-              </tr>
-              <tr>
-                <td>After minting period</td>
-                <td>50%</td>
-                <td>50%</td>
-              </tr>
-            </tbody>
-          </table>
-          <h4>Fee-free minting:</h4>
+          <ul>
+            <li>During minting period (first 3 days): lottery receives 100% of fees</li>
+            <li>After minting period: lottery receives 50%, auction receives 50%</li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      id: 'lottery',
+      question: 'How does the lottery work?',
+      answer: (
+        <>
           <p>
-            Users can optionally lock community tokens to mint MONSTR without
-            fees during the minting period. Requirements:
+            The lottery system automatically enters all token holders based on their balance. No manual
+            entry required!
           </p>
           <ul>
-            <li>Lock 100e12 community tokens</li>
-            <li>Tokens locked for 30 days from deployment</li>
-            <li>Only available during the 24-hour minting period</li>
+            <li>Runs every 25 hours (pseudo-day) to rotate timing across timezones</li>
+            <li>Winner selection is weighted by token balance (more tokens = better odds)</li>
+            <li>Uses prevrandao for random selection</li>
+            <li>Winners claim prizes by calling the claim() function</li>
           </ul>
-        </div>
+        </>
       ),
     },
     {
-      id: 'risks',
-      title: 'Risks and Assumptions',
-      content: (
-        <div className="section-content">
-          <p className="warning">
-            <strong>⚠️ High Risk Investment</strong>
-          </p>
-          <ul className="risk-list">
-            <li>
-              <strong>Smart Contract Risk:</strong> The contract is unaudited and may contain
-              bugs or vulnerabilities
-            </li>
-            <li>
-              <strong>Market Risk:</strong> Token price can fall below backing value during
-              periods of low liquidity
-            </li>
-            <li>
-              <strong>Regulatory Risk:</strong> Token mechanics may face regulatory scrutiny
-            </li>
-            <li>
-              <strong>Centralization Risk:</strong> Large holders can influence lottery odds and
-              auction outcomes
-            </li>
-            <li>
-              <strong>Technical Risk:</strong> Blockchain congestion can prevent timely prize
-              claims or auction bids
-            </li>
-            <li>
-              <strong>Liquidity Risk:</strong> No guarantee of secondary market liquidity
-            </li>
-          </ul>
+      id: 'auctions',
+      question: 'How do the daily auctions work?',
+      answer: (
+        <>
           <p>
-            <strong>Do your own research</strong> before participating. Never invest more than you
-            can afford to lose.
+            After the 3-day minting period ends, daily auctions begin. These auctions distribute 50%
+            of the daily fees.
           </p>
-        </div>
+          <ul>
+            <li>Auctions run every 25 hours</li>
+            <li>Bidders use WMON (wrapped MON) to prevent DoS attacks</li>
+            <li>Minimum bid: 50% of redemption value</li>
+            <li>Each new bid must be 10% higher than previous</li>
+            <li>Previous bidders receive instant WMON refunds</li>
+            <li>Winner receives MONSTR tokens from the auction pool</li>
+          </ul>
+        </>
       ),
     },
     {
-      id: 'faq',
-      title: 'FAQ',
-      content: (
-        <div className="section-content">
-          <div className="faq-item">
-            <h4>When can I mint tokens?</h4>
-            <p>
-              Minting is available during the first 24 hours after contract deployment at a 1:1
-              ratio. After that, minting is proportional to the backing ratio.
-            </p>
-          </div>
-
-          <div className="faq-item">
-            <h4>Can I redeem my tokens anytime?</h4>
-            <p>
-              Yes! You can burn your MONSTR tokens anytime to receive your
-              proportional share of the backing pool (minus the 1% fee).
-            </p>
-          </div>
-
-          <div className="faq-item">
-            <h4>How are lottery winners selected?</h4>
-            <p>
-              Winners are selected randomly using prevrandao, weighted by token balance. The
-              selection uses a Fenwick tree (binary indexed tree) for efficient O(log n) winner
-              selection.
-            </p>
-          </div>
-
-          <div className="faq-item">
-            <h4>What happens if I don't claim my prize?</h4>
-            <p>
-              Unclaimed prizes are stored for 7 days. After that, they're sent to the treasury
-              beneficiary address.
-            </p>
-          </div>
-
-          <div className="faq-item">
-            <h4>Why use WMON for auctions?</h4>
-            <p>
-              WMON prevents DoS attacks from malicious bidders who could reject refunds and block
-              the auction. With WMON, refunds are instant and guaranteed.
-            </p>
-          </div>
-
-          <div className="faq-item">
-            <h4>What is the treasury address?</h4>
-            <p>
-              Treasury: <code>{CONTRACT_CONFIG.treasury}</code>
-            </p>
-            <p>Receives unclaimed prizes after 7 days.</p>
-          </div>
-        </div>
+      id: 'unclaimed-prizes',
+      question: 'What happens to unclaimed prizes?',
+      answer: (
+        <>
+          <p>
+            Unclaimed prizes are stored in a 7-slot rolling array. If a prize remains unclaimed after
+            7 days, it's sent to the treasury beneficiary address.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'why-wmon',
+      question: 'Why use WMON for auctions instead of MON?',
+      answer: (
+        <>
+          <p>
+            WMON prevents DoS attacks from malicious bidders who could reject refunds and block the
+            auction. With WMON, refunds are instant and guaranteed.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'pseudo-day',
+      question: 'What is a "pseudo-day" and why 25 hours?',
+      answer: (
+        <>
+          <p>
+            A pseudo-day is a 25-hour period used for lottery and auction cycles. The extra hour
+            ensures that the lottery/auction timing rotates across different timezones, giving everyone
+            fair access regardless of their location.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'winner-selection',
+      question: 'How are lottery winners selected?',
+      answer: (
+        <>
+          <p>
+            Winners are selected randomly using prevrandao (blockchain's random number source),
+            weighted by token balance. The selection uses a Fenwick tree (binary indexed tree) for
+            efficient O(log n) winner selection.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'treasury',
+      question: 'What is the treasury address?',
+      answer: (
+        <>
+          <p>
+            Treasury: <code>{CONTRACT_CONFIG.treasury}</code>
+          </p>
+          <p>This address receives unclaimed prizes after 7 days.</p>
+        </>
+      ),
+    },
+    {
+      id: 'contract-address',
+      question: 'What is the contract address?',
+      answer: (
+        <>
+          <p>
+            Contract: <code>{CONTRACT_CONFIG.address}</code>
+          </p>
+          <p>
+            Network: <strong>{CONTRACT_CONFIG.chainName}</strong>
+          </p>
+        </>
       ),
     },
   ];
@@ -285,28 +199,27 @@ export default function HowItWorks() {
       <div className="page-container">
         {/* Intro Section */}
         <section className="intro-section">
-          <h1 className="page-title">How It Works</h1>
+          <h1 className="page-title">Frequently Asked Questions</h1>
           <p className="intro-text">
-            MONSTR is a Strategy Coin that combines{' '}
-            MON backing with daily auctions and lottery mechanics. The
-            backing creates a guaranteed price floor, while auctions and lottery distribute
-            protocol fees to participants.
+            Everything you need to know about MONSTR, the Strategy Coin backed by MON.
           </p>
         </section>
 
-        {/* Collapsible Sections */}
+        {/* FAQ List */}
         <section className="collapsible-sections">
-          {sections.map((section) => (
-            <div key={section.id} className="collapsible-section">
+          {faqs.map((faq) => (
+            <div key={faq.id} className="collapsible-section">
               <button
-                className={`section-header ${openSection === section.id ? 'open' : ''}`}
-                onClick={() => toggleSection(section.id)}
+                className={`section-header ${openQuestion === faq.id ? 'open' : ''}`}
+                onClick={() => toggleQuestion(faq.id)}
               >
-                <span className="section-title">{section.title}</span>
-                <span className="section-icon">{openSection === section.id ? '−' : '+'}</span>
+                <span className="section-title">{faq.question}</span>
+                <span className="section-icon">{openQuestion === faq.id ? '−' : '+'}</span>
               </button>
-              {openSection === section.id && (
-                <div className="section-body">{section.content}</div>
+              {openQuestion === faq.id && (
+                <div className="section-body">
+                  <div className="section-content">{faq.answer}</div>
+                </div>
               )}
             </div>
           ))}

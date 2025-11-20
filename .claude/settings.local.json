@@ -23,7 +23,8 @@
       "Bash(if [ -f .env ])",
       "Bash(then echo \"=== .env exists ===\")",
       "Bash(else echo \"=== No .env file - copying from example ===\")",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm run fetch-constants:*)"
     ],
     "deny": [],
     "ask": []

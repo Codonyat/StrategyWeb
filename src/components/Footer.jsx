@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FileText, BookOpen, Github, Twitter, MessageCircle } from 'lucide-react';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import './Footer.css';
 
@@ -55,26 +56,26 @@ export function Footer() {
           <h4 className="footer-subtitle">Links</h4>
           <div className="footer-links">
             <a href="/audit-report.pdf" target="_blank" rel="noopener noreferrer" className="footer-link">
-              Audit Report
+              <FileText size={16} /> Audit Report
             </a>
             {CONTRACT_CONFIG.links.docs !== '#' && (
               <a href={CONTRACT_CONFIG.links.docs} target="_blank" rel="noopener noreferrer" className="footer-link">
-                Docs
+                <BookOpen size={16} /> Docs
               </a>
             )}
             {CONTRACT_CONFIG.links.repository !== '#' && (
               <a href={CONTRACT_CONFIG.links.repository} target="_blank" rel="noopener noreferrer" className="footer-link">
-                Code
+                <Github size={16} /> Github
               </a>
             )}
             {CONTRACT_CONFIG.links.twitter !== '#' && (
               <a href={CONTRACT_CONFIG.links.twitter} target="_blank" rel="noopener noreferrer" className="footer-link">
-                Twitter
+                <Twitter size={16} /> Twitter
               </a>
             )}
             {CONTRACT_CONFIG.links.telegram !== '#' && (
               <a href={CONTRACT_CONFIG.links.telegram} target="_blank" rel="noopener noreferrer" className="footer-link">
-                Telegram
+                <MessageCircle size={16} /> Telegram
               </a>
             )}
           </div>
