@@ -6,6 +6,7 @@ import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { DataStrip } from './DataStrip';
 import { AnimatedLogo } from './AnimatedLogo';
 import { useProtocolStats } from '../hooks/useProtocolStats';
+import { CONTRACT_CONFIG } from '../config/contract';
 import './Header.css';
 
 export function Header() {
@@ -99,6 +100,8 @@ export function Header() {
                 (!authenticationStatus ||
                   authenticationStatus === 'authenticated');
 
+              const wrongNetwork = connected && chain.id !== CONTRACT_CONFIG.chainId;
+
               return (
                 <div
                   {...(!ready && {
@@ -115,6 +118,15 @@ export function Header() {
                       return (
                         <button onClick={openConnectModal} className="wallet-connect-btn">
                           Connect Wallet
+                        </button>
+                      );
+                    }
+
+                    if (wrongNetwork) {
+                      return (
+                        <button onClick={openChainModal} className="wallet-wrong-network-btn">
+                          <span className="warning-icon">⚠</span>
+                          <span>Wrong Network</span>
                         </button>
                       );
                     }

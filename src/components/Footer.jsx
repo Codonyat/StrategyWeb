@@ -20,23 +20,34 @@ export function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h3 className="footer-title">Strategy Coin</h3>
+          <h4 className="footer-subtitle">About MONSTR</h4>
           <p className="footer-description">
-            100% backed by MON, withdraw anytime, up-only floor price.
+            100% backed by MON, withdraw anytime, up-only floor price. Designed for Monad.
           </p>
         </div>
 
         <div className="footer-section">
-          <h4 className="footer-subtitle">Contract</h4>
-          <div className="contract-address">
-            <span className="address-text">{shortenAddress(CONTRACT_ADDRESS)}</span>
-            <button
-              onClick={copyAddress}
-              className="copy-button"
-              aria-label="Copy contract address"
+          <h4 className="footer-subtitle">Contract ({CONTRACT_CONFIG.chainName})</h4>
+          <div className="contract-module">
+            <div className="contract-address">
+              <span className="address-text">{CONTRACT_ADDRESS}</span>
+              <button
+                onClick={copyAddress}
+                className="copy-button"
+                aria-label="Copy contract address"
+                title="Copy address"
+              >
+                {copied ? '✓' : '📋'}
+              </button>
+            </div>
+            <a
+              href={`${CONTRACT_CONFIG.explorerUrl}/address/${CONTRACT_ADDRESS}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="explorer-link"
             >
-              {copied ? '✓' : '📋'}
-            </button>
+              View on Explorer →
+            </a>
           </div>
         </div>
 
@@ -58,9 +69,9 @@ export function Footer() {
                 Twitter
               </a>
             )}
-            {CONTRACT_CONFIG.links.discord !== '#' && (
-              <a href={CONTRACT_CONFIG.links.discord} target="_blank" rel="noopener noreferrer" className="footer-link">
-                Discord
+            {CONTRACT_CONFIG.links.telegram !== '#' && (
+              <a href={CONTRACT_CONFIG.links.telegram} target="_blank" rel="noopener noreferrer" className="footer-link">
+                Telegram
               </a>
             )}
           </div>
@@ -69,7 +80,10 @@ export function Footer() {
 
       <div className="footer-disclaimer">
         <p>
-          High risk investment. Smart contracts are unaudited. Do your own research.
+          Contract audited for Ethereum, adapted for Monad. MONSTR is not affiliated with Monad. Do your own research.
+        </p>
+        <p className="footer-copyright">
+          © 2025 MONSTR. All rights reserved.
         </p>
       </div>
     </footer>

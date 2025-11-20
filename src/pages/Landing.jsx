@@ -111,7 +111,6 @@ export default function Landing() {
 
             {/* Right Side - Recent Transactions */}
             <div className="hero-right">
-            <h3 className="transactions-title">Recent Activity</h3>
             <div className="transactions-list">
               {/* Mock data - replace with real contract data */}
               <div className="transaction-item mint">

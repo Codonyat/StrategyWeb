@@ -12,33 +12,26 @@ import {
   ledgerWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 
-// Define custom Monad chains
-export const monadTestnet = {
-  id: 10143,
-  name: 'Monad Testnet',
+// Get public RPC URL for wallet (not using private VITE_RPC_URL)
+const publicRpcUrl = CONTRACT_CONFIG.chainId === 143
+  ? 'https://rpc.monad.xyz'
+  : 'https://testnet-rpc.monad.xyz';
+
+// Define custom Monad chain based on environment config
+const currentChain = {
+  id: CONTRACT_CONFIG.chainId,
+  name: CONTRACT_CONFIG.chainName,
   nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.testnet.monad.xyz'] },
+    default: { http: [publicRpcUrl] },
   },
   blockExplorers: {
-    default: { name: 'Monad Testnet Explorer', url: 'https://testnet.monadscan.com' },
+    default: {
+      name: `${CONTRACT_CONFIG.chainName} Explorer`,
+      url: CONTRACT_CONFIG.explorerUrl
+    },
   },
 };
-
-export const monadMainnet = {
-  id: 143,
-  name: 'Monad',
-  nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
-  rpcUrls: {
-    default: { http: ['https://rpc.monad.xyz'] },
-  },
-  blockExplorers: {
-    default: { name: 'Monad Explorer', url: 'https://explorer.monad.xyz' },
-  },
-};
-
-// Get the current chain based on config
-const currentChain = CONTRACT_CONFIG.chainId === 143 ? monadMainnet : monadTestnet;
 
 // Create wagmi config with RainbowKit and custom wallet list
 export const config = getDefaultConfig({

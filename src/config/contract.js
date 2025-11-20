@@ -80,7 +80,7 @@ export const CONTRACT_CONFIG = {
     docs: import.meta.env.VITE_LINK_DOCS || '#',
     repository: import.meta.env.VITE_LINK_REPOSITORY || '#',
     twitter: import.meta.env.VITE_LINK_TWITTER || '#',
-    discord: import.meta.env.VITE_LINK_DISCORD || '#',
+    telegram: import.meta.env.VITE_LINK_TELEGRAM || '#',
   },
 };
 
