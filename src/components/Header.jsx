@@ -18,7 +18,7 @@ export function Header() {
     { path: '/auctions', label: 'Auctions' },
     { path: '/lottery', label: 'Lottery' },
     { path: '/stats', label: 'Stats' },
-    { path: '/how-it-works', label: 'How it works' },
+    { path: '/faq', label: 'FAQ' },
   ];
 
   const isActive = (path) => location.pathname === path;

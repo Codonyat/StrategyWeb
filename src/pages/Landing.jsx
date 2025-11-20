@@ -197,9 +197,9 @@ export default function Landing() {
           <div className="step-card" tabIndex="0">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3 className="step-title">Backing increases daily</h3>
+              <h3 className="step-title">Supply fixed after 3 days</h3>
               <p className="step-description">
-                1% <strong>fee</strong> on transfers grows <strong>backing</strong> over time
+                After 3 days, supply is locked and <strong>backing grows</strong> from fees
               </p>
             </div>
           </div>
