@@ -9,188 +9,233 @@ export default function HowItWorks() {
     setOpenQuestion(openQuestion === questionId ? null : questionId);
   };
 
-  const faqs = [
+  const faqCategories = [
     {
-      id: 'what-is-monstr',
-      question: 'What is MONSTR?',
-      answer: (
-        <>
-          <p>
-            MONSTR is a Strategy Coin backed by MON, the native currency of the Monad blockchain.
-            Every MONSTR token is backed by a proportional amount of MON held in the smart contract,
-            creating a guaranteed price floor.
-          </p>
-        </>
-      ),
+      category: 'Basics',
+      faqs: [
+        {
+          id: 'what-is-monstr',
+          question: 'What is MONSTR?',
+          answer: (
+            <>
+              <p>
+                <strong>MONSTR is a strategy coin backed 100% by MON.</strong> You can always burn MONSTR to withdraw MON from the backing pool, and protocol fees create an up-only backing ratio over time.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'when-mint',
+          question: 'When can I mint tokens?',
+          answer: (
+            <>
+              <p>
+                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1 MON mints 1 MONSTR, before any fees or premiums. After the minting period ends you can only acquire MONSTR on the market.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'redeem-anytime',
+          question: 'Can I redeem my tokens anytime?',
+          answer: (
+            <>
+              <p>
+                <strong>Yes.</strong> You can burn MONSTR at any time to redeem MON from the backing pool at the current backing ratio. A 1% protocol fee is applied on redemptions.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'risky',
+          question: 'Is MONSTR risky?',
+          answer: (
+            <>
+              <p>
+                <strong>MONSTR is an experimental protocol.</strong> Like all DeFi applications, it carries risks including smart contract vulnerabilities and exposure to MON price volatility. The backing mechanism ensures you can always redeem at the current backing ratio, so market prices should track backing through arbitrage. Always do your own research before participating.
+              </p>
+            </>
+          ),
+        },
+      ],
     },
     {
-      id: 'when-mint',
-      question: 'When can I mint tokens?',
-      answer: (
-        <>
-          <p>
-            Minting is available during the first 3 days after contract deployment at a 1:1 ratio
-            (1 MON = 1 MONSTR). After that, minting continues but is proportional to the backing ratio.
-          </p>
-        </>
-      ),
+      category: 'Mechanics',
+      faqs: [
+        {
+          id: 'backing-works',
+          question: 'How does the backing mechanism work?',
+          answer: (
+            <>
+              <p>
+                <strong>All MON sent into the protocol</strong> (minting, fees, and auction proceeds) stays in the reserve. MONSTR supply can go down over time when tokens are burned. Because the pool can grow while supply shrinks, the backing per MONSTR tends to increase as long as the protocol collects more fees than it pays out.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'fees',
+          question: 'What are the fees?',
+          answer: (
+            <>
+              <p>
+                <strong>There is a 1% fee on mint, burn, and transfers of MONSTR.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'backing-vs-price',
+          question: 'What is the difference between backing ratio and exchange price?',
+          answer: (
+            <>
+              <p>
+                <strong>The backing ratio</strong> tells you how much MON sits behind each MONSTR in the reserve. <strong>The exchange price</strong> is whatever the token trades for on the market. Since anyone can redeem MONSTR for backing at any time, arbitrageurs will buy below backing and redeem for profit, creating a price floor. In practice, MONSTR should trade at or above backing.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'lottery',
+          question: 'How does the lottery work?',
+          answer: (
+            <>
+              <p>
+                <strong>Each day the protocol snapshots MONSTR holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'auctions',
+          question: 'How do the daily auctions work?',
+          answer: (
+            <>
+              <p>
+                <strong>Another share of protocol fees is converted to MONSTR and auctioned once per day.</strong> Users bid with MON or WMON. At the end of the day the highest bid wins the pool of MONSTR. Losing bidders keep their MON.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'unclaimed-prizes',
+          question: 'What happens to unclaimed prizes?',
+          answer: (
+            <>
+              <p>
+                <strong>Lottery and auction prizes can be claimed for 7 days.</strong> After that window closes unclaimed prizes are sent to the treasury address defined in the contract.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'auction-bidding',
+          question: 'Can I bid with MON or WMON?',
+          answer: (
+            <>
+              <p>
+                <strong>You can bid with either MON or WMON.</strong> The contract accepts both. WMON support allows the contract to pull bids safely with <code>transferFrom</code> and prevents certain denial-of-service issues. MON support provides direct convenience for bidders.
+              </p>
+            </>
+          ),
+        },
+      ],
     },
     {
-      id: 'redeem-anytime',
-      question: 'Can I redeem my tokens anytime?',
-      answer: (
-        <>
-          <p>
-            Yes! You can burn your MONSTR tokens anytime to receive your proportional share of the
-            backing pool. A 1% fee is applied on redemption.
-          </p>
-        </>
-      ),
+      category: 'Timing and randomness',
+      faqs: [
+        {
+          id: 'pseudo-day',
+          question: 'What is a pseudo-day and why 25 hours?',
+          answer: (
+            <>
+              <p>
+                <strong>The protocol uses 25-hour pseudo-days instead of 24 hours.</strong> That slowly rotates the time of day when lotteries and auctions roll over so no single timezone always gets the most convenient reset time.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'winner-selection',
+          question: 'How are lottery winners selected?',
+          answer: (
+            <>
+              <p>
+                <strong>The contract uses a data structure that tracks holder balances</strong> and picks a random position using the prevrandao value from the block. This lets it select a winner weighted by balance without iterating over all holders.
+              </p>
+            </>
+          ),
+        },
+      ],
     },
     {
-      id: 'backing-works',
-      question: 'How does the backing mechanism work?',
-      answer: (
-        <>
-          <p>
-            The backing per token is calculated as: <strong>Total MON ÷ Total MONSTR</strong>
-          </p>
-          <p>
-            This creates a guaranteed floor price - you can always redeem your tokens for their
-            proportional share of the backing pool.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: 'fees',
-      question: 'What are the fees?',
-      answer: (
-        <>
-          <p>
-            A 1% fee is applied to all minting, burning, and transfer operations. These fees fund
-            the lottery and auction systems.
-          </p>
-          <ul>
-            <li>During minting period (first 3 days): lottery receives 100% of fees</li>
-            <li>After minting period: lottery receives 50%, auction receives 50%</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      id: 'lottery',
-      question: 'How does the lottery work?',
-      answer: (
-        <>
-          <p>
-            The lottery system automatically enters all token holders based on their balance. No manual
-            entry required!
-          </p>
-          <ul>
-            <li>Runs every 25 hours (pseudo-day) to rotate timing across timezones</li>
-            <li>Winner selection is weighted by token balance (more tokens = better odds)</li>
-            <li>Uses prevrandao for random selection</li>
-            <li>Winners claim prizes by calling the claim() function</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      id: 'auctions',
-      question: 'How do the daily auctions work?',
-      answer: (
-        <>
-          <p>
-            After the 3-day minting period ends, daily auctions begin. These auctions distribute 50%
-            of the daily fees.
-          </p>
-          <ul>
-            <li>Auctions run every 25 hours</li>
-            <li>Bidders use WMON (wrapped MON) to prevent DoS attacks</li>
-            <li>Minimum bid: 50% of redemption value</li>
-            <li>Each new bid must be 10% higher than previous</li>
-            <li>Previous bidders receive instant WMON refunds</li>
-            <li>Winner receives MONSTR tokens from the auction pool</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      id: 'unclaimed-prizes',
-      question: 'What happens to unclaimed prizes?',
-      answer: (
-        <>
-          <p>
-            Unclaimed prizes are stored in a 7-slot rolling array. If a prize remains unclaimed after
-            7 days, it's sent to the treasury beneficiary address.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: 'why-wmon',
-      question: 'Why use WMON for auctions instead of MON?',
-      answer: (
-        <>
-          <p>
-            WMON prevents DoS attacks from malicious bidders who could reject refunds and block the
-            auction. With WMON, refunds are instant and guaranteed.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: 'pseudo-day',
-      question: 'What is a "pseudo-day" and why 25 hours?',
-      answer: (
-        <>
-          <p>
-            A pseudo-day is a 25-hour period used for lottery and auction cycles. The extra hour
-            ensures that the lottery/auction timing rotates across different timezones, giving everyone
-            fair access regardless of their location.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: 'winner-selection',
-      question: 'How are lottery winners selected?',
-      answer: (
-        <>
-          <p>
-            Winners are selected randomly using prevrandao (blockchain's random number source),
-            weighted by token balance. The selection uses a Fenwick tree (binary indexed tree) for
-            efficient O(log n) winner selection.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: 'treasury',
-      question: 'What is the treasury address?',
-      answer: (
-        <>
-          <p>
-            Treasury: <code>{CONTRACT_CONFIG.treasury}</code>
-          </p>
-          <p>This address receives unclaimed prizes after 7 days.</p>
-        </>
-      ),
-    },
-    {
-      id: 'contract-address',
-      question: 'What is the contract address?',
-      answer: (
-        <>
-          <p>
-            Contract: <code>{CONTRACT_CONFIG.address}</code>
-          </p>
-          <p>
-            Network: <strong>{CONTRACT_CONFIG.chainName}</strong>
-          </p>
-        </>
-      ),
+      category: 'Operations and contracts',
+      faqs: [
+        {
+          id: 'treasury',
+          question: 'What is the treasury address?',
+          answer: (
+            <>
+              <p>
+                <strong>The treasury address is a hard-coded address</strong> that receives unclaimed prizes and other protocol funds. You can view it in the contract under <code>BENEFICIARIES</code>.
+              </p>
+              <p>
+                Treasury: <code>{CONTRACT_CONFIG.treasury}</code>
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'contract-address',
+          question: 'What is the contract address?',
+          answer: (
+            <>
+              <p>
+                <strong>The strategy contract address is shown in the footer and on the FAQ page.</strong> You can click it to open the contract on the block explorer and verify the source code.
+              </p>
+              <p>
+                Contract: <code>{CONTRACT_CONFIG.address}</code>
+              </p>
+              <p>
+                Network: <strong>{CONTRACT_CONFIG.chainName}</strong>
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'audited',
+          question: 'Has the contract been audited?',
+          answer: (
+            <>
+              <p>
+                <strong>The MONSTR contract has been audited for Ethereum and then adapted for Monad testnet.</strong> Audits reduce but do not remove risk. Always review the code and audit reports yourself.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'stake-lock',
+          question: 'Do I need to stake or lock MONSTR to enter the lottery?',
+          answer: (
+            <>
+              <p>
+                <strong>No.</strong> You stay entered in the daily lottery as long as you hold MONSTR in your wallet at the time of the daily snapshot.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'wallets-networks',
+          question: 'What wallets and networks are supported?',
+          answer: (
+            <>
+              <p>
+                <strong>MONSTR currently runs on {CONTRACT_CONFIG.chainName}</strong> and supports any wallet that can connect to EVM-compatible networks, such as MetaMask or Rabby.
+              </p>
+            </>
+          ),
+        },
+      ],
     },
   ];
 
@@ -206,21 +251,28 @@ export default function HowItWorks() {
         </section>
 
         {/* FAQ List */}
-        <section className="collapsible-sections">
-          {faqs.map((faq) => (
-            <div key={faq.id} className="collapsible-section">
-              <button
-                className={`section-header ${openQuestion === faq.id ? 'open' : ''}`}
-                onClick={() => toggleQuestion(faq.id)}
-              >
-                <span className="section-title">{faq.question}</span>
-                <span className="section-icon">{openQuestion === faq.id ? '−' : '+'}</span>
-              </button>
-              {openQuestion === faq.id && (
-                <div className="section-body">
-                  <div className="section-content">{faq.answer}</div>
-                </div>
-              )}
+        <section className="faq-sections">
+          {faqCategories.map((category) => (
+            <div key={category.category} className="faq-category">
+              <h2 className="category-label">{category.category}</h2>
+              <div className="collapsible-sections">
+                {category.faqs.map((faq) => (
+                  <div key={faq.id} className="collapsible-section">
+                    <button
+                      className={`section-header ${openQuestion === faq.id ? 'open' : ''}`}
+                      onClick={() => toggleQuestion(faq.id)}
+                    >
+                      <span className="section-title">{faq.question}</span>
+                      <span className="section-icon">{openQuestion === faq.id ? '−' : '+'}</span>
+                    </button>
+                    {openQuestion === faq.id && (
+                      <div className="section-body">
+                        <div className="section-content">{faq.answer}</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </section>

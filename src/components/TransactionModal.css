@@ -439,6 +439,16 @@
   box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3) !important;
 }
 
+/* Bid Button - Purple gradient overlay */
+.submit-button.bid::before {
+  background: linear-gradient(135deg, var(--color-purple), var(--color-secondary));
+}
+
+.submit-button.bid:hover:not(:disabled) {
+  border-color: var(--color-purple) !important;
+  box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3) !important;
+}
+
 /* Loading state */
 .submit-button.loading {
   cursor: wait;
