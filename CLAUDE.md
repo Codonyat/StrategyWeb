@@ -100,7 +100,21 @@ Source: `c:/Users/nilga/Repos/Etherium/src/Strategy.sol`
 The contract ABI and configuration are located in:
 - `src/config/abi.js` - Full contract ABI
 - `src/config/contract.js` - **All configuration indexed by chain ID** (network, tokens, branding, colors, links)
+- `src/config/contract-constants.json` - **Immutable contract constants** (fetched once during build)
 - `.env.example` - Environment variable template
+
+### Contract Constants (Build-Time Fetched)
+**IMPORTANT**: The `deploymentTime` and `MINTING_PERIOD` constants are immutable values that are fetched once during the build process by `scripts/fetch-contract-constants.js` and saved to `src/config/contract-constants.json`.
+
+**These constants should NEVER be refetched at runtime** - simply import them from the JSON file:
+```javascript
+import contractConstants from '../config/contract-constants.json';
+
+const deploymentTime = Number(contractConstants.deploymentTime);
+const mintingPeriod = Number(contractConstants.MINTING_PERIOD);
+```
+
+Since these values never change after deployment, there's no need to query the contract or use `useReadContract` hooks for them. Use the pre-fetched values from the build process instead.
 
 Set your environment variables in `.env`:
 ```

@@ -435,8 +435,8 @@
 }
 
 .submit-button.burn:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3);
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3) !important;
 }
 
 /* Loading state */

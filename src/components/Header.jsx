@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { StatusChip } from './StatusChip';
+import { StatusCapsule } from './StatusCapsule';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { DataStrip } from './DataStrip';
 import { AnimatedLogo } from './AnimatedLogo';
 import { useProtocolStats } from '../hooks/useProtocolStats';
+import { useMintingCountdown } from '../hooks/useMintingCountdown';
 import { CONTRACT_CONFIG } from '../config/contract';
 import './Header.css';
 
@@ -13,6 +15,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { tvl, supply, backingRatio, isMintingPeriod, isLoading, hasError, error } = useProtocolStats();
+  const { timeRemaining, isActive: isMintingActive } = useMintingCountdown();
 
   const navItems = [
     { path: '/auctions', label: 'Auctions' },
@@ -45,26 +48,17 @@ export function Header() {
               />
             ) : (
             <>
-              {isMintingPeriod && (
-                <StatusChip
-                  label=""
-                  value="Minting"
-                  type="minting"
-                />
-              )}
-              <StatusChip
-                label="Backing"
-                value={
+              <StatusCapsule
+                leftLabel="Backing"
+                leftValue={isMintingPeriod ? "1:1" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
+                leftTooltip={
                   <>
-                    1:<DisplayFormattedNumber num={backingRatio} significant={3} />
+                    Backing ratio: <strong>1 MONSTR = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
                   </>
                 }
-                type="active"
-                tooltip={
-                  <>
-                    Backing ratio: <strong>1 MONSTR = <DisplayFormattedNumber num={backingRatio} significant={3} /> MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
-                  </>
-                }
+                rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
+                rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
+                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing." : "Exchange rate between MONSTR and MON. Coming soon."}
               />
               </>
             )}

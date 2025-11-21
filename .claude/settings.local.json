@@ -26,7 +26,9 @@
       "Bash(npm run build:*)",
       "Bash(npm run fetch-constants:*)",
       "Bash(node -e:*)",
-      "Bash(C:/Users/nilga/Repos/StrategyWeb/strategy-abi-temp.json)"
+      "Bash(C:/Users/nilga/Repos/StrategyWeb/strategy-abi-temp.json)",
+      "Bash(grep:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
