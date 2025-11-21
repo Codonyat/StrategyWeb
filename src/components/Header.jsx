@@ -155,22 +155,34 @@ export function Header() {
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <nav className="nav-mobile">
-          {/* Status Capsule in Mobile Menu (visible only <560px) */}
+          {/* Status Chips in Mobile Menu (visible only <430px) */}
           {!hasError && !isLoading && (
             <div className="nav-mobile-stats">
-              <StatusCapsule
-                leftLabel="Backing"
-                leftValue={isMintingPeriod ? "1:1" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
-                leftTooltip={
+              <StatusChip
+                label="Backing"
+                value={isMintingPeriod ? "1:1" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
+                type="active"
+                tooltip={
                   <>
                     Backing ratio: <strong>1 MONSTR = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
                   </>
                 }
-                rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
-                rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
-                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing." : "Exchange rate between MONSTR and MON. Coming soon."}
-                fixedWidth={isMintingPeriod && isMintingActive}
               />
+              {isMintingPeriod && isMintingActive ? (
+                <StatusChip
+                  label="Minting ends in"
+                  value={timeRemaining}
+                  type="accent"
+                  tooltip="Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing."
+                />
+              ) : (
+                <StatusChip
+                  label="Exchange"
+                  value="N/A"
+                  type="default"
+                  tooltip="Exchange rate between MONSTR and MON. Coming soon."
+                />
+              )}
             </div>
           )}
 

@@ -208,3 +208,73 @@
     min-width: 60px;
   }
 }
+
+
+/* Mobile menu stats - override all responsive hiding */
+@media (max-width: 600px) {
+  .nav-mobile-stats .status-capsule {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-mobile-stats .segment-label {
+    display: inline !important;
+    font-size: 0.75rem !important;
+  }
+
+  .nav-mobile-stats .capsule-segment {
+    padding: 0.5rem 1rem !important;
+    gap: 0.5rem !important;
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-mobile-stats .segment-label {
+    display: inline !important;
+    font-size: 0.75rem !important;
+  }
+
+  .nav-mobile-stats .capsule-segment {
+    padding: 0.5rem 1rem !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Mobile menu stats - override all responsive rules to show full format */
+@media (max-width: 430px) {
+  .nav-mobile-stats .status-capsule {
+    width: 100%;
+    font-size: 0.8125rem;
+  }
+
+  .nav-mobile-stats .segment-label {
+    display: inline-flex !important;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #e0e0e0;
+  }
+
+  .nav-mobile-stats .segment-value {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+
+  .nav-mobile-stats .capsule-segment {
+    padding: 0.5rem 1rem !important;
+    gap: 0.5rem !important;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Ensure proper border radius */
+  .nav-mobile-stats .capsule-left {
+    border-radius: 9999px 0 0 9999px !important;
+  }
+
+  .nav-mobile-stats .capsule-right {
+    border-radius: 0 9999px 9999px 0 !important;
+  }
+}

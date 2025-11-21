@@ -28,7 +28,8 @@
       "Bash(node -e:*)",
       "Bash(C:/Users/nilga/Repos/StrategyWeb/strategy-abi-temp.json)",
       "Bash(grep:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(\"C:/Users/nilga/Repos/StrategyWeb/src/pages/Landing.css\")"
     ],
     "deny": [],
     "ask": []

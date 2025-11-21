@@ -759,3 +759,114 @@
     max-height: 300px;
   }
 }
+/* Mobile layout fixes - Add to end of Landing.css */
+
+@media (max-width: 480px) {
+  /* Reduce padding on very small screens */
+  .landing-page {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero-section {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+
+  .explainer-section {
+    padding: 0 var(--spacing-xs);
+  }
+
+  .quick-stats {
+    padding: 0 var(--spacing-xs);
+  }
+
+  .deep-links {
+    padding: 0 var(--spacing-xs) var(--spacing-2xl);
+  }
+
+  /* Fix transaction grid overflow */
+  .transaction-row {
+    grid-template-columns: auto 1fr auto;
+    gap: 0.375rem;
+    padding: 0.5rem 0.375rem;
+  }
+
+  .tx-address {
+    font-size: 0.7rem;
+  }
+
+  .tx-type {
+    font-size: 0.65rem;
+    min-width: 38px;
+  }
+
+  .tx-amount {
+    font-size: 0.75rem;
+  }
+
+  /* Stack time on its own line */
+  .tx-time {
+    grid-column: 1 / -1;
+    text-align: left;
+    margin-top: 0.25rem;
+    font-size: 0.65rem;
+  }
+
+  /* Smaller coin */
+  .coin-container {
+    width: 220px;
+    height: 220px;
+  }
+
+  /* Stack action buttons */
+  .coin-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--spacing-sm);
+  }
+
+  .action-btn {
+    width: 100%;
+    min-width: unset;
+    padding: 0.875rem 1.5rem;
+  }
+
+  /* Smaller step cards */
+  .step-card {
+    padding: 16px;
+  }
+
+  .step-number {
+    font-size: 52px;
+    width: 42px;
+  }
+
+  .step-title {
+    font-size: 14px;
+  }
+
+  .step-description {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Extra small screens */
+  .hero-section,
+  .explainer-section,
+  .quick-stats,
+  .deep-links {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .transaction-row {
+    gap: 0.25rem;
+    padding: 0.375rem 0.25rem;
+  }
+
+  .coin-container {
+    width: 200px;
+    height: 200px;
+  }
+}
