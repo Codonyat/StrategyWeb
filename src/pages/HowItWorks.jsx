@@ -30,7 +30,10 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1 MON mints 1 MONSTR, before any fees or premiums. After the minting period ends you can only acquire MONSTR on the market.
+                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1 MON mints 1 MONSTR at a 1:1 ratio, before the 1% transfer fee is applied.
+              </p>
+              <p>
+                After the minting period ends, you can still mint MONSTR at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn MONSTR, this opens up supply capacity for new minting. You can also acquire MONSTR on the secondary market.
               </p>
             </>
           ),
@@ -52,7 +55,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>MONSTR is an experimental protocol.</strong> Like all DeFi applications, it carries risks including smart contract vulnerabilities and exposure to MON price volatility. The backing mechanism ensures you can always redeem at the current backing ratio, so market prices should track backing through arbitrage. Always do your own research before participating.
+                <strong>MONSTR has been audited and uses a transparent, on-chain backing mechanism.</strong> The contract allows you to redeem MONSTR for MON at any time, creating a price floor at the backing ratio. Like all DeFi protocols, you should be aware of smart contract risk and exposure to MON price volatility. Always review the audit and source code yourself before participating.
               </p>
             </>
           ),
@@ -68,7 +71,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>All MON sent into the protocol</strong> (minting, fees, and auction proceeds) stays in the reserve. MONSTR supply can go down over time when tokens are burned. Because the pool can grow while supply shrinks, the backing per MONSTR tends to increase as long as the protocol collects more fees than it pays out.
+                <strong>All MON sent into the protocol</strong> (minting, fees, and auction proceeds) stays in the reserve. MONSTR supply fluctuates: it decreases when tokens are burned and can increase when new tokens are minted (if below the max supply cap). Because the reserve grows but the max supply stays capped, the backing per MONSTR will increase over time as long as the protocol collects fees.
               </p>
             </>
           ),
@@ -79,7 +82,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>There is a 1% fee on mint, burn, and transfers of MONSTR.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool.
+                <strong>There is a 1% fee on mint, burn, and transfers of MONSTR.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool. The auction mechanism converts collected fees back into MON by auctioning MONSTR tokens to bidders, thereby increasing the net amount of MON in the reserve and strengthening the backing ratio.
               </p>
             </>
           ),
@@ -90,7 +93,21 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>The backing ratio</strong> tells you how much MON sits behind each MONSTR in the reserve. <strong>The exchange price</strong> is whatever the token trades for on the market. Since anyone can redeem MONSTR for backing at any time, arbitrageurs will buy below backing and redeem for profit, creating a price floor. In practice, MONSTR should trade at or above backing.
+                <strong>The backing ratio</strong> tells you how much MON sits behind each MONSTR in the reserve. <strong>The exchange price</strong> is whatever the token trades for on the market. Since anyone can redeem MONSTR for MON at the backing ratio at any time, arbitrageurs will buy below backing and redeem for profit, creating a price floor. In practice, MONSTR should trade at or above the backing ratio.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'flywheel-effect',
+          question: 'How does MONSTR create value over time?',
+          answer: (
+            <>
+              <p>
+                <strong>MONSTR has a built-in flywheel effect.</strong> Minting generates fees, which increase the backing ratio. A higher backing ratio creates profit expectations, driving secondary market buying. This buying generates more fees, further increasing the backing. If the exchange price diverges too much from backing and drops, increased trading activity generates even more fees, strengthening the backing and restarting the cycle.
+              </p>
+              <p>
+                This mechanism makes MONSTR a safe leverage bet on MON. As long as MON has value and the protocol sees activity, the backing ratio trends upward over time.
               </p>
             </>
           ),
@@ -101,7 +118,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Each day the protocol snapshots MONSTR holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
+                <strong>Each day the protocol snapshots MONSTR holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. Only regular wallet addresses participate—smart contracts are excluded from lottery draws. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
               </p>
             </>
           ),
@@ -196,9 +213,6 @@ export default function HowItWorks() {
               <p>
                 Contract: <code>{CONTRACT_CONFIG.address}</code>
               </p>
-              <p>
-                Network: <strong>{CONTRACT_CONFIG.chainName}</strong>
-              </p>
             </>
           ),
         },
@@ -219,7 +233,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>No.</strong> You stay entered in the daily lottery as long as you hold MONSTR in your wallet at the time of the daily snapshot.
+                <strong>No.</strong> You stay entered in the daily lottery as long as you hold MONSTR in your wallet at the time of the daily snapshot. Note that only regular wallets participate, smart contracts are excluded from lottery draws.
               </p>
             </>
           ),
@@ -242,14 +256,9 @@ export default function HowItWorks() {
   return (
     <div className="how-it-works-page">
       <div className="page-container">
-        {/* Intro Section */}
-        <section className="intro-section">
-          <h1 className="page-title">Frequently Asked Questions</h1>
-          <p className="intro-text">
-            Everything you need to know about MONSTR, the Strategy Coin backed by MON.
-          </p>
-        </section>
-
+        <p className="page-tagline">
+          Frequently asked questions
+        </p>
         {/* FAQ List */}
         <section className="faq-sections">
           {faqCategories.map((category) => (

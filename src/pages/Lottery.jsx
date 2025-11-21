@@ -73,14 +73,13 @@ export default function Lottery() {
 
   return (
     <div className="lottery-page">
-      {/* Band 1: Header row - title + key stats */}
+      {/* Band 1: Header row - tagline + key stats */}
       <section className="lottery-header-section">
         <div className="lottery-header-content">
+          <p className="page-tagline">
+            Hodl MONSTR, win daily prizes, zero risk.
+          </p>
           <div className="lottery-title-row">
-            <div className="lottery-title-area">
-              <h1 className="lottery-main-title">Lottery</h1>
-              <p className="lottery-subtitle">Daily no loss draw from protocol fees.</p>
-            </div>
             <div className="lottery-stats-chips">
               <StatusChip
                 label="Next draw"

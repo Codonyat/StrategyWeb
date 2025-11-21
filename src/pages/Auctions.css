@@ -18,7 +18,23 @@
 .auctions-header-content {
   max-width: var(--max-width);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
 }
+
+.page-tagline {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+
 
 .auctions-title-row {
   display: flex;

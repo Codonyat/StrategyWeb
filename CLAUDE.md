@@ -18,7 +18,7 @@ This separation allows the app to display protocol stats and data regardless of 
 
 ### Minting & Redemption
 - **During minting period (first 24 hours)**: 1 MON = 1 MONSTR (1:1 ratio)
-- **After minting period**: Proportional to MON backing ratio
+- **After minting period**: Minting still possible at the current backing ratio, but only if total supply is below the max supply cap (set at end of minting period). Burns create capacity for new minting.
 - **Redemption**: Burn MONSTR to receive proportional share of contract's MON balance
 - **Fee**: 1% on all mints, burns, and transfers
 
@@ -922,6 +922,114 @@ export function StatusChip({ label, value, type = 'default', tooltip }) {
 - Component: `src/components/StatusChip.jsx`
 - Styles: `src/components/StatusChip.css`
 - Usage: `src/components/Header.jsx`
+
+## CSS Best Practices & Common Pitfalls
+
+### CSS Specificity and Inheritance Issues
+
+**CRITICAL LESSON**: In React/Vite apps, all CSS files are bundled together regardless of which page is active. Unscoped class names in page-specific CSS files can cause conflicts across different pages.
+
+#### The Problem
+When multiple page CSS files use the same class names (e.g., `.section-title`), the last loaded CSS rule wins due to CSS cascade order, not based on which page is currently rendered.
+
+**Example of the issue:**
+```css
+/* Landing.css */
+.section-title {
+  font-size: 2rem;  /* Global rule - affects ALL pages */
+}
+
+/* Lottery.css */
+.section-title {
+  font-size: 2rem;  /* Also global - affects ALL pages */
+}
+
+/* HowItWorks.css */
+.section-header {
+  font-size: 1rem;  /* Applied to button */
+}
+
+.section-title {
+  /* No font-size specified - inherits from global 2rem, not from parent button! */
+}
+```
+
+**What happens:**
+- The button (`.section-header`) has the correct `font-size: 1rem`
+- The text inside the button is wrapped in a span with class `.section-title`
+- The span picks up the global `font-size: 2rem` from Landing.css/Lottery.css instead of inheriting from its parent button
+- Result: Text appears at 32px instead of 16px
+
+#### The Solution
+
+**Option 1: Force inheritance (Quick Fix)**
+```css
+.how-it-works-page .section-title {
+  font-size: inherit !important;  /* Force child to inherit from parent */
+  font-weight: inherit !important;
+}
+```
+
+**Option 2: Scope all CSS selectors (Best Practice)**
+```css
+/* Landing.css */
+.landing-page .section-title {
+  font-size: 2rem;
+}
+
+/* Lottery.css */
+.lottery-page .section-title {
+  font-size: 2rem;
+}
+
+/* HowItWorks.css */
+.how-it-works-page .section-title {
+  font-size: 1rem;
+}
+```
+
+#### Best Practices to Follow
+
+1. **Always scope page-specific styles** with the page container class
+   - Bad: `.section-title { ... }`
+   - Good: `.how-it-works-page .section-title { ... }`
+
+2. **Use inheritance explicitly when needed**
+   - If a child element should inherit from its parent, explicitly set `font-size: inherit` rather than relying on default inheritance
+
+3. **Avoid global class names** unless they're truly global utilities
+   - Classes like `.section-title`, `.card`, `.button` should always be scoped to their page/component
+
+4. **Use `!important` sparingly** but when you do, document why
+   - Only use when fighting specificity issues or overriding third-party styles
+   - Always add a comment explaining the reason
+
+5. **Check for CSS conflicts** when styles aren't applying as expected
+   - Search the entire codebase for the class name to find conflicting rules
+   - Use browser DevTools to inspect which CSS rules are being applied and from which files
+
+#### Debugging CSS Issues Checklist
+
+When styles aren't applying as expected:
+
+1. ✅ **Check browser DevTools** - Inspect the element and see which CSS rules are applied and which are overridden
+2. ✅ **Search for class name globally** - `grep -r "\.className" src/` to find all occurrences
+3. ✅ **Check CSS specificity** - More specific selectors win
+4. ✅ **Check cascade order** - Later rules override earlier ones with same specificity
+5. ✅ **Check for inline styles** - Inline styles override CSS files
+6. ✅ **Hard refresh browser** - `Ctrl+Shift+R` to clear cached CSS
+7. ✅ **Restart dev server** - Vite may not hot-reload CSS changes in some cases
+8. ✅ **Check inheritance** - Child elements may not inherit properties you expect
+
+#### CSS Scoping Reference
+
+**Current page classes:**
+- Landing: `.landing-page`
+- Lottery: `.lottery-page`
+- Auctions: `.auctions-page`
+- FAQ/How It Works: `.how-it-works-page`
+
+**Always prefix page-specific styles with these classes to prevent conflicts.**
 
 - to memorize
 - to memorize

@@ -1,0 +1,279 @@
+.how-it-works-page {
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.how-it-works-page .page-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Intro Section */
+.intro-section {
+  margin-bottom: 3rem;
+}
+
+.intro-section .page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.intro-text {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* FAQ Categories */
+.faq-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.faq-category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.category-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Collapsible Sections */
+.collapsible-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.collapsible-section {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsible-section:hover {
+  border-color: var(--color-border-light);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.125rem 1.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.section-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.section-header.open {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--primary-accent);
+  min-width: 30px;
+  text-align: center;
+}
+
+.section-body {
+  padding: 1.125rem 1.25rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Content */
+.section-content {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.section-content p {
+  margin-bottom: 1rem;
+}
+
+.section-content h4 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.section-content ul,
+.section-content ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.section-content li {
+  margin-bottom: 0.5rem;
+}
+
+.section-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section-content code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--primary-accent-light);
+}
+
+.highlight {
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid var(--primary-accent);
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+}
+
+/* Warning Box */
+.warning {
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid var(--error);
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+}
+
+.risk-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.risk-list li {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.risk-list li::before {
+  content: '⚠';
+  position: absolute;
+  left: 0;
+  color: var(--error);
+}
+
+/* Fee Table */
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.fee-table th,
+.fee-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.fee-table th {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.fee-table td {
+  color: var(--text-secondary);
+}
+
+/* FAQ Items */
+.faq-item {
+  margin-bottom: 2rem;
+}
+
+.faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.faq-item h4 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.faq-item p {
+  margin-bottom: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .how-it-works-page .page-container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .intro-section .page-title {
+    font-size: 2rem;
+  }
+
+  .intro-text {
+    font-size: 1rem;
+  }
+
+  .faq-sections {
+    gap: var(--spacing-lg);
+  }
+
+  .section-header {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .section-body {
+    padding: 1rem;
+  }
+
+  .section-content {
+    font-size: 0.9375rem;
+  }
+
+  .fee-table {
+    font-size: 0.875rem;
+  }
+
+  .fee-table th,
+  .fee-table td {
+    padding: 0.5rem;
+  }
+}
