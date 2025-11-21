@@ -7,6 +7,11 @@
   transition: all 0.2s ease;
 }
 
+/* Fixed width only during minting period to prevent layout shifts from countdown */
+.status-capsule.fixed-width .capsule-right {
+  min-width: 208px;
+}
+
 .capsule-segment {
   display: flex;
   align-items: center;
@@ -69,6 +74,12 @@
 .segment-value {
   font-weight: 600;
   color: #e0e0e0;
+}
+
+/* Fixed width for countdown to prevent layout shifts - only during minting */
+.status-capsule.fixed-width .capsule-right .segment-value {
+  min-width: 70px;
+  text-align: center;
 }
 
 /* Tooltip styling - same as StatusChip */
@@ -141,6 +152,10 @@
     font-size: 0.75rem;
   }
 
+  .status-capsule.fixed-width .capsule-segment.capsule-right {
+    min-width: 205px;
+  }
+
   .capsule-segment {
     padding: 0.3rem 0.6rem;
     gap: 0.4rem;
@@ -149,11 +164,19 @@
   .segment-label {
     font-size: 0.7rem;
   }
+
+  .status-capsule.fixed-width .capsule-right .segment-value {
+    min-width: 86px;
+  }
 }
 
 @media (max-width: 480px) {
   .status-capsule {
     font-size: 0.7rem;
+  }
+
+  .status-capsule.fixed-width .capsule-segment.capsule-right {
+    min-width: 86px;
   }
 
   .capsule-segment {
@@ -163,5 +186,9 @@
 
   .segment-label {
     display: none;
+  }
+
+  .status-capsule.fixed-width .capsule-right .segment-value {
+    min-width: 60px;
   }
 }

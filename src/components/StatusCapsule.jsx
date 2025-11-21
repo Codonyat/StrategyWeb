@@ -7,10 +7,11 @@ export function StatusCapsule({
   rightLabel,
   rightValue,
   rightTooltip,
-  rightDisabled = false
+  rightDisabled = false,
+  fixedWidth = false
 }) {
   return (
-    <div className="status-capsule">
+    <div className={`status-capsule ${fixedWidth ? 'fixed-width' : ''}`}>
       {/* Left segment - Backing */}
       <div className={`capsule-segment capsule-left ${leftTooltip ? 'has-tooltip' : ''}`}>
         <span className="segment-label">{leftLabel}</span>

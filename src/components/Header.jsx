@@ -59,6 +59,7 @@ export function Header() {
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
                 rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
                 rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing." : "Exchange rate between MONSTR and MON. Coming soon."}
+                fixedWidth={isMintingPeriod && isMintingActive}
               />
               </>
             )}
