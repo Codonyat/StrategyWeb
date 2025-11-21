@@ -17,7 +17,6 @@ export function Header() {
   const navItems = [
     { path: '/auctions', label: 'Auctions' },
     { path: '/lottery', label: 'Lottery' },
-    { path: '/stats', label: 'Stats' },
     { path: '/faq', label: 'FAQ' },
   ];
 
@@ -57,10 +56,15 @@ export function Header() {
                 label="Backing"
                 value={
                   <>
-                    x<DisplayFormattedNumber num={backingRatio} significant={3} />
+                    1:<DisplayFormattedNumber num={backingRatio} significant={3} />
                   </>
                 }
                 type="active"
+                tooltip={
+                  <>
+                    Backing ratio: <strong>1 MONSTR = <DisplayFormattedNumber num={backingRatio} significant={3} /> MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
+                  </>
+                }
               />
               </>
             )}

@@ -178,10 +178,10 @@ Modals in MONSTR follow a consistent design system with specific patterns for tr
 - Use `var(--radius-xl)` for modal container, `var(--radius-md)` for inner elements
 
 #### 2. **Color Semantics**
-- **Deposit/Mint actions**: Green gradient (`--color-success` to `--color-secondary`)
-- **Burn/Destructive actions**: Red-to-purple gradient (`--color-primary` to `--color-purple`)
-- **Neutral actions**: Use default system colors
-- Focus states: Match the action color (green for deposit, red for burn)
+- **Deposit/Mint actions**: Green hover effects (`--color-success` to `--color-secondary`)
+- **Burn/Destructive actions**: Red/pink hover effects (`--color-primary` to `--color-secondary`)
+- **Neutral actions**: Purple hover effects (`--color-purple`)
+- **Input focus states**: Neutral border (`--color-border-light`) - NO colored borders on focus to keep UI clean
 
 #### 3. **Input Fields**
 ```css
@@ -189,41 +189,57 @@ Modals in MONSTR follow a consistent design system with specific patterns for tr
 - Remove browser number spinners completely
 - Token symbol displayed inside input (right-aligned, matching input font size)
 - Neutral border (`--color-border`) when unfocused
-- Colored border + glow on focus (green/red depending on action)
-- Padding: `1rem 1.25rem`, with `padding-right: 120px` to prevent overlap
+- Subtle neutral border (`--color-border-light`) on focus - NO colored glow
+- Padding: `1rem 1.25rem`, with `padding-right: 90px` for token symbol
+- Input class: Plain for deposit, `burn-input` for burn (but styling is the same)
 ```
 
 #### 4. **Helper Elements**
-- **Balance line**: Lighter gray (`#808080`), clickable to set max, shows hover state
-- **MAX button**: Pill-shaped, uppercase, hovers to action color with glow
-- **Quick amount buttons** (for burn): 25%, 50%, 75% options below balance
-- **Transaction info box**: Separate section with `margin-top: 1.5rem`, smaller radius than modal
+- **Balance display**: Two formats available:
+  - Simple: Single line with balance info (used when no shortcuts needed)
+  - With shortcuts: `.balance-row` containing `.balance-info-text` and `.balance-shortcuts`
+- **Shortcut buttons**: 25%, 50%, MAX pill buttons
+  - Small, compact design (`padding: 0.25rem 0.625rem`, `font-size: 0.7rem`)
+  - Purple hover/selected state (`--color-purple`) - universal for all modals
+  - Clear selected state with visual feedback
+  - Auto-deselect on manual input edit
+- **Transaction info box**:
+  - Zero vertical padding (`padding: 0 1rem`) for cleaner row alignment
+  - `min-height: 2.5rem` on `.info-row` for consistent heights
+  - Consistent `line-height: 1.5` on all row content
 
 #### 5. **Button Design**
 ```javascript
-// Primary action buttons in modals - calmer than hero CTAs
+// Modal buttons match landing page action buttons - NOT filled gradients
 - Full width pill style (`border-radius: 9999px`)
-- Single-hue gradient for semantic clarity (not rainbow)
-  - Deposit: green → darker green (#00e887 → #00b366)
-  - Burn: magenta → darker magenta (#ff3864 → #cc2d50)
-- No shadow by default (cleaner for modal context)
-- Uppercase text with tight letter spacing (`0.02em`)
-- Subtle hover: slight lift (1px) + 1% scale + brightness
+- Dark background with border: `background: var(--color-background-card)`, `border: 2px solid var(--color-border-light)`
+- Text color: `var(--color-text-primary)` (white)
+- Gradient overlay on ::before pseudo-element (opacity 0 → 0.1 on hover)
+  - Deposit: green gradient (`--color-success` to `--color-secondary`)
+  - Burn: red gradient (`--color-primary` to `--color-secondary`)
+- Hover: border color changes to action color, lift + scale + glow
 - Active state: scale down slightly (0.99)
 - Disabled: 50% opacity, no transform
 - Loading state shows spinner + status text ("Waiting for approval", "Confirming")
 - Labels should be concise: "Deposit MON", "Burn MONSTR" (not "Deposit & Mint")
+- Button content needs `z-index: 1` to appear above gradient overlay
 
-// Philosophy: Hero buttons are stars (loud gradients), modal buttons are confirmations (calm, semantic)
+// Philosophy: Buttons are NOT filled with color - they have dark backgrounds with subtle gradient overlays on hover
 ```
 
 #### 6. **Information Hierarchy**
 ```
 Label (lighter gray #909090)          Value (white, right-aligned, bold)
 ─────────────────────────────────────────────────────────────────────
-You will receive                       ~X MONSTR (highlighted in action color)
-Exchange rate / Backing ratio          1:1 or Xx
+You will receive                       ~X MONSTR (plain span, no wrapper)
+Exchange rate                          1:X.XX (use ratio notation, not Xx format)
 Fee                                    1%
+
+IMPORTANT:
+- NO wrapper divs around "You will receive" value - keep it clean
+- Use "Exchange rate" label (not "Backing ratio") with 1:X.XX notation for consistency
+- Burn modal: 1:${backingRatio} (1 MONSTR → X MON)
+- Mint modal: 1:1 or 1:${1/backingRatio} (1 MON → X MONSTR)
 ```
 
 #### 7. **Destructive Action Warnings**
@@ -767,5 +783,132 @@ All design tokens are defined in `src/index.css` and should be used consistently
 
 **Never hardcode these values.** Always use the CSS custom properties.
 
+### Tooltip Pattern
+
+MONSTR uses a clean, readable tooltip system for contextual help. Tooltips appear on hover with smooth animations.
+
+#### Implementation
+
+**Component (StatusChip example):**
+```jsx
+export function StatusChip({ label, value, type = 'default', tooltip }) {
+  return (
+    <div className={`status-chip status-chip-${type} ${tooltip ? 'has-tooltip' : ''}`}>
+      <span className="status-chip-label">{label}</span>
+      <span className="status-chip-value">{value}</span>
+      {tooltip && <div className="status-chip-tooltip">{tooltip}</div>}
+    </div>
+  );
+}
+```
+
+**Usage:**
+```jsx
+<StatusChip
+  label="Backing"
+  value={<>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
+  type="active"
+  tooltip={
+    <>
+      Backing ratio: <strong>1 MONSTR = <DisplayFormattedNumber num={backingRatio} significant={3} /> MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
+    </>
+  }
+/>
+```
+
+#### Styling
+```css
+.status-chip.has-tooltip {
+  cursor: help;
+}
+
+.status-chip-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #3a3a3a;                    /* Mid-dark gray for readability */
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: #ffffff;                         /* Pure white for contrast */
+  white-space: normal;
+  width: max-content;
+  max-width: 200px;                       /* Limit width for shorter lines */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);  /* Soft shadow for separation */
+  line-height: 1.4;
+  text-transform: none;
+  text-align: left;
+}
+
+.status-chip-tooltip strong {
+  font-weight: 600;                       /* Emphasize key info */
+  color: #ffffff;
+}
+
+/* Arrow - double layer for border effect */
+.status-chip-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--color-border-light);
+}
+
+.status-chip-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #3a3a3a;      /* Match tooltip background */
+  margin-bottom: -1px;
+}
+
+.status-chip.has-tooltip:hover .status-chip-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+```
+
+#### Design Guidelines
+- **Background**: Mid-dark gray (`#3a3a3a`) instead of near-black for better readability
+- **Text**: Pure white (`#ffffff`) for all text, use `font-weight: 600` for emphasis (not color changes)
+- **Shadow**: Soft and prominent (`0 10px 30px rgba(0, 0, 0, 0.55)`) to separate from underlying UI
+- **Arrow**: Double-layer technique (border + background) for seamless appearance
+- **Width**: `max-width: 200px` to keep lines short and scannable
+- **Padding**: 8px vertical, 12px horizontal for comfortable spacing
+- **Typography**: 0.7rem font size, line-height 1.4, left-aligned
+- **Animation**: Fade in with slight downward motion (4px translateY)
+- **Position**: Appears below the trigger element to avoid overflow on nav bars
+
+#### Content Guidelines
+- Keep copy concise and scannable
+- Use `<strong>` tags to emphasize key numbers or ratios
+- Left-align text for better readability
+- Include both the concept and practical implication
+- Example: "Backing ratio: **1 MONSTR = X MON**. Each MONSTR can be redeemed for this amount of MON from the reserve."
+
+**Files Reference:**
+- Component: `src/components/StatusChip.jsx`
+- Styles: `src/components/StatusChip.css`
+- Usage: `src/components/Header.jsx`
+
+- to memorize
 - to memorize
 - to memorize

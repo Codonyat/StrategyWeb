@@ -11,6 +11,7 @@ const parsedAbi = parseAbi([
   'function getAllUnclaimedPrizes() view returns (address[7] lotteryWinners, uint112[7] lotteryAmounts, address[7] auctionWinners, uint112[7] auctionAmounts)',
   'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 monstrAmount, uint32 auctionDay)',
   'function mintingEndTime() view returns (uint256)',
+  'function balanceOf(address) view returns (uint256)',
 ]);
 
 export function DataStrip() {
@@ -44,6 +45,16 @@ export function DataStrip() {
   // Get MON reserve (contract balance)
   const { data: monBalance } = useBalance({
     address: CONTRACT_ADDRESS,
+    chainId: CONTRACT_CONFIG.chainId,
+    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
+  });
+
+  // Get daily accumulated fees (MONSTR balance of FEES_POOL)
+  const { data: feesBalance } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'balanceOf',
+    args: ['0x00000000000fee50000000AdD2E5500000000000'],
     chainId: CONTRACT_CONFIG.chainId,
     query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
   });
@@ -87,7 +98,8 @@ export function DataStrip() {
       const timeLeft = mintingEnd - now;
       const hours = Math.floor(timeLeft / 3600);
       const minutes = Math.floor((timeLeft % 3600) / 60);
-      return `${hours}h ${minutes}m`;
+      const seconds = timeLeft % 60;
+      return `${hours}h ${minutes}m ${seconds}s`;
     }
 
     const timeSinceMinting = now - mintingEnd;
@@ -138,7 +150,7 @@ export function DataStrip() {
   const monReserve = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
   const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
   const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
-  const lastAuctionProceeds = getLastAuctionProceeds();
+  const dailyFees = feesBalance ? parseFloat(formatEther(feesBalance)) : 0;
   const lastLotteryWinner = getLastLotteryWinner();
   const timeUntilDraw = calculateTimeUntilDraw();
 
@@ -171,27 +183,26 @@ export function DataStrip() {
         <span className="ticker-separator">•</span>
 
         <span className="ticker-item">
-          <span className="ticker-label">Pool</span>{' '}
+          <span className="ticker-label">Daily fees</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={lotteryPoolAmount} significant={3} /> MONSTR
+            <DisplayFormattedNumber num={dailyFees} significant={3} /> MONSTR
           </span>
         </span>
 
         <span className="ticker-separator">•</span>
 
         <span className="ticker-item">
-          <span className="ticker-label">Last auction</span>{' '}
-          <span className="ticker-value">
-            <DisplayFormattedNumber num={lastAuctionProceeds} significant={3} /> MON
-          </span>
+          <span className="ticker-label">MONSTR price</span>{' '}
+          <span className="ticker-value">N/A</span>
         </span>
 
         <span className="ticker-separator">•</span>
 
         <span className="ticker-item">
-          <span className="ticker-label">Last winner</span>{' '}
-          <span className="ticker-value">{lastLotteryWinner}</span>
+          <span className="ticker-label">MON price</span>{' '}
+          <span className="ticker-value">N/A</span>
         </span>
+
       </div>
     </div>
   );

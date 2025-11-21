@@ -24,7 +24,9 @@
       "Bash(then echo \"=== .env exists ===\")",
       "Bash(else echo \"=== No .env file - copying from example ===\")",
       "Bash(npm run build:*)",
-      "Bash(npm run fetch-constants:*)"
+      "Bash(npm run fetch-constants:*)",
+      "Bash(node -e:*)",
+      "Bash(C:/Users/nilga/Repos/StrategyWeb/strategy-abi-temp.json)"
     ],
     "deny": [],
     "ask": []

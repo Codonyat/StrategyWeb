@@ -71,18 +71,6 @@ export function useProtocolStats() {
         currentDayError: currentDayError?.message || currentDayError,
       });
     }
-    
-    if (!isLoading && !hasError && (tvl > 0 || supply > 0)) {
-      console.log('Protocol Stats:', {
-        contractAddress: CONTRACT_ADDRESS,
-        chainId: CONTRACT_CONFIG.chainId,
-        tvl: tvl.toFixed(4),
-        supply: supply.toFixed(4),
-        backingRatio: backingRatio.toFixed(4),
-        isMintingPeriod,
-        currentDay: currentDay ? Number(currentDay) : 'N/A',
-      });
-    }
   }
 
   return {

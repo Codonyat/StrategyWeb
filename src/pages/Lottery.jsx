@@ -1,8 +1,11 @@
-import { useWallet } from '../hooks/useWallet';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import './Lottery.css';
 
 export default function Lottery() {
-  const { isConnected } = useWallet();
+  const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   // Mock data - replace with real contract data
   const lotteryData = {
@@ -19,137 +22,147 @@ export default function Lottery() {
     unclaimedAmount: '0.5',
   };
 
-  const lotteryHistory = [
-    { round: 155, winner: '0x1234...5678', prize: '10.2' },
-    { round: 154, winner: '0xabcd...ef01', prize: '8.9' },
-    { round: 153, winner: '0x9876...4321', prize: '11.5' },
-    { round: 152, winner: '0xdef0...1234', prize: '9.3' },
+  const recentWinners = [
+    { round: 155, winner: '0x1234...5678', prize: '10.2', timeAgo: '1 hour ago' },
+    { round: 154, winner: '0xabcd...ef01', prize: '8.9', timeAgo: '26 hours ago' },
+    { round: 153, winner: '0x9876...4321', prize: '11.5', timeAgo: '2 days ago' },
+    { round: 152, winner: '0xdef0...1234', prize: '9.3', timeAgo: '3 days ago' },
+    { round: 151, winner: '0x5555...6666', prize: '12.1', timeAgo: '4 days ago' },
   ];
 
-  const summaryMetrics = {
-    totalPaidOut: '1,245.8',
-    completedRounds: 155,
-    largestPrize: '25.4',
+  const pastWinners = [
+    { round: 150, winner: '0x1111...2222', prize: '13.4' },
+    { round: 149, winner: '0x3333...4444', prize: '9.8' },
+    { round: 148, winner: '0x5555...6666', prize: '11.2' },
+    { round: 147, winner: '0x7777...8888', prize: '10.5' },
+  ];
+
+  const handleClaim = () => {
+    console.log('Claiming prizes');
   };
 
   return (
     <div className="lottery-page">
-      <div className="page-container">
-        {/* Page Header */}
-        <section className="page-header">
-          <div className="header-top">
-            <h1 className="page-title">Lottery</h1>
-            <span className="round-badge">Round {lotteryData.currentRound}</span>
-          </div>
-          <p className="page-subtitle">
-            Token holders are automatically entered based on their balance
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-wrapper">
+          <p className="hero-subtitle">
+            Automatic daily lottery weighted by token balance
           </p>
-        </section>
 
-        {/* Lottery Status Card */}
-        <section className="lottery-status">
-          <div className="status-card">
-            <div className="timers-row">
-              <div className="timer-block">
-                <div className="timer-value">{lotteryData.snapshotIn}</div>
-                <div className="timer-label">Snapshot in</div>
-              </div>
-              <div className="timer-block">
-                <div className="timer-value">{lotteryData.drawIn}</div>
-                <div className="timer-label">Draw in</div>
-              </div>
-            </div>
+          <div className="hero-content-grid">
+            {/* Left Side - Lottery Card */}
+            <div className="hero-left">
+              <div className="lottery-card">
+                <div className="lottery-header">
+                  <div className="lottery-title">
+                    <h2>Current Lottery</h2>
+                    <span className="round-badge">Round {lotteryData.currentRound}</span>
+                  </div>
+                  <span className="status-chip active">Active</span>
+                </div>
 
-            <div className="prize-info">
-              <div className="prize-label">Current prize pool</div>
-              <div className="prize-value">
-                {lotteryData.prizePool} MON
-              </div>
-              <div className="prize-note">Funded by protocol fees</div>
-            </div>
-          </div>
-        </section>
-
-        {/* User Panel */}
-        {isConnected ? (
-          <section className="user-panel">
-            {lotteryData.hasUnclaimedPrizes && (
-              <div className="unclaimed-alert">
-                <div className="alert-content">
-                  <span className="alert-icon">🎉</span>
-                  <div>
-                    <div className="alert-title">You have unclaimed prizes!</div>
-                    <div className="alert-amount">
-                      {lotteryData.unclaimedAmount} MON
-                    </div>
+                <div className="timers-section">
+                  <div className="timer-block">
+                    <div className="timer-value">{lotteryData.snapshotIn}</div>
+                    <div className="timer-label">Snapshot in</div>
+                  </div>
+                  <div className="timer-block">
+                    <div className="timer-value">{lotteryData.drawIn}</div>
+                    <div className="timer-label">Draw in</div>
                   </div>
                 </div>
-                <button className="btn btn-primary">Claim prize</button>
-              </div>
-            )}
 
-            <div className="user-stats-grid">
-              <div className="user-stat">
-                <div className="stat-label">Your MONSTR balance</div>
-                <div className="stat-value">
-                  {lotteryData.userBalance} MONSTR
+                <div className="lottery-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Prize pool</span>
+                    <span className="detail-value highlight">{lotteryData.prizePool} MONSTR</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Total weight</span>
+                    <span className="detail-value">{lotteryData.totalWeight}</span>
+                  </div>
+                  {address && (
+                    <>
+                      <div className="detail-row">
+                        <span className="detail-label">Your balance</span>
+                        <span className="detail-value">{lotteryData.userBalance} MONSTR</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Your weight</span>
+                        <span className="detail-value">{lotteryData.userWeight} ({lotteryData.weightPercent}%)</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Estimated odds</span>
+                        <span className="detail-value">{lotteryData.estimatedOdds}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-              <div className="user-stat">
-                <div className="stat-label">Your lottery weight</div>
-                <div className="stat-value">{lotteryData.userWeight}</div>
-                <div className="stat-note">{lotteryData.weightPercent}% of total</div>
-              </div>
-              <div className="user-stat">
-                <div className="stat-label">Estimated odds</div>
-                <div className="stat-value">{lotteryData.estimatedOdds}</div>
-                <div className="stat-note">Approximately</div>
+
+                {address ? (
+                  lotteryData.hasUnclaimedPrizes ? (
+                    <div className="claim-section">
+                      <div className="unclaimed-info">
+                        <span className="unclaimed-icon">🎉</span>
+                        <div>
+                          <div className="unclaimed-title">Unclaimed prizes</div>
+                          <div className="unclaimed-amount">{lotteryData.unclaimedAmount} MONSTR</div>
+                        </div>
+                      </div>
+                      <button className="action-btn claim-btn" onClick={handleClaim}>
+                        <span className="action-line">Claim Prizes</span>
+                      </button>
+                    </div>
+                  ) : null
+                ) : (
+                  <button className="action-btn connect-btn" onClick={openConnectModal}>
+                    <span className="action-line">Connect Wallet</span>
+                  </button>
+                )}
               </div>
             </div>
-          </section>
-        ) : (
-          <section className="connect-section">
-            <p>Connect wallet to see your weight and any winnings</p>
-          </section>
-        )}
 
-        {/* Summary Metrics */}
-        <section className="summary-metrics">
-          <div className="metric-card">
-            <div className="metric-value">{summaryMetrics.totalPaidOut} MON</div>
-            <div className="metric-label">Total prizes paid out</div>
-          </div>
-          <div className="metric-card">
-            <div className="metric-value">{summaryMetrics.completedRounds}</div>
-            <div className="metric-label">Completed rounds</div>
-          </div>
-          <div className="metric-card">
-            <div className="metric-value">{summaryMetrics.largestPrize} MON</div>
-            <div className="metric-label">Largest single prize</div>
-          </div>
-        </section>
-
-        {/* Lottery History */}
-        <section className="lottery-history">
-          <h2 className="section-title">Previous Winners</h2>
-          <div className="history-table">
-            <div className="table-header">
-              <span>Round</span>
-              <span>Winner</span>
-              <span>Prize</span>
+            {/* Right Side - Recent Winners */}
+            <div className="hero-right">
+              <div className="winners-list">
+                {recentWinners.map((winner, index) => (
+                  <div key={winner.round} className={`winner-row ${index >= 3 ? 'fade' : ''}`}>
+                    <span className="winner-indicator"></span>
+                    <span className="winner-type">WIN</span>
+                    <span className="winner-address">{winner.winner}</span>
+                    <span className="winner-time">{winner.timeAgo}</span>
+                    <span className="winner-prize">{winner.prize} MONSTR</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            {lotteryHistory.map((entry) => (
-              <div key={entry.round} className="table-row">
-                <span>#{entry.round}</span>
-                <span className="mono">{entry.winner}</span>
-                <span>
-                  {entry.prize} MON
-                </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Past Winners Section */}
+      <section className="history-section">
+        <div className="history-content">
+          <h2 className="section-title">Lottery history</h2>
+          <div className="history-grid">
+            {pastWinners.map((winner) => (
+              <div key={winner.round} className="history-card" tabIndex="0">
+                <div className="card-number">{winner.round}</div>
+                <div className="card-content">
+                  <h3 className="card-title">Round {winner.round}</h3>
+                  <p className="card-description">
+                    Winner: <strong className="mono">{winner.winner}</strong>
+                  </p>
+                  <p className="card-description">
+                    Prize: <strong>{winner.prize} MONSTR</strong>
+                  </p>
+                </div>
               </div>
             ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

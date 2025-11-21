@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAccount, useBalance } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { parseEther, formatEther } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
 import { useProtocolStats } from '../hooks/useProtocolStats';
@@ -10,15 +11,30 @@ import './TransactionModal.css';
 export function MintModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+  const [selectedPercentage, setSelectedPercentage] = useState(null);
   const inputRef = useRef(null);
   const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { mint, isPending, isConfirming, isSuccess, error: txError } = useStrategyContract();
   const { isMintingPeriod, backingRatio } = useProtocolStats();
 
   // Get MON balance
-  const { data: balance } = useBalance({
+  const { data: balance, isError, isLoading: isBalanceLoading, refetch } = useBalance({
     address,
+    query: {
+      enabled: !!address,
+      retry: 3,
+      retryDelay: 1000,
+      refetchInterval: 10000, // Refetch every 10 seconds
+    },
   });
+
+  // Refetch balance when modal opens
+  useEffect(() => {
+    if (isOpen && address) {
+      refetch();
+    }
+  }, [isOpen, address, refetch]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -71,8 +87,8 @@ export function MintModal({ isOpen, onClose }) {
       return;
     }
 
-    if (balance && parseEther(amount) > balance.value) {
-      setError('Insufficient MON balance');
+    if (balance?.value && parseEther(amount) > balance.value) {
+      setError(`Insufficient ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
       return;
     }
 
@@ -83,24 +99,29 @@ export function MintModal({ isOpen, onClose }) {
     }
   };
 
-  const handleMaxClick = () => {
-    if (balance) {
-      // Leave a small amount for gas
-      const maxAmount = Math.max(0, parseFloat(formatEther(balance.value)) - 0.01);
-      setAmount(maxAmount.toFixed(6));
+  const handlePercentageClick = (percentage) => {
+    if (balance?.value !== undefined && balance?.value !== null) {
+      const totalBalance = parseFloat(formatEther(balance.value));
+      // Leave a small amount for gas on MAX
+      const availableBalance = percentage === 1.0
+        ? Math.max(0, totalBalance - 0.01)
+        : totalBalance;
+      const newAmount = (availableBalance * percentage).toFixed(6);
+      setAmount(newAmount);
+      setSelectedPercentage(percentage * 100);
     }
   };
 
   const estimatedOutput = () => {
-    if (!amount || parseFloat(amount) <= 0) return '0';
+    if (!amount || parseFloat(amount) <= 0) return 0;
     const inputAmount = parseFloat(amount);
 
     if (isMintingPeriod) {
       // During minting period: 1:1 ratio minus 1% fee
-      return (inputAmount * 0.99).toFixed(6);
+      return inputAmount * 0.99;
     } else {
       // After minting period: proportional to backing ratio minus 1% fee
-      return (inputAmount / backingRatio * 0.99).toFixed(6);
+      return inputAmount / backingRatio * 0.99;
     }
   };
 
@@ -132,41 +153,70 @@ export function MintModal({ isOpen, onClose }) {
                 onChange={(e) => {
                   setAmount(e.target.value);
                   setError('');
+                  setSelectedPercentage(null); // Clear selection on manual edit
                 }}
                 disabled={isLoading}
                 className={error ? 'error' : ''}
               />
               <span className="token-symbol">{CONTRACT_CONFIG.nativeCoin.symbol}</span>
-              <button
-                type="button"
-                className="max-button"
-                onClick={handleMaxClick}
-                disabled={isLoading || !balance}
-              >
-                MAX
-              </button>
             </div>
-            {balance && (
-              <div
-                className={`balance-info ${parseFloat(formatEther(balance.value)) === 0 ? 'disabled' : ''}`}
-                onClick={parseFloat(formatEther(balance.value)) > 0 ? handleMaxClick : undefined}
-                title={parseFloat(formatEther(balance.value)) > 0 ? "Click to use max" : ""}
-              >
-                Balance: <strong><DisplayFormattedNumber num={formatEther(balance.value)} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+            {isBalanceLoading ? (
+              <div className="balance-info disabled">
+                Balance: <strong>Loading...</strong>
               </div>
-            )}
+            ) : isError ? (
+              <div className="balance-info disabled">
+                Balance: <strong>Error loading balance</strong>
+              </div>
+            ) : balance?.value !== undefined && balance?.value !== null ? (
+              <div className="balance-row">
+                <div className="balance-info-text">
+                  Balance: <strong><DisplayFormattedNumber num={formatEther(balance.value)} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+                </div>
+                <div className="balance-shortcuts">
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(0.25)}
+                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                  >
+                    25%
+                  </button>
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(0.5)}
+                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                  >
+                    50%
+                  </button>
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(1.0)}
+                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+            ) : address ? (
+              <div className="balance-info disabled">
+                Balance: <strong>0 {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+              </div>
+            ) : null}
           </div>
 
           <div className="transaction-info">
             <div className="info-row">
               <span>You will receive</span>
-              <span className="highlight">
-                {amount && parseFloat(amount) > 0 ? `~${estimatedOutput()}` : '0'} {CONTRACT_CONFIG.strategyCoin.symbol}
+              <span>
+                ~<DisplayFormattedNumber num={estimatedOutput()} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}
               </span>
             </div>
             <div className="info-row">
               <span>Exchange rate</span>
-              <span>{isMintingPeriod ? '1:1' : `1:${(1 / backingRatio).toFixed(4)}`}</span>
+              <span>{isMintingPeriod ? '1:1' : <>1:<DisplayFormattedNumber num={1 / backingRatio} significant={4} /></>}</span>
             </div>
             <div className="info-row">
               <span>Fee</span>
@@ -177,19 +227,33 @@ export function MintModal({ isOpen, onClose }) {
           {error && <div className="error-message">{error}</div>}
           {isSuccess && <div className="success-message">Transaction successful!</div>}
 
-          <button
-            type="submit"
-            className={`submit-button ${isLoading ? 'loading' : ''}`}
-            disabled={isLoading || !amount || parseFloat(amount) <= 0}
-          >
-            <div className="button-content">
-              {isLoading && <span className="spinner"></span>}
-              {isPending ? 'Waiting for approval' :
-               isConfirming ? 'Confirming' :
-               isSuccess ? 'Success!' :
-               'Deposit MON'}
-            </div>
-          </button>
+          {!address ? (
+            <button
+              type="button"
+              className="submit-button"
+              onClick={() => {
+                openConnectModal?.();
+              }}
+            >
+              <div className="button-content">
+                Connect Wallet
+              </div>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className={`submit-button ${isLoading ? 'loading' : ''}`}
+              disabled={isLoading || !amount || parseFloat(amount) <= 0}
+            >
+              <div className="button-content">
+                {isLoading && <span className="spinner"></span>}
+                {isPending ? 'Waiting for approval' :
+                 isConfirming ? 'Confirming' :
+                 isSuccess ? 'Success!' :
+                 'Deposit MON'}
+              </div>
+            </button>
+          )}
         </form>
       </div>
     </div>
