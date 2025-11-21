@@ -1,165 +1,291 @@
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { StatusChip } from '../components/StatusChip';
+import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
+import { useLotteryData } from '../hooks/useLotteryData';
+import { useLotteryCountdown } from '../hooks/useLotteryCountdown';
+import { CONTRACT_ADDRESS } from '../config/contract';
+import { STRATEGY_ABI } from '../config/abi';
 import './Lottery.css';
 
 export default function Lottery() {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, success, error
 
-  // Mock data - replace with real contract data
-  const lotteryData = {
-    currentRound: 156,
-    snapshotIn: '12:34:56',
-    drawIn: '18:45:23',
-    prizePool: '12.5',
-    userBalance: '1500',
-    userWeight: '1500',
-    totalWeight: '150000',
-    weightPercent: '1.0',
-    estimatedOdds: '1 in 100',
-    hasUnclaimedPrizes: true,
-    unclaimedAmount: '0.5',
+  const {
+    currentPool,
+    lastLotteryDay,
+    lotteryHistory,
+    userBalance,
+    totalWeight,
+    sharePercent,
+    userClaimable,
+    hasUnclaimedPrizes,
+    isLoading,
+  } = useLotteryData();
+
+  const { timeRemaining } = useLotteryCountdown();
+
+  // Get last winner from history
+  const lastWinner = lotteryHistory.length > 0 ? lotteryHistory[0] : null;
+
+  // Calculate total unclaimed in the 7-day ring
+  const totalUnclaimed = lotteryHistory.reduce((sum, entry) => sum + entry.amount, 0);
+
+  // Claim contract interaction
+  const { writeContract, data: claimHash, error: claimError } = useWriteContract();
+
+  const { isLoading: isClaimConfirming, isSuccess: isClaimConfirmed } = useWaitForTransactionReceipt({
+    hash: claimHash,
+  });
+
+  const handleClaim = async () => {
+    if (!address) {
+      openConnectModal?.();
+      return;
+    }
+
+    try {
+      setClaimStatus('claiming');
+      writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: STRATEGY_ABI,
+        functionName: 'claim',
+      });
+    } catch (error) {
+      console.error('Claim error:', error);
+      setClaimStatus('error');
+    }
   };
 
-  const recentWinners = [
-    { round: 155, winner: '0x1234...5678', prize: '10.2', timeAgo: '1 hour ago' },
-    { round: 154, winner: '0xabcd...ef01', prize: '8.9', timeAgo: '26 hours ago' },
-    { round: 153, winner: '0x9876...4321', prize: '11.5', timeAgo: '2 days ago' },
-    { round: 152, winner: '0xdef0...1234', prize: '9.3', timeAgo: '3 days ago' },
-    { round: 151, winner: '0x5555...6666', prize: '12.1', timeAgo: '4 days ago' },
-  ];
+  // Handle claim confirmation
+  if (isClaimConfirmed && claimStatus === 'claiming') {
+    setClaimStatus('success');
+    setTimeout(() => setClaimStatus('idle'), 3000);
+  }
 
-  const pastWinners = [
-    { round: 150, winner: '0x1111...2222', prize: '13.4' },
-    { round: 149, winner: '0x3333...4444', prize: '9.8' },
-    { round: 148, winner: '0x5555...6666', prize: '11.2' },
-    { round: 147, winner: '0x7777...8888', prize: '10.5' },
-  ];
-
-  const handleClaim = () => {
-    console.log('Claiming prizes');
-  };
+  if (claimError && claimStatus === 'claiming') {
+    setClaimStatus('error');
+    setTimeout(() => setClaimStatus('idle'), 5000);
+  }
 
   return (
     <div className="lottery-page">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-wrapper">
-          <p className="hero-subtitle">
-            Automatic daily lottery weighted by token balance
-          </p>
-
-          <div className="hero-content-grid">
-            {/* Left Side - Lottery Card */}
-            <div className="hero-left">
-              <div className="lottery-card">
-                <div className="lottery-header">
-                  <div className="lottery-title">
-                    <h2>Current Lottery</h2>
-                    <span className="round-badge">Round {lotteryData.currentRound}</span>
-                  </div>
-                  <span className="status-chip active">Active</span>
-                </div>
-
-                <div className="timers-section">
-                  <div className="timer-block">
-                    <div className="timer-value">{lotteryData.snapshotIn}</div>
-                    <div className="timer-label">Snapshot in</div>
-                  </div>
-                  <div className="timer-block">
-                    <div className="timer-value">{lotteryData.drawIn}</div>
-                    <div className="timer-label">Draw in</div>
-                  </div>
-                </div>
-
-                <div className="lottery-details">
-                  <div className="detail-row">
-                    <span className="detail-label">Prize pool</span>
-                    <span className="detail-value highlight">{lotteryData.prizePool} MONSTR</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Total weight</span>
-                    <span className="detail-value">{lotteryData.totalWeight}</span>
-                  </div>
-                  {address && (
-                    <>
-                      <div className="detail-row">
-                        <span className="detail-label">Your balance</span>
-                        <span className="detail-value">{lotteryData.userBalance} MONSTR</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Your weight</span>
-                        <span className="detail-value">{lotteryData.userWeight} ({lotteryData.weightPercent}%)</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Estimated odds</span>
-                        <span className="detail-value">{lotteryData.estimatedOdds}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {address ? (
-                  lotteryData.hasUnclaimedPrizes ? (
-                    <div className="claim-section">
-                      <div className="unclaimed-info">
-                        <span className="unclaimed-icon">🎉</span>
-                        <div>
-                          <div className="unclaimed-title">Unclaimed prizes</div>
-                          <div className="unclaimed-amount">{lotteryData.unclaimedAmount} MONSTR</div>
-                        </div>
-                      </div>
-                      <button className="action-btn claim-btn" onClick={handleClaim}>
-                        <span className="action-line">Claim Prizes</span>
-                      </button>
-                    </div>
-                  ) : null
-                ) : (
-                  <button className="action-btn connect-btn" onClick={openConnectModal}>
-                    <span className="action-line">Connect Wallet</span>
-                  </button>
-                )}
-              </div>
+      {/* Band 1: Header row - title + key stats */}
+      <section className="lottery-header-section">
+        <div className="lottery-header-content">
+          <div className="lottery-title-row">
+            <div className="lottery-title-area">
+              <h1 className="lottery-main-title">Lottery</h1>
+              <p className="lottery-subtitle">Daily no loss draw from protocol fees.</p>
             </div>
-
-            {/* Right Side - Recent Winners */}
-            <div className="hero-right">
-              <div className="winners-list">
-                {recentWinners.map((winner, index) => (
-                  <div key={winner.round} className={`winner-row ${index >= 3 ? 'fade' : ''}`}>
-                    <span className="winner-indicator"></span>
-                    <span className="winner-type">WIN</span>
-                    <span className="winner-address">{winner.winner}</span>
-                    <span className="winner-time">{winner.timeAgo}</span>
-                    <span className="winner-prize">{winner.prize} MONSTR</span>
-                  </div>
-                ))}
-              </div>
+            <div className="lottery-stats-chips">
+              <StatusChip
+                label="Next draw"
+                value={isLoading ? '...' : timeRemaining}
+                type="active"
+                tooltip="Time until next lottery draw can be executed"
+              />
+              <StatusChip
+                label="Pool"
+                value={
+                  isLoading ? '...' : (
+                    <>
+                      <DisplayFormattedNumber num={currentPool} significant={3} /> MONSTR
+                    </>
+                  )
+                }
+                type="default"
+                tooltip="Today's prize pool accumulated from protocol fees"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Past Winners Section */}
-      <section className="history-section">
-        <div className="history-content">
-          <h2 className="section-title">Lottery history</h2>
-          <div className="history-grid">
-            {pastWinners.map((winner) => (
-              <div key={winner.round} className="history-card" tabIndex="0">
-                <div className="card-number">{winner.round}</div>
-                <div className="card-content">
-                  <h3 className="card-title">Round {winner.round}</h3>
-                  <p className="card-description">
-                    Winner: <strong className="mono">{winner.winner}</strong>
-                  </p>
-                  <p className="card-description">
-                    Prize: <strong>{winner.prize} MONSTR</strong>
-                  </p>
+      {/* Band 2: Two columns - Your status vs Today's draw */}
+      <section className="lottery-two-column-section">
+        <div className="lottery-two-column-content">
+          {/* Left: Your lottery card */}
+          <div className="your-lottery-card">
+            <h2 className="card-section-title">Your lottery</h2>
+
+            {address ? (
+              <>
+                <div className="lottery-info-rows">
+                  <div className="info-row">
+                    <span className="info-label">Your MONSTR balance</span>
+                    <span className="info-value">
+                      <DisplayFormattedNumber num={userBalance} significant={4} /> MONSTR
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Share of holders</span>
+                    <span className="info-value">
+                      <DisplayFormattedNumber num={sharePercent} significant={2} />%
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Estimated odds today</span>
+                    <span className="info-value">
+                      {sharePercent > 0 ? `~1 in ${Math.round(100 / sharePercent)}` : 'N/A'}
+                    </span>
+                  </div>
+                  {hasUnclaimedPrizes && (
+                    <div className="info-row highlight-row">
+                      <span className="info-label">Unclaimed prizes</span>
+                      <span className="info-value highlight-value">
+                        <DisplayFormattedNumber num={userClaimable} significant={4} /> MONSTR
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                <p className="lottery-explainer-text">
+                  You stay entered as long as you hold MONSTR. Snapshots are taken once per day.
+                </p>
+
+                {hasUnclaimedPrizes && (
+                  <button
+                    className="claim-btn"
+                    onClick={handleClaim}
+                    disabled={isClaimConfirming || claimStatus === 'claiming'}
+                  >
+                    {isClaimConfirming || claimStatus === 'claiming'
+                      ? 'Claiming...'
+                      : claimStatus === 'success'
+                      ? '✓ Claimed!'
+                      : claimStatus === 'error'
+                      ? 'Error - Try again'
+                      : 'Claim now'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="connect-prompt">
+                <p className="connect-text">Connect your wallet to see your lottery status and odds.</p>
+                <button className="connect-btn-lottery" onClick={openConnectModal}>
+                  Connect Wallet
+                </button>
               </div>
-            ))}
+            )}
+          </div>
+
+          {/* Right: Today's draw card */}
+          <div className="today-draw-card">
+            <h2 className="card-section-title">Today's draw</h2>
+
+            <div className="today-pool-display">
+              <span className="pool-label">Today's pool</span>
+              <span className="pool-amount">
+                <DisplayFormattedNumber num={currentPool} significant={4} /> MONSTR
+              </span>
+            </div>
+
+            <div className="countdown-display">
+              <span className="countdown-label">Next draw in</span>
+              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+              <div className="countdown-progress">
+                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+              </div>
+            </div>
+
+            <p className="draw-explainer-text">
+              Fees from transfers fill the pool. Snapshot taken at end of day, winner chosen from holders.
+            </p>
+
+            <p className="last-executed-text">Last executed: day {lastLotteryDay}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Band 3: History - Last 7 draws */}
+      <section className="lottery-history-section">
+        <div className="lottery-history-content">
+          <div className="history-header">
+            <h2 className="section-title">Last 7 draws</h2>
+          </div>
+
+          <div className="history-table-card">
+            <div className="history-table">
+              <div className="table-header">
+                <span className="th-day">Day</span>
+                <span className="th-winner">Winner</span>
+                <span className="th-prize">Prize</span>
+                <span className="th-status">Status</span>
+              </div>
+              {lotteryHistory.length > 0 ? (
+                lotteryHistory.map((entry) => (
+                  <div
+                    key={entry.day}
+                    className={`table-row ${entry.isUserWinner ? 'user-winner' : ''}`}
+                  >
+                    <span className="td-day">{entry.day}</span>
+                    <span className="td-winner">
+                      {entry.winner.slice(0, 6)}...{entry.winner.slice(-4)}
+                      {entry.isUserWinner && <span className="you-badge">You</span>}
+                    </span>
+                    <span className="td-prize">
+                      <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
+                    </span>
+                    <span className={`td-status status-${entry.status}`}>
+                      {entry.status === 'unclaimed' ? 'Unclaimed' : 'Claimed'}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="empty-history-row">
+                  <p>No lottery history yet. The first draw will happen after day 0.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Band 4: How it works - Lottery specific */}
+      <section className="lottery-explainer-section">
+        <div className="lottery-explainer-content">
+          <h2 className="section-title">How it works</h2>
+          <div className="lottery-steps-grid">
+            <div className="step-card" tabIndex="0">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <h3 className="step-title">Fees accumulate</h3>
+                <p className="step-description">
+                  1 percent transfer fee is collected in the fees pool.
+                </p>
+              </div>
+            </div>
+            <div className="step-card" tabIndex="0">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <h3 className="step-title">Daily snapshot</h3>
+                <p className="step-description">
+                  Once per day, holder balances are snapshotted.
+                </p>
+              </div>
+            </div>
+            <div className="step-card" tabIndex="0">
+              <div className="step-number">3</div>
+              <div className="step-content">
+                <h3 className="step-title">Random winner</h3>
+                <p className="step-description">
+                  One holder is chosen at random, weighted by balance.
+                </p>
+              </div>
+            </div>
+            <div className="step-card" tabIndex="0">
+              <div className="step-number">4</div>
+              <div className="step-content">
+                <h3 className="step-title">Claim within 7 days</h3>
+                <p className="step-description">
+                  Winner can claim from the lottery pool. After 7 days, unclaimed prizes roll to the treasury.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

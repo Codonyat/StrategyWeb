@@ -305,12 +305,13 @@
 }
 
 .deposit-btn:hover {
-  border-color: var(--color-success);
-  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+  border-color: var(--color-success) !important;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3) !important;
 }
 
 .deposit-btn:hover::before {
-  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary)) !important;
+  opacity: 0.1;
 }
 
 .deposit-btn:focus-visible {

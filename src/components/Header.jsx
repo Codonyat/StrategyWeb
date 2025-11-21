@@ -18,8 +18,8 @@ export function Header() {
   const { timeRemaining, isActive: isMintingActive } = useMintingCountdown();
 
   const navItems = [
-    { path: '/auctions', label: 'Auctions' },
     { path: '/lottery', label: 'Lottery' },
+    { path: '/auctions', label: 'Auctions' },
     { path: '/faq', label: 'FAQ' },
   ];
 
