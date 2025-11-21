@@ -1,27 +1,44 @@
 import { ethers } from 'ethers';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables from .env file
-const envPath = join(__dirname, '..', '.env');
-const envContent = readFileSync(envPath, 'utf-8');
-const env = {};
-envContent.split('\n').forEach(line => {
-  const trimmed = line.trim();
-  if (trimmed && !trimmed.startsWith('#')) {
-    const [key, ...valueParts] = trimmed.split('=');
-    if (key && valueParts.length > 0) {
-      env[key.trim()] = valueParts.join('=').trim();
-    }
-  }
-});
+// Get environment variables - prefer process.env (Vercel), fallback to .env file (local)
+let contractAddress = process.env.VITE_CONTRACT_ADDRESS;
+let rpcUrl = process.env.VITE_RPC_URL;
 
-const contractAddress = env.VITE_CONTRACT_ADDRESS;
-const rpcUrl = env.VITE_RPC_URL;
+// If not in process.env, try to load from .env file (local development)
+if (!contractAddress || !rpcUrl) {
+  const envPath = join(__dirname, '..', '.env');
+
+  if (existsSync(envPath)) {
+    const envContent = readFileSync(envPath, 'utf-8');
+    const env = {};
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...valueParts] = trimmed.split('=');
+        if (key && valueParts.length > 0) {
+          env[key.trim()] = valueParts.join('=').trim();
+        }
+      }
+    });
+
+    contractAddress = contractAddress || env.VITE_CONTRACT_ADDRESS;
+    rpcUrl = rpcUrl || env.VITE_RPC_URL;
+  }
+}
+
+// Validate required environment variables
+if (!contractAddress) {
+  throw new Error('VITE_CONTRACT_ADDRESS environment variable is required');
+}
+if (!rpcUrl) {
+  throw new Error('VITE_RPC_URL environment variable is required');
+}
 
 // Minimal ABI for the functions we need
 const abi = [
