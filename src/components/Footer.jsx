@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { FileText, BookOpen, Github, Twitter, MessageCircle } from 'lucide-react';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
+import { DisclaimerModal } from './DisclaimerModal';
 import './Footer.css';
 
 export function Footer() {
   const [copied, setCopied] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(CONTRACT_ADDRESS);
@@ -84,12 +86,19 @@ export function Footer() {
 
       <div className="footer-disclaimer">
         <p>
-          Contract audited for Ethereum, adapted for Monad. MONSTR is not affiliated with Monad. Do your own research.
+          Contract audited for Ethereum, adapted for Monad. MONSTR is not affiliated with Monad.
+        </p>
+        <p>
+          <button onClick={() => setShowDisclaimer(true)} className="disclaimer-link">
+            Legal Disclaimer & Terms of Use
+          </button>
         </p>
         <p className="footer-copyright">
           © 2025 MONSTR. All rights reserved.
         </p>
       </div>
+
+      <DisclaimerModal isOpen={showDisclaimer} onClose={() => setShowDisclaimer(false)} />
     </footer>
   );
 }

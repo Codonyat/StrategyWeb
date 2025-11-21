@@ -168,6 +168,29 @@
   margin: 0 0 var(--spacing-sm) 0;
 }
 
+.disclaimer-link {
+  background: none;
+  border: none;
+  color: var(--color-secondary);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  font-family: inherit;
+}
+
+.disclaimer-link:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.disclaimer-link:focus-visible {
+  outline: 2px solid rgba(0, 212, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .footer-copyright {
   color: var(--color-text-muted);
   font-size: 0.7rem;
@@ -195,6 +218,18 @@
   }
 
   .address-text {
+    font-size: 0.7rem;
+  }
+
+  .footer-disclaimer {
+    padding: var(--spacing-lg) var(--spacing-md) 0;
+  }
+
+  .footer-disclaimer p {
+    font-size: 0.7rem;
+  }
+
+  .disclaimer-link {
     font-size: 0.7rem;
   }
 }

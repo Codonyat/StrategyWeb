@@ -55,7 +55,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>MONSTR has been audited and uses a transparent, on-chain backing mechanism.</strong> The contract allows you to redeem MONSTR for MON at any time, creating a price floor at the backing ratio. Like all DeFi protocols, you should be aware of smart contract risk and exposure to MON price volatility. Always review the audit and source code yourself before participating.
+                <strong>MONSTR has been audited and uses a transparent, on-chain backing mechanism.</strong> The contract allows you to redeem MONSTR for MON at any time, creating a price floor at the backing ratio. Like all crypto protocols, you should be aware of smart contract risk and exposure to MON price volatility. Always review the audit and source code yourself before participating.
               </p>
             </>
           ),
