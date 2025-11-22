@@ -29,6 +29,15 @@ export function MintModal({ isOpen, onClose }) {
     },
   });
 
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setAmount('');
+      setError('');
+      setSelectedPercentage(null);
+    }
+  }, [isOpen]);
+
   // Refetch balance when modal opens
   useEffect(() => {
     if (isOpen && address) {
@@ -73,6 +82,30 @@ export function MintModal({ isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
+  // Check if amount exceeds balance in real-time
+  const exceedsBalance = () => {
+    if (!amount || parseFloat(amount) <= 0) return false;
+    if (!balance?.value) return false;
+    try {
+      const amountWei = parseEther(amount);
+      // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)
+      // This handles formatEther → parseEther precision loss
+      const tolerance = balance.value / BigInt(1000000000) || BigInt(1000000);
+      return amountWei > balance.value + tolerance;
+    } catch {
+      return false;
+    }
+  };
+
+  // Update error message when amount changes
+  useEffect(() => {
+    if (exceedsBalance()) {
+      setError(`Amount exceeds your ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
+    } else if (error && error.includes('exceeds')) {
+      setError('');
+    }
+  }, [amount, balance]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -87,7 +120,7 @@ export function MintModal({ isOpen, onClose }) {
       return;
     }
 
-    if (balance?.value && parseEther(amount) > balance.value) {
+    if (exceedsBalance()) {
       setError(`Insufficient ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
       return;
     }
@@ -102,12 +135,16 @@ export function MintModal({ isOpen, onClose }) {
   const handlePercentageClick = (percentage) => {
     if (balance?.value !== undefined && balance?.value !== null) {
       const totalBalance = parseFloat(formatEther(balance.value));
-      // Leave a small amount for gas on MAX
-      const availableBalance = percentage === 1.0
-        ? Math.max(0, totalBalance - 0.01)
-        : totalBalance;
-      const newAmount = (availableBalance * percentage).toFixed(6);
-      setAmount(newAmount);
+      if (percentage === 1.0) {
+        // For MAX, leave a small amount for gas and use full precision
+        const gasReserve = parseEther('0.01');
+        const maxAmount = balance.value > gasReserve ? balance.value - gasReserve : BigInt(0);
+        setAmount(formatEther(maxAmount));
+      } else {
+        // For percentages, use rounded value
+        const newAmount = (totalBalance * percentage).toFixed(6);
+        setAmount(newAmount);
+      }
       setSelectedPercentage(percentage * 100);
     }
   };
@@ -224,7 +261,9 @@ export function MintModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          <div className="error-text-reserved">
+            {error && <span className="error-text">{error}</span>}
+          </div>
           {isSuccess && <div className="success-message">Transaction successful!</div>}
 
           {!address ? (
@@ -243,7 +282,7 @@ export function MintModal({ isOpen, onClose }) {
             <button
               type="submit"
               className={`submit-button ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading || !amount || parseFloat(amount) <= 0}
+              disabled={isLoading || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}

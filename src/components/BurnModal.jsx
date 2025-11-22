@@ -16,7 +16,7 @@ export function BurnModal({ isOpen, onClose }) {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { burn, isPending, isConfirming, isSuccess, error: txError } = useStrategyContract();
-  const { backingRatio } = useProtocolStats();
+  const { backingRatio, isMintingPeriod } = useProtocolStats();
 
   // Get MONSTR balance
   const { data: tokenBalance, isError, isLoading: isBalanceLoading, refetch } = useReadContract({
@@ -32,6 +32,15 @@ export function BurnModal({ isOpen, onClose }) {
       refetchInterval: 10000, // Refetch every 10 seconds
     }
   });
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setAmount('');
+      setError('');
+      setSelectedPercentage(null);
+    }
+  }, [isOpen]);
 
   // Refetch balance when modal opens
   useEffect(() => {
@@ -77,6 +86,30 @@ export function BurnModal({ isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
+  // Check if amount exceeds balance in real-time
+  const exceedsBalance = () => {
+    if (!amount || parseFloat(amount) <= 0) return false;
+    if (!tokenBalance) return false;
+    try {
+      const amountWei = parseEther(amount);
+      // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)
+      // This handles formatEther → parseEther precision loss
+      const tolerance = tokenBalance / BigInt(1000000000) || BigInt(1000000);
+      return amountWei > tokenBalance + tolerance;
+    } catch {
+      return false;
+    }
+  };
+
+  // Update error message when amount changes
+  useEffect(() => {
+    if (exceedsBalance()) {
+      setError(`Amount exceeds your ${CONTRACT_CONFIG.strategyCoin.symbol} balance`);
+    } else if (error && error.includes('exceeds')) {
+      setError('');
+    }
+  }, [amount, tokenBalance]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -91,7 +124,7 @@ export function BurnModal({ isOpen, onClose }) {
       return;
     }
 
-    if (tokenBalance && parseEther(amount) > tokenBalance) {
+    if (exceedsBalance()) {
       setError(`Insufficient ${CONTRACT_CONFIG.strategyCoin.symbol} balance`);
       return;
     }
@@ -103,17 +136,13 @@ export function BurnModal({ isOpen, onClose }) {
     }
   };
 
-  const handleMaxClick = () => {
-    if (tokenBalance !== undefined && tokenBalance !== null) {
-      setAmount(formatEther(tokenBalance));
-      setSelectedPercentage(100);
-    }
-  };
-
   const handlePercentageClick = (percentage) => {
     if (tokenBalance !== undefined && tokenBalance !== null) {
       const balance = parseFloat(formatEther(tokenBalance));
-      const newAmount = (balance * percentage).toFixed(6);
+      // For MAX (100%), use full precision to avoid rounding errors
+      const newAmount = percentage === 1.0
+        ? formatEther(tokenBalance)
+        : (balance * percentage).toFixed(6);
       setAmount(newAmount);
       setSelectedPercentage(percentage * 100);
     }
@@ -226,11 +255,15 @@ export function BurnModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <div className="warning-message">
-            <strong>Warning:</strong> Burning {CONTRACT_CONFIG.strategyCoin.symbol} is irreversible. You will receive {CONTRACT_CONFIG.nativeCoin.symbol} at the current backing ratio.
-          </div>
+          {!isMintingPeriod && (
+            <div className="warning-message">
+              <strong>Warning:</strong> Burning {CONTRACT_CONFIG.strategyCoin.symbol} is irreversible. You will receive {CONTRACT_CONFIG.nativeCoin.symbol} at the current backing ratio.
+            </div>
+          )}
 
-          {error && <div className="error-message">{error}</div>}
+          <div className="error-text-reserved">
+            {error && <span className="error-text">{error}</span>}
+          </div>
           {isSuccess && <div className="success-message">Transaction successful!</div>}
 
           {!address ? (
@@ -249,7 +282,7 @@ export function BurnModal({ isOpen, onClose }) {
             <button
               type="submit"
               className={`submit-button burn ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading || !amount || parseFloat(amount) <= 0}
+              disabled={isLoading || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}

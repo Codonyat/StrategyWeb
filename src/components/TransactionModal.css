@@ -381,6 +381,21 @@
   color: var(--color-success);
 }
 
+/* Error Text - Simple sentence with reserved space */
+.error-text-reserved {
+  min-height: 1.75rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  line-height: 1.5;
+}
+
 /* Submit Button - Matches landing page action buttons */
 .submit-button {
   width: 100%;
