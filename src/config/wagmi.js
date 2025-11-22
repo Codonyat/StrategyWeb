@@ -1,6 +1,9 @@
 import { http } from 'wagmi';
 import { CONTRACT_CONFIG } from './contract';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+
+console.log('[WAGMI] Loading wagmi config...');
+console.log('[WAGMI] CONTRACT_CONFIG:', CONTRACT_CONFIG);
 import {
   metaMaskWallet,
   trustWallet,
@@ -34,6 +37,9 @@ const currentChain = {
 };
 
 // Create wagmi config with RainbowKit and custom wallet list
+console.log('[WAGMI] Creating wagmi config...');
+console.log('[WAGMI] WalletConnect Project ID:', import.meta.env.VITE_WALLETCONNECT_PROJECT_ID);
+
 export const config = getDefaultConfig({
   appName: 'MONSTR Strategy',
   projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // Get from https://cloud.walletconnect.com
@@ -62,3 +68,5 @@ export const config = getDefaultConfig({
     },
   ],
 });
+
+console.log('[WAGMI] Config created successfully:', config);

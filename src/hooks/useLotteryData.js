@@ -1,6 +1,10 @@
 import { useReadContract, useAccount, useBalance } from 'wagmi';
 import { formatEther, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
+import { useProtocolStats } from './useProtocolStats';
+
+// FEES_POOL synthetic address where fees accumulate
+const FEES_POOL = '0x00000000000fee50000000AdD2E5500000000000';
 
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
@@ -14,12 +18,14 @@ const parsedAbi = parseAbi([
 
 export function useLotteryData() {
   const { address } = useAccount();
+  const { isMintingPeriod } = useProtocolStats();
 
-  // Get current lottery pool
-  const { data: lotteryPool, error: poolError, isLoading: poolLoading } = useReadContract({
+  // Get FEES_POOL balance (where fees accumulate before distribution)
+  const { data: feesPoolBalance, error: poolError, isLoading: poolLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
-    functionName: 'currentLotteryPool',
+    functionName: 'balanceOf',
+    args: [FEES_POOL],
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
@@ -102,7 +108,11 @@ export function useLotteryData() {
   });
 
   // Process data
-  const currentPool = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
+  // Calculate lottery's share of fees pool
+  // During minting period: 100% of fees go to lottery
+  // After minting period: 50% of fees go to lottery (other 50% to auction)
+  const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
+  const currentPool = isMintingPeriod ? feesPoolAmount : feesPoolAmount * 0.5;
 
   // Extract latestValue from totalHolderBalance struct (excludes contracts)
   const totalWeight = totalHolderBalance && totalHolderBalance[1]

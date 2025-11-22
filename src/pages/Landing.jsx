@@ -1,15 +1,41 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { formatEther } from 'viem';
 import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
+import { useRecentTransactions } from '../hooks/useRecentTransactions';
+import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import './Landing.css';
 
 export default function Landing() {
+  console.log('[LANDING] Rendering Landing page');
   const [showStrategy, setShowStrategy] = useState(false);
   const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
   const [animationTimeout, setAnimationTimeout] = useState(null);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [isBurnModalOpen, setIsBurnModalOpen] = useState(false);
+
+  // Fetch recent transactions from subgraph
+  console.log('[LANDING] Calling useRecentTransactions...');
+  const { transactions, loading: txLoading } = useRecentTransactions(10, 10000);
+  console.log('[LANDING] useRecentTransactions result:', { transactions, txLoading });
+
+  // Helper function to format time ago
+  const formatTimeAgo = (timestamp) => {
+    const now = Math.floor(Date.now() / 1000);
+    const diff = now - parseInt(timestamp);
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+  };
+
+  // Helper function to truncate address
+  const truncateAddress = (address) => {
+    if (!address) return '0x0000...0000';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   const handleCoinClick = () => {
     setShowStrategy(!showStrategy);
@@ -118,62 +144,38 @@ export default function Landing() {
             {/* Right Side - Recent Transactions */}
             <div className="hero-right">
             <div className="transactions-list">
-              {/* Mock data - replace with real contract data */}
-              <div className="transaction-row mint">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">MINT</span>
-                <span className="tx-address">0x1a2b...3c4d</span>
-                <span className="tx-time">2 min ago</span>
-                <span className="tx-amount">+1,250 MONSTR</span>
-              </div>
+              {txLoading && transactions.length === 0 ? (
+                <div className="transaction-row">
+                  <span className="tx-type">Loading transactions...</span>
+                </div>
+              ) : transactions.length === 0 ? (
+                <div className="transaction-row">
+                  <span className="tx-type">No recent transactions</span>
+                </div>
+              ) : (
+                transactions.slice(0, 7).map((tx, index) => {
+                  const isFaded = index >= 4;
+                  const isDesktopOnly = index >= 5;
+                  const type = tx.type.toLowerCase();
+                  // Map "redeem" to "burn" for display
+                  const displayType = type === 'redeem' ? 'burn' : type;
+                  const formattedAmount = formatEther(BigInt(tx.stratAmount));
+                  const sign = type === 'mint' ? '+' : '-';
 
-              <div className="transaction-row burn">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">BURN</span>
-                <span className="tx-address">0x5e6f...7g8h</span>
-                <span className="tx-time">5 min ago</span>
-                <span className="tx-amount">-800 MONSTR</span>
-              </div>
-
-              <div className="transaction-row mint">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">MINT</span>
-                <span className="tx-address">0x9i0j...1k2l</span>
-                <span className="tx-time">12 min ago</span>
-                <span className="tx-amount">+3,500 MONSTR</span>
-              </div>
-
-              <div className="transaction-row burn">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">BURN</span>
-                <span className="tx-address">0x3m4n...5o6p</span>
-                <span className="tx-time">18 min ago</span>
-                <span className="tx-amount">-2,100 MONSTR</span>
-              </div>
-
-              <div className="transaction-row mint fade">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">MINT</span>
-                <span className="tx-address">0x7q8r...9s0t</span>
-                <span className="tx-time">25 min ago</span>
-                <span className="tx-amount">+950 MONSTR</span>
-              </div>
-
-              <div className="transaction-row burn fade desktop-only">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">BURN</span>
-                <span className="tx-address">0x4u5v...6w7x</span>
-                <span className="tx-time">32 min ago</span>
-                <span className="tx-amount">-1,800 MONSTR</span>
-              </div>
-
-              <div className="transaction-row mint fade desktop-only">
-                <span className="tx-indicator"></span>
-                <span className="tx-type">MINT</span>
-                <span className="tx-address">0x8y9z...0a1b</span>
-                <span className="tx-time">45 min ago</span>
-                <span className="tx-amount">+2,400 MONSTR</span>
-              </div>
+                  return (
+                    <div
+                      key={tx.id}
+                      className={`transaction-row ${displayType} ${isFaded ? 'fade' : ''} ${isDesktopOnly ? 'desktop-only' : ''}`}
+                    >
+                      <span className="tx-indicator"></span>
+                      <span className="tx-type">{displayType.toUpperCase()}</span>
+                      <span className="tx-address">{truncateAddress(tx.user)}</span>
+                      <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
+                      <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
           </div>

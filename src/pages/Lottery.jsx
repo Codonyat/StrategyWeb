@@ -4,7 +4,9 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { StatusChip } from '../components/StatusChip';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { useLotteryData } from '../hooks/useLotteryData';
+import { useLotteryPrizeHistory } from '../hooks/useLotteryPrizeHistory';
 import { useLotteryCountdown } from '../hooks/useLotteryCountdown';
+import { useProtocolStats } from '../hooks/useProtocolStats';
 import { CONTRACT_ADDRESS } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Lottery.css';
@@ -16,8 +18,6 @@ export default function Lottery() {
 
   const {
     currentPool,
-    lastLotteryDay,
-    lotteryHistory,
     userBalance,
     totalWeight,
     sharePercent,
@@ -26,7 +26,14 @@ export default function Lottery() {
     isLoading,
   } = useLotteryData();
 
+  // Get lottery prize history from subgraph (with claim status)
+  const { lotteryHistory, loading: historyLoading } = useLotteryPrizeHistory(7, 30000);
+
   const { timeRemaining } = useLotteryCountdown();
+  const { isMintingPeriod } = useProtocolStats();
+
+  // Get last lottery day from history
+  const lastLotteryDay = lotteryHistory.length > 0 ? lotteryHistory[0].day : 0;
 
   // Get last winner from history
   const lastWinner = lotteryHistory.length > 0 ? lotteryHistory[0] : null;
@@ -97,7 +104,11 @@ export default function Lottery() {
                   )
                 }
                 type="default"
-                tooltip="Today's prize pool accumulated from protocol fees"
+                tooltip={
+                  isMintingPeriod
+                    ? "Lottery's prize pool from accumulated fees (100% of fees during minting period)"
+                    : "Lottery's prize pool from accumulated fees (50% of fees, other 50% goes to auction)"
+                }
               />
             </div>
           </div>
@@ -215,7 +226,11 @@ export default function Lottery() {
                 <span className="th-prize">Prize</span>
                 <span className="th-status">Status</span>
               </div>
-              {lotteryHistory.length > 0 ? (
+              {historyLoading && lotteryHistory.length === 0 ? (
+                <div className="empty-history-row">
+                  <p>Loading lottery history...</p>
+                </div>
+              ) : lotteryHistory.length > 0 ? (
                 lotteryHistory.map((entry) => (
                   <div
                     key={entry.day}
@@ -230,7 +245,7 @@ export default function Lottery() {
                       <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
                     </span>
                     <span className={`td-status status-${entry.status}`}>
-                      {entry.status === 'unclaimed' ? 'Unclaimed' : 'Claimed'}
+                      {entry.status === 'claimed' ? '✓ Claimed' : entry.status === 'expired' ? '⚠ Expired' : 'Unclaimed'}
                     </span>
                   </div>
                 ))

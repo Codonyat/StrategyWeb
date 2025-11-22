@@ -122,6 +122,7 @@ Set your environment variables in `.env`:
 VITE_CONTRACT_ADDRESS=0x...
 VITE_CHAIN_ID=10143          # Testnet: 10143, Mainnet: 143
 # VITE_RPC_URL=https://...   # Optional - uses network default if not specified
+VITE_SUBGRAPH_URL=https://... # Subgraph URL for indexing historical data
 ```
 
 ### Network Configuration

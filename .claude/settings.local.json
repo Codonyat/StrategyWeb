@@ -29,7 +29,9 @@
       "Bash(C:/Users/nilga/Repos/StrategyWeb/strategy-abi-temp.json)",
       "Bash(grep:*)",
       "Bash(git checkout:*)",
-      "Bash(\"C:/Users/nilga/Repos/StrategyWeb/src/pages/Landing.css\")"
+      "Bash(\"C:/Users/nilga/Repos/StrategyWeb/src/pages/Landing.css\")",
+      "Bash(rm:*)",
+      "Bash(then cat .env)"
     ],
     "deny": [],
     "ask": []

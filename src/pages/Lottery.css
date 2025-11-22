@@ -487,6 +487,11 @@
   color: var(--color-success);
 }
 
+.td-status.status-expired {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
 .empty-history-row {
   display: grid;
   grid-template-columns: 100px 1fr 200px 120px;

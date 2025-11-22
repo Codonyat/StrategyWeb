@@ -1,5 +1,7 @@
 import { STRATEGY_ABI } from './abi';
 
+console.log('[CONTRACT] Loading contract config...');
+
 // Validate required environment variables
 const requiredEnvVars = {
   VITE_CONTRACT_ADDRESS: import.meta.env.VITE_CONTRACT_ADDRESS,
@@ -15,7 +17,11 @@ const missingVars = Object.entries(requiredEnvVars)
   .filter(([key, value]) => !value || value.trim() === '')
   .map(([key]) => key);
 
+console.log('[CONTRACT] Required env vars:', requiredEnvVars);
+console.log('[CONTRACT] Missing vars:', missingVars);
+
 if (missingVars.length > 0) {
+  console.error('[CONTRACT] VALIDATION ERROR: Missing environment variables:', missingVars);
   throw new Error(
     `Missing or invalid required environment variables:\n${missingVars.join('\n')}\n\n` +
     `Please check your .env file and ensure all required variables are set.\n` +
