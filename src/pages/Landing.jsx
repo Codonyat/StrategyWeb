@@ -159,7 +159,7 @@ export default function Landing() {
                 <span className="tx-amount">+950 MONSTR</span>
               </div>
 
-              <div className="transaction-row burn fade">
+              <div className="transaction-row burn fade desktop-only">
                 <span className="tx-indicator"></span>
                 <span className="tx-type">BURN</span>
                 <span className="tx-address">0x4u5v...6w7x</span>
@@ -167,7 +167,7 @@ export default function Landing() {
                 <span className="tx-amount">-1,800 MONSTR</span>
               </div>
 
-              <div className="transaction-row mint fade">
+              <div className="transaction-row mint fade desktop-only">
                 <span className="tx-indicator"></span>
                 <span className="tx-type">MINT</span>
                 <span className="tx-address">0x8y9z...0a1b</span>

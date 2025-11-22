@@ -756,7 +756,14 @@
   }
 
   .transactions-list {
-    max-height: 300px;
+    max-height: none;
+    overflow-y: visible;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .desktop-only {
+    display: none;
   }
 }
 /* Mobile layout fixes - Add to end of Landing.css */

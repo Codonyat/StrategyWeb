@@ -6,6 +6,7 @@ Strategy.sol is an ERC20 token contract with the symbol **MONSTR**, backed by MO
 ## Development Guidelines
 - **Prefer simplicity**: When possible, use simple, straightforward solutions instead of over-engineered ones
 - Keep implementations minimal and easy to understand
+- **Use relative paths for file operations**: When using Read, Edit, Write, or other file tools, always use relative paths (e.g., `src/config/abi.js`) instead of absolute paths. This ensures compatibility across different environments and systems.
 
 ## RPC and Chain ID Usage
 **IMPORTANT**: The app uses different RPC/chain configurations for queries vs transactions:
