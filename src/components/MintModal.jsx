@@ -85,7 +85,7 @@ export function MintModal({ isOpen, onClose }) {
   // Check if amount exceeds balance in real-time
   const exceedsBalance = () => {
     if (!amount || parseFloat(amount) <= 0) return false;
-    if (!balance?.value) return false;
+    if (balance?.value === undefined || balance?.value === null) return false;
     try {
       const amountWei = parseEther(amount);
       // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)

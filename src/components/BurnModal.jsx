@@ -89,7 +89,7 @@ export function BurnModal({ isOpen, onClose }) {
   // Check if amount exceeds balance in real-time
   const exceedsBalance = () => {
     if (!amount || parseFloat(amount) <= 0) return false;
-    if (!tokenBalance) return false;
+    if (tokenBalance === undefined || tokenBalance === null) return false;
     try {
       const amountWei = parseEther(amount);
       // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)

@@ -157,10 +157,12 @@ export default function Landing() {
                   const isFaded = index >= 4;
                   const isDesktopOnly = index >= 5;
                   const type = tx.type.toLowerCase();
-                  // Map "redeem" to "burn" for display
-                  const displayType = type === 'redeem' ? 'burn' : type;
+                  // Map transaction types for display
+                  const displayType = type === 'redeem' ? 'burn' :
+                                     type === 'transfer' ? 'fee' : type;
                   const formattedAmount = formatEther(BigInt(tx.stratAmount));
-                  const sign = type === 'mint' ? '+' : '-';
+                  const sign = type === 'mint' ? '+' :
+                              type === 'transfer' ? '' : '-';
 
                   return (
                     <div

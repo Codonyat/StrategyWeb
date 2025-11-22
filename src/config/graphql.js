@@ -27,9 +27,10 @@ console.log('[GRAPHQL] ApolloClient created:', subgraphClient);
 // GraphQL Queries
 
 /**
- * Get recent mint/burn transactions for the landing page activity feed
+ * Get recent transactions for the landing page activity feed
  * Returns the last 10 transactions ordered by timestamp (most recent first)
- * Note: Subgraph stores "redeem" type, but UI displays it as "burn"
+ * Transaction types: MINT, REDEEM (displayed as "BURN"), TRANSFER (displayed as "FEE")
+ * Note: TRANSFER transactions are fee collections sent to the fee pool
  */
 export const GET_RECENT_TRANSACTIONS = gql`
   query GetRecentTransactions($limit: Int = 10) {

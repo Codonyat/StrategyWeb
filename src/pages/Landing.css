@@ -423,12 +423,23 @@
   box-shadow: 0 0 8px rgba(255, 56, 100, 0.4);
 }
 
+.transaction-row.transfer .tx-indicator,
+.transaction-row.fee .tx-indicator {
+  background: var(--color-secondary);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
 /* Colored border on hover */
 .transaction-row.mint {
   border-left-color: transparent;
 }
 
 .transaction-row.burn {
+  border-left-color: transparent;
+}
+
+.transaction-row.transfer,
+.transaction-row.fee {
   border-left-color: transparent;
 }
 
@@ -440,6 +451,12 @@
 .transaction-row.burn:hover {
   border-left-color: var(--color-error);
   background: rgba(255, 56, 100, 0.03);
+}
+
+.transaction-row.transfer:hover,
+.transaction-row.fee:hover {
+  border-left-color: var(--color-secondary);
+  background: rgba(0, 212, 255, 0.03);
 }
 
 .transaction-row:hover {
@@ -461,6 +478,11 @@
 
 .transaction-row.burn .tx-type {
   color: var(--color-error);
+}
+
+.transaction-row.transfer .tx-type,
+.transaction-row.fee .tx-type {
+  color: var(--color-secondary);
 }
 
 /* Address */
@@ -500,6 +522,11 @@
 
 .transaction-row.burn .tx-amount {
   color: var(--color-error);
+}
+
+.transaction-row.transfer .tx-amount,
+.transaction-row.fee .tx-amount {
+  color: var(--color-secondary);
 }
 
 /* Progressive fade for older entries */
