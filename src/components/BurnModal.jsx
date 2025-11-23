@@ -15,7 +15,7 @@ export function BurnModal({ isOpen, onClose }) {
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { burn, isPending, isConfirming, isSuccess, error: txError } = useStrategyContract();
+  const { burn, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
   const { backingRatio, isMintingPeriod } = useProtocolStats();
 
   // Get MONSTR balance
@@ -39,8 +39,9 @@ export function BurnModal({ isOpen, onClose }) {
       setAmount('');
       setError('');
       setSelectedPercentage(null);
+      reset(); // Reset transaction state from previous transactions
     }
-  }, [isOpen]);
+  }, [isOpen, reset]);
 
   // Refetch balance when modal opens
   useEffect(() => {
@@ -58,7 +59,8 @@ export function BurnModal({ isOpen, onClose }) {
 
   // Auto-close on success
   useEffect(() => {
-    if (isSuccess) {
+    // Only auto-close if modal is open and we have an amount (actual transaction success)
+    if (isSuccess && isOpen && amount) {
       const timer = setTimeout(() => {
         setAmount('');
         setError('');
@@ -66,11 +68,15 @@ export function BurnModal({ isOpen, onClose }) {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess, onClose]);
+  }, [isSuccess, isOpen, amount, onClose]);
 
   // Handle transaction errors
   useEffect(() => {
     if (txError) {
+      // Don't show error if user rejected the transaction
+      if (txError.message && txError.message.includes('User rejected')) {
+        return;
+      }
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
@@ -114,6 +120,11 @@ export function BurnModal({ isOpen, onClose }) {
     e.preventDefault();
     setError('');
 
+    // Prevent submission if transaction is in progress or succeeded
+    if (isPending || isConfirming || isSuccess) {
+      return;
+    }
+
     if (!address) {
       setError('Please connect your wallet');
       return;
@@ -132,6 +143,10 @@ export function BurnModal({ isOpen, onClose }) {
     try {
       await burn(amount);
     } catch (err) {
+      // Don't show error if user rejected the transaction
+      if (err.message && err.message.includes('User rejected')) {
+        return;
+      }
       setError(err.message || 'Failed to burn');
     }
   };
@@ -263,8 +278,8 @@ export function BurnModal({ isOpen, onClose }) {
 
           <div className="error-text-reserved">
             {error && <span className="error-text">{error}</span>}
+            {isSuccess && amount && !error && <span className="success-text">Transaction successful!</span>}
           </div>
-          {isSuccess && <div className="success-message">Transaction successful!</div>}
 
           {!address ? (
             <button
@@ -281,14 +296,14 @@ export function BurnModal({ isOpen, onClose }) {
           ) : (
             <button
               type="submit"
-              className={`submit-button burn ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
+              className={`submit-button burn ${isLoading || (isSuccess && amount) ? 'loading' : ''}`}
+              disabled={isLoading || (isSuccess && amount) || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}
                 {isPending ? 'Waiting for approval' :
                  isConfirming ? 'Confirming' :
-                 isSuccess ? 'Success!' :
+                 (isSuccess && amount) ? 'Success!' :
                  `Burn ${CONTRACT_CONFIG.strategyCoin.symbol}`}
               </div>
             </button>

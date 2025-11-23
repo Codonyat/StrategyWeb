@@ -55,6 +55,42 @@
   margin-bottom: var(--spacing-sm);
 }
 
+/* Balance Strip */
+.balances-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.balances-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.balance-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.balance-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.balance-separator {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  margin: 0 0.25rem;
+}
+
 .hero-content-grid {
   width: 100%;
   display: grid;

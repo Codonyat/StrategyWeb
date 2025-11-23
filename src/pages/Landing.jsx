@@ -1,19 +1,53 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatEther } from 'viem';
+import { formatEther, parseAbi } from 'viem';
+import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
 import { useRecentTransactions } from '../hooks/useRecentTransactions';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
+import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import './Landing.css';
+
+// Simple ABI for balanceOf
+const parsedAbi = parseAbi(['function balanceOf(address) view returns (uint256)']);
 
 export default function Landing() {
   console.log('[LANDING] Rendering Landing page');
+  const { address } = useAccount();
   const [showStrategy, setShowStrategy] = useState(false);
   const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
   const [animationTimeout, setAnimationTimeout] = useState(null);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [isBurnModalOpen, setIsBurnModalOpen] = useState(false);
+
+  // Fetch user balances
+  // Get MON balance (native token)
+  const { data: monBalance } = useBalance({
+    address,
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!address,
+      refetchInterval: 10000,
+    },
+  });
+
+  // Get MONSTR balance
+  const { data: monstrBalance } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!address && !!CONTRACT_ADDRESS,
+      refetchInterval: 10000,
+    },
+  });
+
+  // Format balances
+  const monValue = monBalance ? parseFloat(formatEther(monBalance.value)) : 0;
+  const monstrValue = monstrBalance ? parseFloat(formatEther(monstrBalance)) : 0;
 
   // Fetch recent transactions from subgraph
   console.log('[LANDING] Calling useRecentTransactions...');
@@ -93,6 +127,22 @@ export default function Landing() {
           <p className="hero-subtitle">
             100% backed by MON, withdraw anytime, up-only price.
           </p>
+
+          {/* Balance Strip - Only show if wallet connected */}
+          {address && (
+            <div className="balances-strip">
+              <span className="balances-label">Your balances:</span>
+              <div className="balance-item">
+                <img src="/coins/mon.png" alt="MON" className="balance-icon" />
+                <DisplayFormattedNumber num={monValue} significant={3} /> MON
+              </div>
+              <span className="balance-separator">·</span>
+              <div className="balance-item">
+                <img src="/coins/monstr.png" alt="MONSTR" className="balance-icon" />
+                <DisplayFormattedNumber num={monstrValue} significant={3} /> MONSTR
+              </div>
+            </div>
+          )}
 
           <div className="hero-content-grid">
             {/* Left Side - Coin Flip */}

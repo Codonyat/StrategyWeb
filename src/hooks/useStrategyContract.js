@@ -4,7 +4,7 @@ import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 
 export function useStrategyContract() {
   const { address } = useAccount();
-  const { writeContract, data: hash, isPending, error } = useWriteContract();
+  const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
@@ -110,5 +110,6 @@ export function useStrategyContract() {
     isSuccess,
     error,
     hash,
+    reset,
   };
 }

@@ -15,7 +15,7 @@ export function MintModal({ isOpen, onClose }) {
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { mint, isPending, isConfirming, isSuccess, error: txError } = useStrategyContract();
+  const { mint, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
   const { isMintingPeriod, backingRatio } = useProtocolStats();
 
   // Get MON balance
@@ -35,8 +35,9 @@ export function MintModal({ isOpen, onClose }) {
       setAmount('');
       setError('');
       setSelectedPercentage(null);
+      reset(); // Reset transaction state from previous transactions
     }
-  }, [isOpen]);
+  }, [isOpen, reset]);
 
   // Refetch balance when modal opens
   useEffect(() => {
@@ -54,7 +55,8 @@ export function MintModal({ isOpen, onClose }) {
 
   // Auto-close on success
   useEffect(() => {
-    if (isSuccess) {
+    // Only auto-close if modal is open and we have an amount (actual transaction success)
+    if (isSuccess && isOpen && amount) {
       const timer = setTimeout(() => {
         setAmount('');
         setError('');
@@ -62,11 +64,15 @@ export function MintModal({ isOpen, onClose }) {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess, onClose]);
+  }, [isSuccess, isOpen, amount, onClose]);
 
   // Handle transaction errors
   useEffect(() => {
     if (txError) {
+      // Don't show error if user rejected the transaction
+      if (txError.message && txError.message.includes('User rejected')) {
+        return;
+      }
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
@@ -110,6 +116,11 @@ export function MintModal({ isOpen, onClose }) {
     e.preventDefault();
     setError('');
 
+    // Prevent submission if transaction is in progress or succeeded
+    if (isPending || isConfirming || isSuccess) {
+      return;
+    }
+
     if (!address) {
       setError('Please connect your wallet');
       return;
@@ -128,6 +139,10 @@ export function MintModal({ isOpen, onClose }) {
     try {
       await mint(amount);
     } catch (err) {
+      // Don't show error if user rejected the transaction
+      if (err.message && err.message.includes('User rejected')) {
+        return;
+      }
       setError(err.message || 'Failed to mint');
     }
   };
@@ -136,10 +151,8 @@ export function MintModal({ isOpen, onClose }) {
     if (balance?.value !== undefined && balance?.value !== null) {
       const totalBalance = parseFloat(formatEther(balance.value));
       if (percentage === 1.0) {
-        // For MAX, leave a small amount for gas and use full precision
-        const gasReserve = parseEther('0.01');
-        const maxAmount = balance.value > gasReserve ? balance.value - gasReserve : BigInt(0);
-        setAmount(formatEther(maxAmount));
+        // For MAX, use full balance without gas reserve
+        setAmount(formatEther(balance.value));
       } else {
         // For percentages, use rounded value
         const newAmount = (totalBalance * percentage).toFixed(6);
@@ -263,8 +276,8 @@ export function MintModal({ isOpen, onClose }) {
 
           <div className="error-text-reserved">
             {error && <span className="error-text">{error}</span>}
+            {isSuccess && amount && !error && <span className="success-text">Transaction successful!</span>}
           </div>
-          {isSuccess && <div className="success-message">Transaction successful!</div>}
 
           {!address ? (
             <button
@@ -281,14 +294,14 @@ export function MintModal({ isOpen, onClose }) {
           ) : (
             <button
               type="submit"
-              className={`submit-button ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
+              className={`submit-button ${isLoading || (isSuccess && amount) ? 'loading' : ''}`}
+              disabled={isLoading || (isSuccess && amount) || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}
                 {isPending ? 'Waiting for approval' :
                  isConfirming ? 'Confirming' :
-                 isSuccess ? 'Success!' :
+                 (isSuccess && amount) ? 'Success!' :
                  'Deposit MON'}
               </div>
             </button>

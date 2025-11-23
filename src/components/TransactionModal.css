@@ -396,6 +396,13 @@
   line-height: 1.5;
 }
 
+.success-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-success);
+  line-height: 1.5;
+}
+
 /* Submit Button - Matches landing page action buttons */
 .submit-button {
   width: auto;
