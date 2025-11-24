@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 
 // Get environment variables - prefer process.env (Vercel), fallback to .env file (local)
 let contractAddress = process.env.VITE_CONTRACT_ADDRESS;
-let rpcUrl = process.env.VITE_RPC_URL;
+let rpcUrl = process.env.RPC_URL;
 
 // If not in process.env, try to load from .env file (local development)
 if (!contractAddress || !rpcUrl) {
@@ -28,7 +28,7 @@ if (!contractAddress || !rpcUrl) {
     });
 
     contractAddress = contractAddress || env.VITE_CONTRACT_ADDRESS;
-    rpcUrl = rpcUrl || env.VITE_RPC_URL;
+    rpcUrl = rpcUrl || env.RPC_URL;
   }
 }
 
@@ -37,7 +37,7 @@ if (!contractAddress) {
   throw new Error('VITE_CONTRACT_ADDRESS environment variable is required');
 }
 if (!rpcUrl) {
-  throw new Error('VITE_RPC_URL environment variable is required');
+  throw new Error('RPC_URL environment variable is required');
 }
 
 // Minimal ABI for the functions we need

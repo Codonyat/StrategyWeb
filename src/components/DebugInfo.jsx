@@ -36,8 +36,7 @@ export function DebugInfo() {
       <div style={{ marginBottom: '10px' }}>
         <strong>Config:</strong><br/>
         Contract: {CONTRACT_ADDRESS}<br/>
-        Chain ID: {CONTRACT_CONFIG.chainId}<br/>
-        RPC: {CONTRACT_CONFIG.rpcUrl}
+        Chain ID: {CONTRACT_CONFIG.chainId}
       </div>
 
       <div>

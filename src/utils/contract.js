@@ -8,8 +8,8 @@ export const getProvider = () => {
   if (typeof window.ethereum !== 'undefined') {
     return new ethers.BrowserProvider(window.ethereum);
   }
-  // Fallback to configured RPC if no wallet is connected
-  return new ethers.JsonRpcProvider(CONTRACT_CONFIG.rpcUrl);
+  // Fallback to RPC proxy if no wallet is connected
+  return new ethers.JsonRpcProvider('/api/rpc');
 };
 
 /**

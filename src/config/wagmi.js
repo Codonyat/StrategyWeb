@@ -12,7 +12,7 @@ import {
   ledgerWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 
-// Get public RPC URL for wallet (not using private VITE_RPC_URL)
+// Get public RPC URL for wallet chain definition
 const publicRpcUrl = CONTRACT_CONFIG.chainId === 143
   ? 'https://rpc.monad.xyz'
   : 'https://testnet-rpc.monad.xyz';
@@ -34,12 +34,13 @@ const currentChain = {
 };
 
 // Create wagmi config with RainbowKit and custom wallet list
+// Use the API proxy for RPC calls to keep the RPC URL private
 export const config = getDefaultConfig({
   appName: 'MONSTR Strategy',
   projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // Get from https://cloud.walletconnect.com
   chains: [currentChain],
   transports: {
-    [currentChain.id]: http(CONTRACT_CONFIG.rpcUrl),
+    [currentChain.id]: http('/api/rpc'),
   },
   wallets: [
     {

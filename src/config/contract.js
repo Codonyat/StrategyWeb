@@ -5,7 +5,6 @@ const requiredEnvVars = {
   VITE_CONTRACT_ADDRESS: import.meta.env.VITE_CONTRACT_ADDRESS,
   VITE_CHAIN_ID: import.meta.env.VITE_CHAIN_ID,
   VITE_CHAIN_NAME: import.meta.env.VITE_CHAIN_NAME,
-  VITE_RPC_URL: import.meta.env.VITE_RPC_URL,
   VITE_EXPLORER_URL: import.meta.env.VITE_EXPLORER_URL,
   VITE_TREASURY_ADDRESS: import.meta.env.VITE_TREASURY_ADDRESS,
 };
@@ -49,14 +48,11 @@ if (isNaN(chainId) || chainId <= 0) {
   );
 }
 
-// Validate URLs
-const urlFields = ['VITE_RPC_URL', 'VITE_EXPLORER_URL'];
-for (const field of urlFields) {
-  try {
-    new URL(requiredEnvVars[field]);
-  } catch (e) {
-    throw new Error(`Invalid ${field}: ${requiredEnvVars[field]}\nMust be a valid URL`);
-  }
+// Validate explorer URL
+try {
+  new URL(requiredEnvVars.VITE_EXPLORER_URL);
+} catch (e) {
+  throw new Error(`Invalid VITE_EXPLORER_URL: ${requiredEnvVars.VITE_EXPLORER_URL}\nMust be a valid URL`);
 }
 
 // Contract configuration
@@ -70,7 +66,7 @@ export const CONTRACT_CONFIG = {
   // Chain configuration
   chainId,
   chainName: requiredEnvVars.VITE_CHAIN_NAME,
-  rpcUrl: requiredEnvVars.VITE_RPC_URL,
+  rpcUrl: '/api/rpc', // Proxied through Vercel serverless function
   explorerUrl: requiredEnvVars.VITE_EXPLORER_URL,
 
   // Treasury address
