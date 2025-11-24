@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
@@ -26,7 +26,7 @@ export default function Lottery() {
   } = useLotteryData();
 
   // Get lottery prize history from subgraph (with claim status)
-  const { lotteryHistory, loading: historyLoading } = useLotteryPrizeHistory(7, 30000);
+  const { lotteryHistory, loading: historyLoading, refetch: refetchHistory } = useLotteryPrizeHistory(7, 30000);
 
   const { timeRemaining } = useLotteryCountdown();
   const { isMintingPeriod } = useProtocolStats();
@@ -61,15 +61,21 @@ export default function Lottery() {
   };
 
   // Handle claim confirmation
-  if (isClaimConfirmed && claimStatus === 'claiming') {
-    setClaimStatus('success');
-    setTimeout(() => setClaimStatus('idle'), 3000);
-  }
+  useEffect(() => {
+    if (isClaimConfirmed && claimStatus === 'claiming') {
+      setClaimStatus('success');
+      // Refetch lottery history immediately to show claimed status
+      refetchHistory();
+      setTimeout(() => setClaimStatus('idle'), 3000);
+    }
+  }, [isClaimConfirmed, claimStatus, refetchHistory]);
 
-  if (claimError && claimStatus === 'claiming') {
-    setClaimStatus('error');
-    setTimeout(() => setClaimStatus('idle'), 5000);
-  }
+  useEffect(() => {
+    if (claimError && claimStatus === 'claiming') {
+      setClaimStatus('error');
+      setTimeout(() => setClaimStatus('idle'), 5000);
+    }
+  }, [claimError, claimStatus]);
 
   return (
     <div className="lottery-page">

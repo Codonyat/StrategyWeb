@@ -14,7 +14,7 @@ import { GET_RECENT_LOTTERY_PRIZES, subgraphClient } from '../config/graphql';
 export function useLotteryPrizeHistory(limit = 7, pollInterval = 30000) {
   const { address } = useAccount();
 
-  const { data, loading, error } = useQuery(GET_RECENT_LOTTERY_PRIZES, {
+  const { data, loading, error, refetch } = useQuery(GET_RECENT_LOTTERY_PRIZES, {
     client: subgraphClient,
     variables: { limit },
     pollInterval, // Auto-refresh
@@ -52,5 +52,6 @@ export function useLotteryPrizeHistory(limit = 7, pollInterval = 30000) {
     lotteryHistory,
     loading,
     error,
+    refetch,
   };
 }

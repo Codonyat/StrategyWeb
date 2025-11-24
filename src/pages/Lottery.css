@@ -54,7 +54,17 @@
 
 .lottery-cards-section {
   width: 100%;
-  /* No padding - let page-header-content handle constraints */
+  padding: 0 var(--spacing-lg); /* Same as explainer-section */
+}
+
+/* Make cards section narrower than explainer sections */
+.lottery-cards-section .page-header-content {
+  max-width: 1000px; /* Narrower than default 1280px */
+}
+
+/* Make both cards equal height */
+.lottery-cards-section .hero-content-grid {
+  align-items: stretch; /* Override center alignment from Landing.css */
 }
 
 /* Left Card: Your Lottery */
@@ -399,8 +409,18 @@
   /* Lottery-specific adjustments can go here */
 }
 
+/* Make history section match cards section width */
+.lottery-history .explainer-content {
+  max-width: 1000px; /* Same as cards section */
+}
+
+/* Reduce top spacing to connect better with cards above */
+.lottery-history {
+  margin-top: calc(var(--spacing-lg) * -0.15); /* Reduce gap by 15% */
+}
+
 .history-header {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md); /* Reduced from var(--spacing-lg) */
 }
 
 .section-title {
@@ -438,15 +458,23 @@
   color: var(--color-text-secondary);
 }
 
+.th-prize {
+  text-align: right;
+}
+
 .table-row {
   display: grid;
   grid-template-columns: 100px 1fr 200px 120px;
   gap: var(--spacing-md);
   padding: 0.875rem var(--spacing-sm);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.03); /* Subtle top border for separation */
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 2px solid transparent;
   align-items: center;
+}
+
+.table-row:first-child {
+  border-top: none; /* Remove top border from first row */
 }
 
 .table-row:nth-child(even) {
@@ -510,6 +538,7 @@
   font-weight: 600;
   color: var(--color-text-primary);
   font-family: 'Space Grotesk', 'Inter', monospace;
+  text-align: right; /* Right-align for better number scanning */
 }
 
 .td-status {
@@ -522,6 +551,7 @@
 
 .td-status.status-unclaimed {
   color: var(--color-accent);
+  font-weight: 700; /* Make it pop more */
 }
 
 .td-status.status-claimed {
@@ -606,6 +636,11 @@
    ======================================== */
 
 /* Reusing shared .explainer-section, .explainer-content, and .steps-grid from Landing.css */
+
+/* Reduce gap between history and how it works sections */
+.lottery-page .explainer-section:not(.lottery-history) {
+  margin-top: calc(var(--spacing-lg) * -0.3); /* Slightly reduced gap */
+}
 
 /* Lottery-specific step card styling */
 .lottery-page .step-card {
