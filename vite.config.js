@@ -10,6 +10,19 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       proxy: {
+        // Proxy /api/rpc to Alchemy in development
+        '/api/rpc': {
+          target: env.RPC_URL,
+          changeOrigin: true,
+          rewrite: (path) => '', // Remove /api/rpc prefix, send directly to RPC
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              if (req.method === 'POST') {
+                proxyReq.setHeader('Content-Type', 'application/json');
+              }
+            });
+          },
+        },
         // Proxy /api/subgraph to Goldsky in development
         '/api/subgraph': {
           target: env.GOLDSKY_SUBGRAPH_URL,

@@ -101,8 +101,8 @@ export default function Auctions() {
             <div className="minting-period-card">
               <h2 className="minting-message-title">Auctions begin after the minting period</h2>
               <p className="minting-message-text">
-                During the initial 24-hour minting period, all 1% transfer fees are directed to the lottery pool.
-                Once the minting period ends and the first 25-hour day begins, daily auctions will commence.
+                During the initial 3-day minting period, all 1% transfer fees are directed to the lottery pool.
+                Once the minting period ends, daily auctions will commence.
               </p>
               <p className="minting-message-text">
                 Each day, 50% of the previous day's fees are converted to MONSTR and auctioned to the highest bidder.

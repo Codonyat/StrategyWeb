@@ -4,7 +4,7 @@ import { formatEther, parseAbi } from 'viem';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
-import { useRecentTransactions } from '../hooks/useRecentTransactions';
+import { useRealtimeTransactions } from '../hooks/useRealtimeTransactions';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import './Landing.css';
@@ -48,8 +48,8 @@ export default function Landing() {
   const monValue = monBalance ? parseFloat(formatEther(monBalance.value)) : 0;
   const monstrValue = monstrBalance ? parseFloat(formatEther(monstrBalance)) : 0;
 
-  // Fetch recent transactions from subgraph
-  const { transactions, loading: txLoading } = useRecentTransactions(10, 10000);
+  // Fetch recent transactions via WebSocket (real-time) or fallback to loading state
+  const { transactions, loading: txLoading, connected } = useRealtimeTransactions(10);
 
   // Helper function to format time ago
   const formatTimeAgo = (timestamp) => {
@@ -190,6 +190,7 @@ export default function Landing() {
 
             {/* Right Side - Recent Transactions */}
             <div className="hero-right">
+            {connected && <div className="live-indicator"><span className="live-dot"></span>LIVE</div>}
             <div className="transactions-list">
               {txLoading && transactions.length === 0 ? (
                 <div className="transaction-row">

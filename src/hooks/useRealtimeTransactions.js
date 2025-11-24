@@ -1,28 +1,40 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useQuery } from '@apollo/client/react';
 import { io } from 'socket.io-client';
+import { GET_RECENT_TRANSACTIONS, subgraphClient } from '../config/graphql';
 
 // WebSocket server URL - set in .env for production
-const SOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:3001';
+const SOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
 /**
  * Hook for real-time transaction updates via WebSocket
- * Falls back gracefully if WebSocket is unavailable
+ * Falls back to subgraph polling if WebSocket is unavailable
  *
  * @param {number} limit - Maximum number of transactions to keep
  * @returns {Object} { transactions, connected, error, loading }
  */
 export function useRealtimeTransactions(limit = 10) {
-  const [transactions, setTransactions] = useState([]);
+  const [wsTransactions, setWsTransactions] = useState([]);
   const [connected, setConnected] = useState(false);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [wsError, setWsError] = useState(null);
+  const [wsLoading, setWsLoading] = useState(true);
   const socketRef = useRef(null);
 
+  // Fallback: Apollo/subgraph polling (only active when WebSocket fails)
+  const shouldUseFallback = !SOCKET_URL || wsError;
+  const { data: subgraphData, loading: subgraphLoading } = useQuery(GET_RECENT_TRANSACTIONS, {
+    client: subgraphClient,
+    variables: { limit },
+    pollInterval: shouldUseFallback ? 10000 : 0, // Poll every 10s only when fallback is active
+    fetchPolicy: 'cache-and-network',
+    skip: !shouldUseFallback, // Skip query when WebSocket is working
+  });
+
   useEffect(() => {
-    // Don't connect if no URL configured
+    // Don't connect if no URL configured - use fallback
     if (!SOCKET_URL) {
-      setLoading(false);
-      setError('WebSocket URL not configured');
+      setWsLoading(false);
+      setWsError('WebSocket URL not configured');
       return;
     }
 
@@ -39,8 +51,8 @@ export function useRealtimeTransactions(limit = 10) {
     socket.on('connect', () => {
       console.log('[WS] Connected to real-time server');
       setConnected(true);
-      setError(null);
-      setLoading(false);
+      setWsError(null);
+      setWsLoading(false);
     });
 
     socket.on('disconnect', (reason) => {
@@ -50,20 +62,20 @@ export function useRealtimeTransactions(limit = 10) {
 
     socket.on('connect_error', (err) => {
       console.error('[WS] Connection error:', err.message);
-      setError('Unable to connect to real-time server');
-      setLoading(false);
+      setWsError('Unable to connect to real-time server');
+      setWsLoading(false);
     });
 
     // Initial batch of recent transactions
     socket.on('recentTransactions', (txs) => {
       console.log('[WS] Received initial transactions:', txs.length);
-      setTransactions(txs.slice(0, limit));
+      setWsTransactions(txs.slice(0, limit));
     });
 
     // Real-time new transaction
     socket.on('newTransaction', (tx) => {
       console.log('[WS] New transaction:', tx.type, tx.user?.slice(0, 8));
-      setTransactions(prev => {
+      setWsTransactions(prev => {
         // Add new transaction, remove duplicates, keep limit
         const updated = [tx, ...prev.filter(t => t.id !== tx.id)];
         return updated.slice(0, limit);
@@ -78,10 +90,17 @@ export function useRealtimeTransactions(limit = 10) {
     };
   }, [limit]);
 
+  // Use WebSocket data if connected, otherwise fall back to subgraph
+  const transactions = connected && wsTransactions.length > 0
+    ? wsTransactions
+    : (subgraphData?.transactions || []);
+
+  const loading = shouldUseFallback ? subgraphLoading : wsLoading;
+
   return {
     transactions,
     connected,
-    error,
+    error: wsError,
     loading,
   };
 }
