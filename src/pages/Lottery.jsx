@@ -244,7 +244,7 @@ export default function Lottery() {
               <div className="step-content">
                 <h3 className="step-title">Fees accumulate</h3>
                 <p className="step-description">
-                  1 percent transfer fee is collected in the fees pool.
+                  1% transfer fee is collected in the fees pool.
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function Lottery() {
               <div className="step-content">
                 <h3 className="step-title">Claim within 7 days</h3>
                 <p className="step-description">
-                  Winner can claim from the lottery pool. After 7 days, unclaimed prizes roll to the treasury.
+                  After 7 days, unclaimed prizes roll to the treasury.
                 </p>
               </div>
             </div>

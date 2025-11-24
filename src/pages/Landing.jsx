@@ -221,7 +221,14 @@ export default function Landing() {
                     >
                       <span className="tx-indicator"></span>
                       <span className="tx-type">{displayType.toUpperCase()}</span>
-                      <span className="tx-address">{truncateAddress(tx.user)}</span>
+                      <a
+                        href={`${CONTRACT_CONFIG.explorerUrl}/address/${tx.user}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tx-address"
+                      >
+                        {truncateAddress(tx.user)}
+                      </a>
                       <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
                       <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
                     </div>
