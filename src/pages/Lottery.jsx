@@ -83,8 +83,9 @@ export default function Lottery() {
       </section>
 
       {/* Band 2: Two columns - Your status vs Today's lottery */}
-      <section className="lottery-two-column-section">
-        <div className="lottery-two-column-content">
+      <section className="lottery-cards-section">
+        <div className="page-header-content">
+          <div className="hero-content-grid">
           {/* Left: Your ticket card */}
           <div className="your-lottery-card">
             <h2 className="card-section-title">Your Daily Ticket</h2>
@@ -101,7 +102,7 @@ export default function Lottery() {
                   <div className="info-row">
                     <span className="info-label">
                       Share of qualifiable supply
-                      <span className="info-tooltip" data-tooltip="Only holders with balances are included in the qualifiable supply for lottery calculations">ⓘ</span>
+                      <span className="info-tooltip" data-tooltip="Contract balances don't count toward lottery eligibility">i</span>
                     </span>
                     <span className="info-value">
                       <DisplayFormattedNumber num={sharePercent} significant={2} />%
@@ -136,8 +137,7 @@ export default function Lottery() {
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>
               <span className="pool-amount">
-                <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" />
-                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={4} /> MONSTR</span>
+                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={4} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
               </span>
             </div>
 
@@ -149,12 +149,13 @@ export default function Lottery() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
       {/* Band 3: History - Last 7 draws */}
-      <section className="lottery-history-section">
-        <div className="lottery-history-content">
+      <section className="explainer-section lottery-history">
+        <div className="explainer-content">
           <div className="history-header">
             <h2 className="section-title">Last 7 draws</h2>
           </div>
@@ -228,10 +229,10 @@ export default function Lottery() {
       </section>
 
       {/* Band 4: How it works - Lottery specific */}
-      <section className="lottery-explainer-section">
-        <div className="lottery-explainer-content">
+      <section className="explainer-section">
+        <div className="explainer-content">
           <h2 className="section-title">How it works</h2>
-          <div className="lottery-steps-grid">
+          <div className="steps-grid">
             <div className="step-card" tabIndex="0">
               <div className="step-number">1</div>
               <div className="step-content">

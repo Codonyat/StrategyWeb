@@ -41,6 +41,12 @@
   margin-bottom: var(--spacing-sm);
 }
 
+/* Landing-specific: Make hero-right wider than hero-left */
+.landing-page .hero-content-grid {
+  grid-template-columns: 2fr 3fr; /* Left column smaller, right column wider */
+  gap: var(--spacing-xl); /* Increased gap: 3rem (48px) instead of default 2rem */
+}
+
 /* Balance Strip */
 .balances-strip {
   display: flex;
