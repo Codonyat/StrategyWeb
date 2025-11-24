@@ -33,7 +33,9 @@
       "Bash(rm:*)",
       "Bash(then cat .env)",
       "Bash(mv:*)",
-      "WebFetch(domain:docs.goldsky.com)"
+      "WebFetch(domain:docs.goldsky.com)",
+      "WebFetch(domain:www.alchemy.com)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
