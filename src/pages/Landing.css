@@ -5,17 +5,16 @@
   gap: var(--spacing-lg);
 }
 
-/* Hero Section */
-.hero-section {
+/* Hero Section - Landing-specific customizations */
+.landing-page .page-header-section {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
   position: relative;
 }
 
 /* Radial gradient behind logo area */
-.hero-section::before {
+.landing-page .page-header-section::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -33,25 +32,12 @@
   z-index: 0;
 }
 
-.hero-wrapper {
-  max-width: var(--max-width);
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  align-items: center;
+.landing-page .page-header-content {
   position: relative;
   z-index: 1;
 }
 
-.hero-subtitle {
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  max-width: 700px;
-  text-align: center;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+.landing-page .page-tagline {
   margin-bottom: var(--spacing-sm);
 }
 
@@ -768,9 +754,8 @@
 }
 
 @media (max-width: 768px) {
-  .hero-section {
+  .landing-page .page-header-section {
     min-height: auto;
-    padding: var(--spacing-xl) var(--spacing-sm);
   }
 
   .hero-content-grid {
@@ -838,9 +823,6 @@
     overflow-x: hidden;
   }
 
-  .hero-section {
-    padding: var(--spacing-md) var(--spacing-xs);
-  }
 
   .explainer-section {
     padding: 0 var(--spacing-xs);
@@ -922,7 +904,6 @@
 
 @media (max-width: 360px) {
   /* Extra small screens */
-  .hero-section,
   .explainer-section,
   .quick-stats,
   .deep-links {

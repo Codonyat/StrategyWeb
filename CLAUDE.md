@@ -50,7 +50,24 @@ const deploymentTime = Number(contractConstants.deploymentTime);
 - **Testnet**: Chain ID 10143
 - **Mainnet**: Chain ID 143
 
-Coin images: `public/coins/{chainId}/{symbol}.svg` (e.g., `public/coins/143/monstr.svg`)
+### Coin Image Assets
+**IMPORTANT**: Use the correct image files for each context:
+
+**For inline text, balances, and UI elements:**
+- MON: `/coins/mon-logo.png`
+- MONSTR: `/coins/monstr-logo.png`
+
+**For animated logo component only:**
+- MONSTR icon: `/coins/monstr-icon.png` (used with AnimatedLogo)
+
+**For hero sections and coin flip:**
+- MON: `/coins/mon.png`
+- MONSTR: `/coins/monstr.png`
+
+**Naming convention:**
+- `{token}-logo.png` - Inline use (balances, text)
+- `{token}-icon.png` - Special components (animated logo)
+- `{token}.png` - Large hero sections
 
 ## Modal Design
 
@@ -120,6 +137,40 @@ useEffect(() => {
 ### Conditional Elements
 - Only show warnings/messages when relevant (e.g., backing ratio warning only post-minting)
 - Use conditional rendering: `{!isMintingPeriod && <div>...</div>}`
+
+## Page Structure Standards
+
+### Page Header Section
+**CRITICAL**: All pages must use standardized header classes for the tagline/subtitle at the top.
+
+**HTML Structure:**
+```jsx
+<div className="{page-name}-page">
+  <section className="page-header-section">
+    <div className="page-header-content">
+      <p className="page-tagline">
+        Your tagline text here.
+      </p>
+    </div>
+  </section>
+  {/* Rest of page content */}
+</div>
+```
+
+**Shared Classes (defined in index.css):**
+- `.page-header-section` - Outer section wrapper
+- `.page-header-content` - Inner content wrapper (centers and constrains width)
+- `.page-tagline` - The tagline/subtitle text
+
+**Page-Specific Customizations:**
+If a page needs custom styling, scope it with the page class:
+```css
+.landing-page .page-header-section {
+  /* Landing-specific overrides */
+}
+```
+
+**Example:** The Landing page adds a radial gradient background via `.landing-page .page-header-section::before`
 
 ## Design System
 

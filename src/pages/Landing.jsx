@@ -122,9 +122,9 @@ export default function Landing() {
   return (
     <div className="landing-page">
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-wrapper">
-          <p className="hero-subtitle">
+      <section className="hero-section page-header-section">
+        <div className="hero-wrapper page-header-content">
+          <p className="page-tagline">
             100% backed by MON, withdraw anytime, up-only price.
           </p>
 
@@ -133,12 +133,12 @@ export default function Landing() {
             <div className="balances-strip">
               <span className="balances-label">Your balances:</span>
               <div className="balance-item">
-                <img src="/coins/mon.png" alt="MON" className="balance-icon" />
+                <img src="/coins/mon-logo.png" alt="MON" className="balance-icon" />
                 <DisplayFormattedNumber num={monValue} significant={3} /> MON
               </div>
               <span className="balance-separator">·</span>
               <div className="balance-item">
-                <img src="/coins/monstr.png" alt="MONSTR" className="balance-icon" />
+                <img src="/coins/monstr-logo.png" alt="MONSTR" className="balance-icon" />
                 <DisplayFormattedNumber num={monstrValue} significant={3} /> MONSTR
               </div>
             </div>

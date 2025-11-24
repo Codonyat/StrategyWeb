@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { StatusChip } from '../components/StatusChip';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { useLotteryData } from '../hooks/useLotteryData';
 import { useLotteryPrizeHistory } from '../hooks/useLotteryPrizeHistory';
 import { useLotteryCountdown } from '../hooks/useLotteryCountdown';
 import { useProtocolStats } from '../hooks/useProtocolStats';
-import { CONTRACT_ADDRESS } from '../config/contract';
+import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Lottery.css';
 
@@ -80,47 +79,21 @@ export default function Lottery() {
 
   return (
     <div className="lottery-page">
-      {/* Band 1: Header row - tagline + key stats */}
-      <section className="lottery-header-section">
-        <div className="lottery-header-content">
+      {/* Band 1: Header row - tagline */}
+      <section className="page-header-section">
+        <div className="page-header-content">
           <p className="page-tagline">
-            Hodl MONSTR, win daily prizes, zero risk.
+            Hodl MONSTR, win daily prizes, no loss lottery.
           </p>
-          <div className="lottery-title-row">
-            <div className="lottery-stats-chips">
-              <StatusChip
-                label="Next draw"
-                value={isLoading ? '...' : timeRemaining}
-                type="active"
-                tooltip="Time until next lottery draw can be executed"
-              />
-              <StatusChip
-                label="Pool"
-                value={
-                  isLoading ? '...' : (
-                    <>
-                      <DisplayFormattedNumber num={currentPool} significant={3} /> MONSTR
-                    </>
-                  )
-                }
-                type="default"
-                tooltip={
-                  isMintingPeriod
-                    ? "Lottery's prize pool from accumulated fees (100% of fees during minting period)"
-                    : "Lottery's prize pool from accumulated fees (50% of fees, other 50% goes to auction)"
-                }
-              />
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Band 2: Two columns - Your status vs Today's draw */}
+      {/* Band 2: Two columns - Your status vs Today's lottery */}
       <section className="lottery-two-column-section">
         <div className="lottery-two-column-content">
-          {/* Left: Your lottery card */}
+          {/* Left: Your ticket card */}
           <div className="your-lottery-card">
-            <h2 className="card-section-title">Your lottery</h2>
+            <h2 className="card-section-title">Your Daily Ticket</h2>
 
             {address ? (
               <>
@@ -132,7 +105,7 @@ export default function Lottery() {
                     </span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Share of holders</span>
+                    <span className="info-label">Share of supply</span>
                     <span className="info-value">
                       <DisplayFormattedNumber num={sharePercent} significant={2} />%
                     </span>
@@ -143,14 +116,16 @@ export default function Lottery() {
                       {sharePercent > 0 ? `~1 in ${Math.round(100 / sharePercent)}` : 'N/A'}
                     </span>
                   </div>
-                  {hasUnclaimedPrizes && (
-                    <div className="info-row highlight-row">
-                      <span className="info-label">Unclaimed prizes</span>
-                      <span className="info-value highlight-value">
-                        <DisplayFormattedNumber num={userClaimable} significant={4} /> MONSTR
-                      </span>
-                    </div>
-                  )}
+                  <div className={`info-row ${hasUnclaimedPrizes ? 'highlight-row' : ''}`}>
+                    <span className="info-label">Unclaimed prizes</span>
+                    <span className={`info-value ${hasUnclaimedPrizes ? 'highlight-value' : ''}`}>
+                      {hasUnclaimedPrizes ? (
+                        <><DisplayFormattedNumber num={userClaimable} significant={4} /> MONSTR</>
+                      ) : (
+                        'None'
+                      )}
+                    </span>
+                  </div>
                 </div>
 
                 <p className="lottery-explainer-text">
@@ -183,9 +158,9 @@ export default function Lottery() {
             )}
           </div>
 
-          {/* Right: Today's draw card */}
+          {/* Right: Today's lottery card */}
           <div className="today-draw-card">
-            <h2 className="card-section-title">Today's draw</h2>
+            <h2 className="card-section-title">Today's Lottery</h2>
 
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>
@@ -238,7 +213,14 @@ export default function Lottery() {
                   >
                     <span className="td-day">{entry.day}</span>
                     <span className="td-winner">
-                      {entry.winner.slice(0, 6)}...{entry.winner.slice(-4)}
+                      <a
+                        href={`${CONTRACT_CONFIG.explorerUrl}/address/${entry.winner}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="winner-link"
+                      >
+                        {entry.winner.slice(0, 6)}...{entry.winner.slice(-4)}
+                      </a>
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
                     <span className="td-prize">

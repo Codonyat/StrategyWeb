@@ -5,15 +5,17 @@ This directory contains coin/token logos for MONSTR and MON.
 ## Files
 
 - `monstr.png` - Main MONSTR token logo
-- `monstr-icon.png` - Small MONSTR icon
+- `monstr-logo.png` - MONSTR logo for inline use (balances, text)
+- `monstr-icon.png` - MONSTR icon for animated logo component
 - `mon.png` - Main MON token logo
-- `mon-icon.png` - Small MON icon
+- `mon-logo.png` - MON logo for inline use (balances, text)
 
 ## Adding Coin Images
 
-1. Provide two versions of each token logo:
+1. Provide versions of each token logo:
    - **Large logo**: `{token}.png` (e.g., `monstr.png`) - For hero sections, coin flip
-   - **Small icon**: `{token}-icon.png` (e.g., `monstr-icon.png`) - For inline use, headers
+   - **Inline logo**: `{token}-logo.png` (e.g., `monstr-logo.png`) - For inline use in balances, text
+   - **Icon**: `{token}-icon.png` (e.g., `monstr-icon.png`) - For special components (animated logo)
 
 ## File Formats & Sizes
 
@@ -39,10 +41,10 @@ theme.strategyCoin.logo      // → /coins/monstr.png
 theme.nativeCoin.logo        // → /coins/mon.png
 theme.wrappedCoin.logo       // → /coins/mon.png
 
-// Small icons (inline text, headers, buttons)
-theme.strategyCoin.logoSmall // → /coins/monstr-icon.png
-theme.nativeCoin.logoSmall   // → /coins/mon-icon.png
-theme.wrappedCoin.logoSmall  // → /coins/mon-icon.png
+// Inline logos (balances, inline text)
+theme.strategyCoin.logoSmall // → /coins/monstr-logo.png
+theme.nativeCoin.logoSmall   // → /coins/mon-logo.png
+theme.wrappedCoin.logoSmall  // → /coins/mon-logo.png
 ```
 
 **Example usage:**

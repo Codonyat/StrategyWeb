@@ -83,8 +83,8 @@ export default function Auctions() {
   return (
     <div className="auctions-page">
       {/* Band 1: Header row - tagline + key stats */}
-      <section className="auctions-header-section">
-        <div className="auctions-header-content">
+      <section className="page-header-section">
+        <div className="page-header-content">
           <p className="page-tagline">
             Bid with MON, win MONSTR below market price.
           </p>
