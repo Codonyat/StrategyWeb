@@ -939,3 +939,123 @@
     height: 200px;
   }
 }
+
+/* New transaction animation - slides in and glows */
+.transaction-row.new {
+  animation: newTransaction 2s ease-out;
+}
+
+@keyframes newTransaction {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+    background: rgba(138, 43, 226, 0.3);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0);
+    background: rgba(138, 43, 226, 0.2);
+  }
+  100% {
+    background: var(--color-background-card);
+  }
+}
+
+/* Type-specific glow for new transactions */
+.transaction-row.new.mint {
+  animation: newMintTransaction 2s ease-out;
+}
+
+@keyframes newMintTransaction {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+    background: rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    background: var(--color-background-card);
+    box-shadow: none;
+  }
+}
+
+.transaction-row.new.burn {
+  animation: newBurnTransaction 2s ease-out;
+}
+
+@keyframes newBurnTransaction {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+    background: rgba(255, 56, 100, 0.3);
+    box-shadow: 0 0 20px rgba(255, 56, 100, 0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    background: var(--color-background-card);
+    box-shadow: none;
+  }
+}
+
+.transaction-row.new.fee {
+  animation: newFeeTransaction 2s ease-out;
+}
+
+@keyframes newFeeTransaction {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+    background: rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    background: var(--color-background-card);
+    box-shadow: none;
+  }
+}
+
+/* Transactions header with LIVE indicator on right */
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Override live-indicator margin when in header */
+.transactions-header .live-indicator {
+  margin-bottom: 0;
+}
+
+/* Transactions wrapper with positioned LIVE indicator */
+.transactions-wrapper {
+  position: relative;
+}
+
+.transactions-wrapper .live-indicator {
+  position: absolute;
+  top: -2px;
+  right: 8px;
+  margin-bottom: 0;
+  z-index: 1;
+}
+
+.transactions-wrapper .transactions-list {
+  padding-right: calc(var(--spacing-xs) + 4px);
+}
+
+/* Add top padding to transactions-list for LIVE indicator space */
+.transactions-wrapper .transactions-list {
+  padding-top: 20px;
+}

@@ -190,8 +190,9 @@ export default function Landing() {
 
             {/* Right Side - Recent Transactions */}
             <div className="hero-right">
-            {connected && <div className="live-indicator"><span className="live-dot"></span>LIVE</div>}
-            <div className="transactions-list">
+            <div className="transactions-wrapper">
+              {connected && <div className="live-indicator"><span className="live-dot"></span>LIVE</div>}
+              <div className="transactions-list">
               {txLoading && transactions.length === 0 ? (
                 <div className="transaction-row">
                   <span className="tx-type">Loading transactions...</span>
@@ -236,7 +237,7 @@ export default function Landing() {
                     return (
                       <div
                         key={tx.id}
-                        className={`transaction-row ${displayType} ${isFaded ? 'fade' : ''} ${isDesktopOnly ? 'desktop-only' : ''}`}
+                        className={`transaction-row ${displayType} ${isFaded ? 'fade' : ''} ${isDesktopOnly ? 'desktop-only' : ''} ${tx.isNew ? 'new' : ''}`}
                       >
                         <span className="tx-indicator"></span>
                         <span className="tx-type">{displayType.toUpperCase()}</span>
@@ -255,6 +256,7 @@ export default function Landing() {
                   });
                 })()
               )}
+              </div>
             </div>
           </div>
           </div>

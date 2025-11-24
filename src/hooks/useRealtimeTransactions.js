@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { io } from 'socket.io-client';
 import { GET_RECENT_TRANSACTIONS, subgraphClient } from '../config/graphql';
@@ -8,32 +8,32 @@ const SOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
 /**
  * Hook for real-time transaction updates via WebSocket
- * Falls back to subgraph polling if WebSocket is unavailable
+ * - Always loads initial data from subgraph (complete history)
+ * - WebSocket pushes new transactions on top (real-time)
+ * - Falls back to subgraph polling if WebSocket unavailable
  *
  * @param {number} limit - Maximum number of transactions to keep
  * @returns {Object} { transactions, connected, error, loading }
  */
 export function useRealtimeTransactions(limit = 10) {
-  const [wsTransactions, setWsTransactions] = useState([]);
+  // Real-time transactions from WebSocket (only NEW ones after page load)
+  const [realtimeTransactions, setRealtimeTransactions] = useState([]);
   const [connected, setConnected] = useState(false);
   const [wsError, setWsError] = useState(null);
-  const [wsLoading, setWsLoading] = useState(true);
   const socketRef = useRef(null);
 
-  // Fallback: Apollo/subgraph polling (only active when WebSocket fails)
-  const shouldUseFallback = !SOCKET_URL || wsError;
+  // Always fetch initial data from subgraph
   const { data: subgraphData, loading: subgraphLoading } = useQuery(GET_RECENT_TRANSACTIONS, {
     client: subgraphClient,
     variables: { limit },
-    pollInterval: shouldUseFallback ? 10000 : 0, // Poll every 10s only when fallback is active
+    // Poll only if WebSocket is not connected (as backup)
+    pollInterval: connected ? 0 : 30000,
     fetchPolicy: 'cache-and-network',
-    skip: !shouldUseFallback, // Skip query when WebSocket is working
   });
 
   useEffect(() => {
-    // Don't connect if no URL configured - use fallback
+    // Don't connect if no URL configured
     if (!SOCKET_URL) {
-      setWsLoading(false);
       setWsError('WebSocket URL not configured');
       return;
     }
@@ -52,7 +52,6 @@ export function useRealtimeTransactions(limit = 10) {
       console.log('[WS] Connected to real-time server');
       setConnected(true);
       setWsError(null);
-      setWsLoading(false);
     });
 
     socket.on('disconnect', (reason) => {
@@ -63,23 +62,32 @@ export function useRealtimeTransactions(limit = 10) {
     socket.on('connect_error', (err) => {
       console.error('[WS] Connection error:', err.message);
       setWsError('Unable to connect to real-time server');
-      setWsLoading(false);
     });
 
-    // Initial batch of recent transactions
+    // Ignore initial batch from server - we use subgraph instead
     socket.on('recentTransactions', (txs) => {
-      console.log('[WS] Received initial transactions:', txs.length);
-      setWsTransactions(txs.slice(0, limit));
+      console.log('[WS] Ignoring server cache, using subgraph for initial data');
     });
 
-    // Real-time new transaction
+    // Real-time new transaction - add to top with animation
     socket.on('newTransaction', (tx) => {
       console.log('[WS] New transaction:', tx.type, tx.user?.slice(0, 8));
-      setWsTransactions(prev => {
-        // Add new transaction, remove duplicates, keep limit
-        const updated = [tx, ...prev.filter(t => t.id !== tx.id)];
-        return updated.slice(0, limit);
+
+      setRealtimeTransactions(prev => {
+        // Mark as new for animation
+        const newTx = { ...tx, isNew: true };
+        // Add to front, remove duplicates
+        const updated = [newTx, ...prev.filter(t => t.id !== tx.id)];
+        // Keep reasonable limit for memory
+        return updated.slice(0, 50);
       });
+
+      // Remove isNew flag after animation completes (2s)
+      setTimeout(() => {
+        setRealtimeTransactions(prev =>
+          prev.map(t => t.id === tx.id ? { ...t, isNew: false } : t)
+        );
+      }, 2000);
     });
 
     // Cleanup on unmount
@@ -88,20 +96,34 @@ export function useRealtimeTransactions(limit = 10) {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [limit]);
+  }, []);
 
-  // Use WebSocket data if connected, otherwise fall back to subgraph
-  const transactions = connected && wsTransactions.length > 0
-    ? wsTransactions
-    : (subgraphData?.transactions || []);
+  // Merge: real-time transactions on top, then subgraph data
+  // Deduplicate by id, keep limit
+  const transactions = useMemo(() => {
+    const subgraphTxs = subgraphData?.transactions || [];
 
-  const loading = shouldUseFallback ? subgraphLoading : wsLoading;
+    // Combine real-time (new) + subgraph (historical)
+    const combined = [...realtimeTransactions];
+
+    // Add subgraph transactions that aren't already in real-time list
+    for (const tx of subgraphTxs) {
+      if (!combined.some(t => t.id === tx.id)) {
+        combined.push(tx);
+      }
+    }
+
+    // Sort by timestamp descending and limit
+    return combined
+      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+      .slice(0, limit);
+  }, [realtimeTransactions, subgraphData, limit]);
 
   return {
     transactions,
     connected,
     error: wsError,
-    loading,
+    loading: subgraphLoading,
   };
 }
 
