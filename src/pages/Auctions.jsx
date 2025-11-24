@@ -82,105 +82,20 @@ export default function Auctions() {
 
   return (
     <div className="auctions-page">
-      {/* Band 1: Header row - tagline + key stats */}
+      {/* Band 1: Header row - tagline */}
       <section className="page-header-section">
         <div className="page-header-content">
           <p className="page-tagline">
             Bid with MON, win MONSTR below market price.
           </p>
-          <div className="auctions-title-row">
-            <div className="auctions-stats-chips">
-              <StatusChip
-                label="Pool"
-                value={
-                  isLoading ? '...' : (
-                    <>
-                      <DisplayFormattedNumber num={auctionPool} significant={3} /> MONSTR
-                    </>
-                  )
-                }
-                type="default"
-                tooltip="Today's MONSTR being auctioned from protocol fees"
-              />
-              <StatusChip
-                label="Min bid"
-                value={
-                  isLoading ? '...' : (
-                    <>
-                      <DisplayFormattedNumber num={minBid} significant={3} /> MON
-                    </>
-                  )
-                }
-                type="default"
-                tooltip="Minimum bid required to participate in the auction"
-              />
-              <StatusChip
-                label="Ends in"
-                value={isLoading ? '...' : timeRemaining}
-                type="active"
-                tooltip="Time until auction ends and winner is determined"
-              />
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Band 2: Two columns - Today's auction + Your position */}
-      <section className="auctions-two-column-section">
-        <div className="auctions-two-column-content">
-          {/* Left: Today's auction card */}
-          <div className="today-auction-card">
-            <h2 className="card-section-title">Today's auction</h2>
-
-            <div className="auction-pool-display">
-              <span className="pool-label">Auctioning</span>
-              <span className="pool-amount">
-                <DisplayFormattedNumber num={auctionPool} significant={4} /> MONSTR
-              </span>
-            </div>
-
-            <div className="auction-info-rows">
-              <div className="info-row">
-                <span className="info-label">Current highest</span>
-                <span className="info-value">
-                  {hasBids ? (
-                    <>
-                      <DisplayFormattedNumber num={currentBid} significant={3} /> MON
-                      <span className="status-badge leading">Leading</span>
-                    </>
-                  ) : (
-                    <span className="status-badge no-bids">No bids yet</span>
-                  )}
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Min bid</span>
-                <span className="info-value">
-                  <DisplayFormattedNumber num={minBid} significant={3} /> MON
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Backing value</span>
-                <span className="info-value">
-                  ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MON
-                </span>
-              </div>
-            </div>
-
-            <div className="countdown-display">
-              <span className="countdown-label">Ends in</span>
-              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
-              <div className="countdown-progress">
-                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
-              </div>
-            </div>
-
-            <p className="draw-explainer-text">
-              Fees from transfers are converted to MONSTR and auctioned once per day. Highest bid wins at end of day.
-            </p>
-          </div>
-
-          {/* Right: Your position card */}
+      {/* Band 2: Two columns - Your position + Today's auction */}
+      <section className="auction-cards-section">
+        <div className="page-header-content">
+          <div className="hero-content-grid">
+          {/* Left: Your position card */}
           <div className="your-position-card">
             <h2 className="card-section-title">Your position</h2>
 
@@ -263,12 +178,60 @@ export default function Auctions() {
               </div>
             )}
           </div>
+
+          {/* Right: Today's auction card */}
+          <div className="today-auction-card">
+            <h2 className="card-section-title">Today's auction</h2>
+
+            <div className="today-pool-display">
+              <span className="pool-label">Today's pool</span>
+              <span className="pool-amount">
+                <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={4} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+              </span>
+            </div>
+
+            <div className="auction-info-rows">
+              <div className="info-row">
+                <span className="info-label">Current highest</span>
+                <span className="info-value">
+                  {hasBids ? (
+                    <>
+                      <DisplayFormattedNumber num={currentBid} significant={3} /> MON
+                    </>
+                  ) : (
+                    <span className="no-bids-text">No bids yet</span>
+                  )}
+                </span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Min bid</span>
+                <span className="info-value">
+                  <DisplayFormattedNumber num={minBid} significant={3} /> MON
+                </span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Backing value</span>
+                <span className="info-value">
+                  ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MON
+                </span>
+              </div>
+            </div>
+
+            <div className="countdown-display">
+              <span className="countdown-label">Next draw in</span>
+              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+              <div className="countdown-progress">
+                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+              </div>
+            </div>
+          </div>
+          </div>
         </div>
       </section>
 
       {/* Band 3: History - Last 7 auctions */}
-      <section className="auctions-history-section">
-        <div className="auctions-history-content">
+      <section className="explainer-section auction-history">
+        <div className="explainer-content">
           <div className="history-header">
             <h2 className="section-title">Last 7 auctions</h2>
           </div>
@@ -323,10 +286,10 @@ export default function Auctions() {
       />
 
       {/* Band 4: How it works - Auction specific */}
-      <section className="auctions-explainer-section">
-        <div className="auctions-explainer-content">
+      <section className="explainer-section">
+        <div className="explainer-content">
           <h2 className="section-title">How it works</h2>
-          <div className="auctions-steps-grid">
+          <div className="steps-grid">
             <div className="step-card" tabIndex="0">
               <div className="step-number">1</div>
               <div className="step-content">

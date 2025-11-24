@@ -94,7 +94,7 @@ export default function Lottery() {
           <div className="hero-content-grid">
           {/* Left: Your ticket card */}
           <div className="your-lottery-card">
-            <h2 className="card-section-title">Your Daily Ticket</h2>
+            <h2 className="card-section-title">Your daily ticket</h2>
 
             {address ? (
               <>
@@ -138,7 +138,7 @@ export default function Lottery() {
 
           {/* Right: Today's lottery card */}
           <div className="today-draw-card">
-            <h2 className="card-section-title">Today's Lottery</h2>
+            <h2 className="card-section-title">Today's lottery</h2>
 
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>

@@ -7,80 +7,33 @@
 }
 
 /* ========================================
-   Band 1: Header Row - Title + Stats
+   Band 1: Header Row - Tagline
    ======================================== */
 
 /* Using shared .page-header-section and .page-header-content from index.css */
 
-.auctions-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-lg);
-}
-
-.auctions-title-area {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  flex: 1;
-}
-
-.auctions-main-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.auctions-subtitle {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-.auctions-stats-chips {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-shrink: 0;
-}
-
 /* ========================================
-   Band 2: Two Column - Today's Auction + Your Position
+   Band 2: Two Column - Your Position + Today's Auction
    ======================================== */
 
-.auctions-two-column-section {
+/* Reusing shared .page-header-content and .hero-content-grid from index.css and Landing.css */
+
+.auction-cards-section {
   width: 100%;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-lg); /* Same as explainer-section */
 }
 
-.auctions-two-column-content {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-lg);
-  align-items: stretch;
+/* Make cards section narrower than explainer sections */
+.auction-cards-section .page-header-content {
+  max-width: 1000px; /* Narrower than default 1280px */
 }
 
-/* Left Card: Today's auction */
-.today-auction-card {
-  background: var(--color-background-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Make both cards equal height */
+.auction-cards-section .hero-content-grid {
+  align-items: stretch; /* Override center alignment from Landing.css */
 }
 
-.today-auction-card:hover {
-  border-color: var(--color-border-light);
-}
-
-/* Right Card: Your Position */
+/* Left Card: Your Position */
 .your-position-card {
   background: var(--color-background-card);
   border: 1px solid var(--color-border);
@@ -96,6 +49,22 @@
   border-color: var(--color-border-light);
 }
 
+/* Right Card: Today's Auction */
+.today-auction-card {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.today-auction-card:hover {
+  border-color: var(--color-border-light);
+}
+
 .card-section-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -103,13 +72,12 @@
   margin: 0;
 }
 
-/* Auction Pool Display */
-.auction-pool-display {
+/* Today's Pool Display */
+.today-pool-display {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  padding: 0 0 var(--spacing-md) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0;
 }
 
 .pool-label {
@@ -121,10 +89,31 @@
 }
 
 .pool-amount {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-purple);
+  color: var(--color-text-primary);
   font-family: 'Space Grotesk', 'Inter', monospace;
+  display: flex;
+  align-items: center;
+}
+
+.pool-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-left: 0.5rem;
+  margin-right: 0.25rem;
+  align-self: center;
+}
+
+.pool-value {
+  display: flex;
+  align-items: baseline;
+}
+
+.pool-symbol {
+  font-size: 0.875rem;
+  vertical-align: baseline;
 }
 
 /* Info Rows */
@@ -178,6 +167,11 @@
   font-weight: 700;
 }
 
+.no-bids-text {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* Status Badges */
 .status-badge {
   padding: 0.25rem 0.625rem;
@@ -187,16 +181,6 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.status-badge.leading {
-  background: var(--color-success);
-  color: var(--color-background);
-}
-
-.status-badge.no-bids {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-secondary);
 }
 
 .status-badge.winning {
@@ -219,7 +203,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  padding: var(--spacing-md) 0 0;
+  padding: var(--spacing-sm) 0 0 0;
 }
 
 .countdown-label {
@@ -236,7 +220,7 @@
   color: var(--color-text-primary);
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 0.25rem;
 }
 
 .countdown-progress {
@@ -253,14 +237,6 @@
   background: linear-gradient(90deg, var(--color-purple), var(--color-secondary));
   border-radius: 2px;
   transition: width 1s linear;
-}
-
-.draw-explainer-text {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-  margin: 0;
-  font-weight: 400;
 }
 
 /* Winning Banner */
@@ -397,18 +373,24 @@
    Band 3: History - Last 7 Auctions
    ======================================== */
 
-.auctions-history-section {
-  width: 100%;
-  padding: 0 var(--spacing-lg);
+/* Reusing shared .explainer-section and .explainer-content from Landing.css */
+
+.auction-history {
+  /* Auction-specific adjustments can go here */
 }
 
-.auctions-history-content {
-  max-width: var(--max-width);
-  margin: 0 auto;
+/* Make history section match cards section width */
+.auction-history .explainer-content {
+  max-width: 1000px; /* Same as cards section */
+}
+
+/* Reduce top spacing to connect better with cards above */
+.auction-history {
+  margin-top: calc(var(--spacing-lg) * -0.15); /* Reduce gap by 15% */
 }
 
 .history-header {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md); /* Reduced from var(--spacing-lg) */
 }
 
 .section-title {
@@ -446,15 +428,28 @@
   color: var(--color-text-secondary);
 }
 
+.th-auctioned,
+.th-bid {
+  text-align: right;
+}
+
 .table-row {
   display: grid;
   grid-template-columns: 80px 150px 150px 1fr 120px;
   gap: var(--spacing-md);
   padding: 0.875rem var(--spacing-sm);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.03); /* Subtle top border for separation */
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 2px solid transparent;
   align-items: center;
+}
+
+.table-row:first-child {
+  border-top: none; /* Remove top border from first row */
+}
+
+.table-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .table-row:hover {
@@ -484,6 +479,7 @@
   color: var(--color-text-primary);
   font-family: 'Space Grotesk', 'Inter', monospace;
   font-size: 0.875rem;
+  text-align: right; /* Right-align for better number scanning */
 }
 
 .td-winner {
@@ -517,6 +513,7 @@
 
 .td-status.status-unclaimed {
   color: var(--color-accent);
+  font-weight: 700; /* Make it pop more */
 }
 
 .td-status.status-claimed {
@@ -544,24 +541,15 @@
    Band 4: How It Works - Auction Specific
    ======================================== */
 
-.auctions-explainer-section {
-  width: 100%;
-  padding: 0 var(--spacing-lg);
+/* Reusing shared .explainer-section, .explainer-content, and .steps-grid from Landing.css */
+
+/* Reduce gap between history and how it works sections */
+.auctions-page .explainer-section:not(.auction-history) {
+  margin-top: calc(var(--spacing-lg) * -0.3); /* Slightly reduced gap */
 }
 
-.auctions-explainer-content {
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-.auctions-steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-}
-
-.step-card {
+/* Auction-specific step card styling */
+.auctions-page .step-card {
   background: rgba(31, 31, 31, 0.8);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -575,19 +563,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.step-card:hover {
-  border-color: var(--color-success);
+.auctions-page .step-card:hover {
+  border-color: var(--color-purple); /* Purple accent for auctions */
   transform: translateY(-1px);
-  box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 1px rgba(138, 43, 226, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-.step-card:focus-visible {
-  outline: 2px solid var(--color-success);
+.auctions-page .step-card:focus-visible {
+  outline: 2px solid var(--color-purple);
   outline-offset: 2px;
-  border-color: var(--color-success);
+  border-color: var(--color-purple);
 }
 
-.step-number {
+.auctions-page .step-number {
   width: 50px;
   flex-shrink: 0;
   display: flex;
@@ -601,11 +589,11 @@
   transition: opacity 0.2s ease;
 }
 
-.step-card:hover .step-number {
+.auctions-page .step-card:hover .step-number {
   opacity: 0.6;
 }
 
-.step-content {
+.auctions-page .step-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -613,7 +601,7 @@
   padding-left: 10px;
 }
 
-.step-title {
+.auctions-page .step-title {
   font-size: 16px;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -621,7 +609,7 @@
   margin: 0;
 }
 
-.step-description {
+.auctions-page .step-description {
   font-size: 13px;
   color: var(--color-text-secondary);
   line-height: 1.5;
@@ -633,17 +621,9 @@
    Responsive
    ======================================== */
 
+/* Shared responsive rules for .hero-content-grid and .steps-grid are in Landing.css */
+
 @media (max-width: 1024px) {
-  .auctions-two-column-content {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-
-  .auctions-steps-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-lg) var(--spacing-md);
-  }
-
   .table-header,
   .table-row {
     grid-template-columns: 70px 120px 120px 1fr 100px;
@@ -655,30 +635,9 @@
 }
 
 @media (max-width: 768px) {
-  .auctions-main-title {
-    font-size: 2rem;
-  }
-
-  .auctions-title-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-  }
-
-  .auctions-stats-chips {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .auctions-two-column-section,
-  .auctions-history-section,
-  .auctions-explainer-section {
+  .auction-cards-section,
+  .auction-history {
     padding: 0 var(--spacing-sm);
-  }
-
-  .auctions-steps-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
   }
 
   .auction-info-rows {
@@ -738,7 +697,12 @@
     text-align: left;
   }
 
-  .step-number {
+  .td-auctioned,
+  .td-bid {
+    text-align: left; /* Left-align on mobile */
+  }
+
+  .auctions-page .step-number {
     font-size: 62px;
   }
 }
