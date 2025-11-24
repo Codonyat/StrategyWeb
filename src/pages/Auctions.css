@@ -13,9 +13,46 @@
 /* Using shared .page-header-section and .page-header-content from index.css */
 
 /* ========================================
-   Band 2: Two Column - Your Position + Today's Auction
+   Band 2: Minting Period Message OR Two Column - Your Position + Today's Auction
    ======================================== */
 
+/* Minting Period Message */
+.minting-period-message-section {
+  width: 100%;
+  padding: 0 var(--spacing-lg);
+}
+
+.minting-period-card {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.minting-message-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.minting-message-text {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-md) 0;
+  text-align: left;
+}
+
+.minting-message-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Auction Cards Section */
 /* Reusing shared .page-header-content and .hero-content-grid from index.css and Landing.css */
 
 .auction-cards-section {
@@ -635,9 +672,22 @@
 }
 
 @media (max-width: 768px) {
+  .minting-period-message-section,
   .auction-cards-section,
   .auction-history {
     padding: 0 var(--spacing-sm);
+  }
+
+  .minting-period-card {
+    padding: var(--spacing-lg);
+  }
+
+  .minting-message-title {
+    font-size: 1.25rem;
+  }
+
+  .minting-message-text {
+    font-size: 0.9rem;
   }
 
   .auction-info-rows {

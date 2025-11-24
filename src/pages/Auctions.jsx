@@ -6,6 +6,7 @@ import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { BidModal } from '../components/BidModal';
 import { useAuctionData } from '../hooks/useAuctionData';
 import { useAuctionCountdown } from '../hooks/useAuctionCountdown';
+import { useProtocolStats } from '../hooks/useProtocolStats';
 import { CONTRACT_ADDRESS } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Auctions.css';
@@ -15,6 +16,8 @@ export default function Auctions() {
   const { openConnectModal } = useConnectModal();
   const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, success, error
   const [showBidModal, setShowBidModal] = useState(false);
+
+  const { isMintingPeriod } = useProtocolStats();
 
   const {
     auctionPool,
@@ -91,10 +94,27 @@ export default function Auctions() {
         </div>
       </section>
 
-      {/* Band 2: Two columns - Your position + Today's auction */}
-      <section className="auction-cards-section">
-        <div className="page-header-content">
-          <div className="hero-content-grid">
+      {/* Band 2: Minting period message OR Two columns - Your position + Today's auction */}
+      {isMintingPeriod ? (
+        <section className="minting-period-message-section">
+          <div className="page-header-content">
+            <div className="minting-period-card">
+              <h2 className="minting-message-title">Auctions begin after the minting period</h2>
+              <p className="minting-message-text">
+                During the initial 24-hour minting period, all 1% transfer fees are directed to the lottery pool.
+                Once the minting period ends and the first 25-hour day begins, daily auctions will commence.
+              </p>
+              <p className="minting-message-text">
+                Each day, 50% of the previous day's fees are converted to MONSTR and auctioned to the highest bidder.
+                Bids are placed in MON or WMON, allowing you to acquire MONSTR below its backing value.
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="auction-cards-section">
+          <div className="page-header-content">
+            <div className="hero-content-grid">
           {/* Left: Your position card */}
           <div className="your-position-card">
             <h2 className="card-section-title">Your position</h2>
@@ -227,9 +247,11 @@ export default function Auctions() {
           </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      {/* Band 3: History - Last 7 auctions */}
+      {/* Band 3: History - Last 7 auctions (only show after minting period) */}
+      {!isMintingPeriod && (
       <section className="explainer-section auction-history">
         <div className="explainer-content">
           <div className="history-header">
@@ -276,6 +298,7 @@ export default function Auctions() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Bid Modal */}
       <BidModal
