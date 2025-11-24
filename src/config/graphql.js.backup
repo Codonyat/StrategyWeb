@@ -2,15 +2,18 @@ import { ApolloClient, InMemoryCache, gql, HttpLink } from '@apollo/client';
 
 console.log('[GRAPHQL] Loading graphql config...');
 
-// Use the Vercel API route which proxies to Goldsky with server-side authentication
-// In production: /api/subgraph
-// In development with vercel dev: /api/subgraph
-const SUBGRAPH_URL = '/api/subgraph';
+// Subgraph endpoint from environment variables
+const SUBGRAPH_URL = import.meta.env.VITE_SUBGRAPH_URL;
 
 console.log('[GRAPHQL] SUBGRAPH_URL:', SUBGRAPH_URL);
+
+if (!SUBGRAPH_URL) {
+  console.warn('VITE_SUBGRAPH_URL is not set. Subgraph queries will fail.');
+}
+
 console.log('[GRAPHQL] Creating ApolloClient...');
 
-// Create HttpLink for the Vercel API proxy
+// Create HttpLink explicitly (required in Apollo Client v4)
 const httpLink = new HttpLink({
   uri: SUBGRAPH_URL,
 });

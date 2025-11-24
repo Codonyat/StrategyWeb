@@ -32,7 +32,8 @@
       "Bash(\"C:/Users/nilga/Repos/StrategyWeb/src/pages/Landing.css\")",
       "Bash(rm:*)",
       "Bash(then cat .env)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebFetch(domain:docs.goldsky.com)"
     ],
     "deny": [],
     "ask": []
