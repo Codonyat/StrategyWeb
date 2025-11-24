@@ -13,7 +13,6 @@ import './Landing.css';
 const parsedAbi = parseAbi(['function balanceOf(address) view returns (uint256)']);
 
 export default function Landing() {
-  console.log('[LANDING] Rendering Landing page');
   const { address } = useAccount();
   const [showStrategy, setShowStrategy] = useState(false);
   const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
@@ -50,9 +49,7 @@ export default function Landing() {
   const monstrValue = monstrBalance ? parseFloat(formatEther(monstrBalance)) : 0;
 
   // Fetch recent transactions from subgraph
-  console.log('[LANDING] Calling useRecentTransactions...');
   const { transactions, loading: txLoading } = useRecentTransactions(10, 10000);
-  console.log('[LANDING] useRecentTransactions result:', { transactions, txLoading });
 
   // Helper function to format time ago
   const formatTimeAgo = (timestamp) => {
@@ -210,9 +207,9 @@ export default function Landing() {
                     // Add the main transaction
                     expandedTransactions.push(tx);
 
-                    // Add fee transaction if it has a fee and is a mint or redeem
+                    // Add fee transaction if it has a fee and is a mint (burns already have fee tx from subgraph)
                     const type = tx.type.toLowerCase();
-                    if ((type === 'mint' || type === 'redeem') && tx.fee && BigInt(tx.fee) > 0) {
+                    if (type === 'mint' && tx.fee && BigInt(tx.fee) > 0) {
                       // Create a synthetic fee transaction
                       expandedTransactions.push({
                         ...tx,

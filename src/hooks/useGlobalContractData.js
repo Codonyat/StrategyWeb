@@ -1,0 +1,199 @@
+import { useMemo } from 'react';
+import { useReadContract, useBalance } from 'wagmi';
+import { formatEther, parseAbi } from 'viem';
+import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
+
+// FEES_POOL synthetic address where fees accumulate
+const FEES_POOL = '0x00000000000fee50000000AdD2E5500000000000';
+
+// Standardized polling interval: 30 seconds
+const POLLING_INTERVAL = 30000;
+
+// Parse the human-readable ABI once
+const parsedAbi = parseAbi([
+  'function totalSupply() view returns (uint256)',
+  'function getCurrentDay() view returns (uint256)',
+  'function currentLotteryPool() view returns (uint256)',
+  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 monstrAmount, uint8 auctionDay)',
+  'function balanceOf(address) view returns (uint256)',
+]);
+
+/**
+ * Centralized hook for global contract data shared across the app.
+ * Replaces redundant calls from useProtocolStats, DataStrip, and other hooks.
+ * Uses standardized 30s polling interval and memoized calculations.
+ */
+export function useGlobalContractData() {
+  // Get total supply of MONSTR tokens
+  const { data: totalSupply, error: totalSupplyError, isLoading: totalSupplyLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'totalSupply',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get MON balance of the contract (TVL)
+  const { data: monBalance, error: balanceError, isLoading: balanceLoading } = useBalance({
+    address: CONTRACT_ADDRESS,
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get current day
+  const { data: currentDay, error: currentDayError, isLoading: currentDayLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'getCurrentDay',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get FEES_POOL balance (where fees accumulate)
+  const { data: feesPoolBalance, error: feesPoolError, isLoading: feesPoolLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'balanceOf',
+    args: [FEES_POOL],
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get lottery pool
+  const { data: lotteryPool, error: lotteryPoolError, isLoading: lotteryPoolLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'currentLotteryPool',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get current auction data
+  const { data: currentAuction, error: auctionError, isLoading: auctionLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'currentAuction',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Memoized calculations to prevent unnecessary re-renders
+  const calculations = useMemo(() => {
+    const tvl = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
+    const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
+    const backingRatio = supply > 0 ? tvl / supply : 0;
+    const isMintingPeriod = currentDay === 0n;
+    const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
+    const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
+
+    // Process auction data
+    const auctionPool = currentAuction && currentAuction[3] ? parseFloat(formatEther(currentAuction[3])) : 0;
+    const currentBid = currentAuction && currentAuction[1] ? parseFloat(formatEther(currentAuction[1])) : 0;
+    const minBid = currentAuction && currentAuction[2] ? parseFloat(formatEther(currentAuction[2])) : 0;
+    const currentBidder = currentAuction ? currentAuction[0] : null;
+    const auctionDay = currentAuction && currentAuction[4] !== undefined ? Number(currentAuction[4]) : 0;
+
+    return {
+      tvl,
+      supply,
+      backingRatio,
+      isMintingPeriod,
+      currentDayNumber: currentDay ? Number(currentDay) : 0,
+      feesPoolAmount,
+      lotteryPoolAmount,
+      auctionPool,
+      currentBid,
+      minBid,
+      currentBidder,
+      auctionDay,
+    };
+  }, [monBalance, totalSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction]);
+
+  // Aggregate errors and loading states
+  const hasError =
+    totalSupplyError ||
+    balanceError ||
+    currentDayError ||
+    feesPoolError ||
+    lotteryPoolError ||
+    auctionError;
+
+  const isLoading =
+    totalSupplyLoading ||
+    balanceLoading ||
+    currentDayLoading ||
+    feesPoolLoading ||
+    lotteryPoolLoading ||
+    auctionLoading;
+
+  // Debug logging for errors
+  if (typeof window !== 'undefined' && hasError) {
+    console.error('Global Contract Data Errors:', {
+      contractAddress: CONTRACT_ADDRESS,
+      chainId: CONTRACT_CONFIG.chainId,
+      errors: {
+        totalSupply: totalSupplyError?.message,
+        balance: balanceError?.message,
+        currentDay: currentDayError?.message,
+        feesPool: feesPoolError?.message,
+        lotteryPool: lotteryPoolError?.message,
+        auction: auctionError?.message,
+      },
+    });
+  }
+
+  return {
+    // Raw data
+    totalSupply,
+    monBalance,
+    currentDay,
+    feesPoolBalance,
+    lotteryPool,
+    currentAuction,
+
+    // Calculated values
+    ...calculations,
+
+    // Status
+    isLoading,
+    hasError,
+    error: hasError ? (
+      totalSupplyError ||
+      balanceError ||
+      currentDayError ||
+      feesPoolError ||
+      lotteryPoolError ||
+      auctionError
+    ) : null,
+  };
+}

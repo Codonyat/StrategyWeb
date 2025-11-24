@@ -1,41 +1,37 @@
-import { useReadContract, useAccount, useBalance } from 'wagmi';
+import { useMemo } from 'react';
+import { useReadContract, useAccount } from 'wagmi';
 import { formatEther, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
-import { useProtocolStats } from './useProtocolStats';
+import { useGlobalContractData } from './useGlobalContractData';
+import { useSharedPrizeData } from './useSharedPrizeData';
 
-// FEES_POOL synthetic address where fees accumulate
-const FEES_POOL = '0x00000000000fee50000000AdD2E5500000000000';
+// Standardized polling interval: 30 seconds
+const POLLING_INTERVAL = 30000;
 
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
-  'function currentLotteryPool() view returns (uint256)',
   'function lastLotteryDay() view returns (uint32)',
-  'function getAllUnclaimedPrizes() view returns (address[7] lotteryWinners, uint112[7] lotteryAmounts, address[7] auctionWinners, uint112[7] auctionAmounts)',
-  'function getMyClaimableAmount() view returns (uint256)',
   'function totalHolderBalance() view returns (uint112 olderValue, uint112 latestValue, uint32 lastUpdatedDay)',
   'function balanceOf(address) view returns (uint256)',
 ]);
 
 export function useLotteryData() {
   const { address } = useAccount();
-  const { isMintingPeriod } = useProtocolStats();
 
-  // Get FEES_POOL balance (where fees accumulate before distribution)
-  const { data: feesPoolBalance, error: poolError, isLoading: poolLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'balanceOf',
-    args: [FEES_POOL],
-    chainId: CONTRACT_CONFIG.chainId,
-    query: {
-      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000, // Refetch every 30 seconds
-      retry: 3,
-      retryDelay: 1000,
-    },
-  });
+  // Use centralized global data (eliminates duplicate calls)
+  const { isMintingPeriod, feesPoolAmount } = useGlobalContractData();
 
-  // Get last lottery day
+  // Use shared prize data (eliminates duplicate calls)
+  const {
+    lotteryWinners,
+    lotteryAmounts,
+    userClaimable,
+    hasUnclaimedPrizes,
+    isLoading: prizeLoading,
+    hasError: prizeError,
+  } = useSharedPrizeData();
+
+  // Get last lottery day (lottery-specific)
   const { data: lastLotteryDay, error: dayError, isLoading: dayLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
@@ -43,42 +39,13 @@ export function useLotteryData() {
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000,
+      refetchInterval: POLLING_INTERVAL,
       retry: 3,
       retryDelay: 1000,
     },
   });
 
-  // Get all unclaimed prizes (7-day ring buffer)
-  const { data: allPrizes, error: prizesError, isLoading: prizesLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'getAllUnclaimedPrizes',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: {
-      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000,
-      retry: 3,
-      retryDelay: 1000,
-    },
-  });
-
-  // Get user's claimable amount (only if connected)
-  const { data: myClaimable, error: claimableError, isLoading: claimableLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'getMyClaimableAmount',
-    chainId: CONTRACT_CONFIG.chainId,
-    account: address,
-    query: {
-      enabled: !!address && !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000,
-      retry: 3,
-      retryDelay: 1000,
-    },
-  });
-
-  // Get total holder balance (excludes contracts)
+  // Get total holder balance (excludes contracts) - lottery-specific
   const { data: totalHolderBalance, error: holderBalanceError, isLoading: holderBalanceLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
@@ -86,13 +53,13 @@ export function useLotteryData() {
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000,
+      refetchInterval: POLLING_INTERVAL,
       retry: 3,
       retryDelay: 1000,
     },
   });
 
-  // Get user balance (only if connected)
+  // Get user balance (only if connected) - lottery-specific
   const { data: userBalance, error: balanceError, isLoading: balanceLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
@@ -101,68 +68,71 @@ export function useLotteryData() {
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!address && !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
-      refetchInterval: 30000,
+      refetchInterval: POLLING_INTERVAL,
       retry: 3,
       retryDelay: 1000,
     },
   });
 
-  // Process data
-  // Calculate lottery's share of fees pool
-  // During minting period: 100% of fees go to lottery
-  // After minting period: 50% of fees go to lottery (other 50% to auction)
-  const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
-  const currentPool = isMintingPeriod ? feesPoolAmount : feesPoolAmount * 0.5;
+  // Memoized calculations
+  const calculations = useMemo(() => {
+    // Calculate lottery's share of fees pool
+    // During minting period: 100% of fees go to lottery
+    // After minting period: 50% of fees go to lottery (other 50% to auction)
+    const currentPool = isMintingPeriod ? feesPoolAmount : feesPoolAmount * 0.5;
 
-  // Extract latestValue from totalHolderBalance struct (excludes contracts)
-  const totalWeight = totalHolderBalance && totalHolderBalance[1]
-    ? parseFloat(formatEther(totalHolderBalance[1]))
-    : 0;
+    // Extract latestValue from totalHolderBalance struct (excludes contracts)
+    const totalWeight = totalHolderBalance && totalHolderBalance[1]
+      ? parseFloat(formatEther(totalHolderBalance[1]))
+      : 0;
 
-  const balance = userBalance ? parseFloat(formatEther(userBalance)) : 0;
-  const sharePercent = totalWeight > 0 && balance > 0 ? (balance / totalWeight) * 100 : 0;
+    const balance = userBalance ? parseFloat(formatEther(userBalance)) : 0;
+    const sharePercent = totalWeight > 0 && balance > 0 ? (balance / totalWeight) * 100 : 0;
 
-  // Parse unclaimed prizes into history
-  const lotteryHistory = [];
-  if (allPrizes) {
-    const [lotteryWinners, lotteryAmounts] = allPrizes;
+    // Parse unclaimed prizes into history
+    const lotteryHistory = [];
+    if (lotteryWinners && lotteryAmounts) {
+      for (let i = 0; i < 7; i++) {
+        const winner = lotteryWinners[i];
+        const amount = lotteryAmounts[i];
 
-    for (let i = 0; i < 7; i++) {
-      const winner = lotteryWinners[i];
-      const amount = lotteryAmounts[i];
-
-      // Check if this slot has data (non-zero address means there's a prize)
-      if (winner !== '0x0000000000000000000000000000000000000000') {
-        const dayNumber = lastLotteryDay ? Number(lastLotteryDay) - i : 0;
-        lotteryHistory.push({
-          day: dayNumber,
-          winner,
-          amount: parseFloat(formatEther(amount)),
-          status: 'unclaimed', // All prizes in the array are unclaimed
-          isUserWinner: address && winner.toLowerCase() === address.toLowerCase(),
-        });
+        // Check if this slot has data (non-zero address means there's a prize)
+        if (winner !== '0x0000000000000000000000000000000000000000') {
+          const dayNumber = lastLotteryDay ? Number(lastLotteryDay) - i : 0;
+          lotteryHistory.push({
+            day: dayNumber,
+            winner,
+            amount: parseFloat(formatEther(amount)),
+            status: 'unclaimed', // All prizes in the array are unclaimed
+            isUserWinner: address && winner.toLowerCase() === address.toLowerCase(),
+          });
+        }
       }
     }
-  }
 
-  // Calculate total unclaimed amount for connected user
-  const userClaimable = myClaimable ? parseFloat(formatEther(myClaimable)) : 0;
-  const hasUnclaimedPrizes = userClaimable > 0;
+    return {
+      currentPool,
+      balance,
+      totalWeight,
+      sharePercent,
+      lotteryHistory,
+    };
+  }, [isMintingPeriod, feesPoolAmount, totalHolderBalance, userBalance, lotteryWinners, lotteryAmounts, lastLotteryDay, address]);
 
-  const hasError = poolError || dayError || prizesError || holderBalanceError;
-  const isLoading = poolLoading || dayLoading || prizesLoading || holderBalanceLoading;
+  const hasError = dayError || holderBalanceError || balanceError || prizeError;
+  const isLoading = dayLoading || holderBalanceLoading || balanceLoading || prizeLoading;
 
   return {
-    currentPool,
+    currentPool: calculations.currentPool,
     lastLotteryDay: lastLotteryDay ? Number(lastLotteryDay) : 0,
-    lotteryHistory,
-    userBalance: balance,
-    totalWeight,
-    sharePercent,
+    lotteryHistory: calculations.lotteryHistory,
+    userBalance: calculations.balance,
+    totalWeight: calculations.totalWeight,
+    sharePercent: calculations.sharePercent,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
     hasError,
-    error: poolError || dayError || prizesError || holderBalanceError,
+    error: dayError || holderBalanceError || balanceError,
   };
 }

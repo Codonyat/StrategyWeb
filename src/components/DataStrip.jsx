@@ -1,137 +1,68 @@
-import { useReadContract, useBalance } from 'wagmi';
-import { formatEther, parseAbi } from 'viem';
-import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
+import { useMemo } from 'react';
+import { formatEther } from 'viem';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
+import { useGlobalContractData } from '../hooks/useGlobalContractData';
+import { useSharedPrizeData } from '../hooks/useSharedPrizeData';
 import contractConstants from '../config/contract-constants.json';
 import './DataStrip.css';
 
-const parsedAbi = parseAbi([
-  'function getCurrentDay() view returns (uint256)',
-  'function totalSupply() view returns (uint256)',
-  'function currentLotteryPool() view returns (uint256)',
-  'function getAllUnclaimedPrizes() view returns (address[7] lotteryWinners, uint112[7] lotteryAmounts, address[7] auctionWinners, uint112[7] auctionAmounts)',
-  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 monstrAmount, uint32 auctionDay)',
-  'function balanceOf(address) view returns (uint256)',
-]);
-
+/**
+ * DataStrip component - now uses centralized data hooks.
+ * All RPC calls eliminated - uses useGlobalContractData and useSharedPrizeData.
+ * This significantly reduces network load and prevents duplicate subscriptions.
+ */
 export function DataStrip() {
-  // Get current day
-  const { data: currentDay } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'getCurrentDay',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+  // Use centralized global data (no RPC calls here!)
+  const {
+    supply,
+    tvl,
+    feesPoolAmount,
+  } = useGlobalContractData();
 
-  // Get total supply
-  const { data: totalSupply } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'totalSupply',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+  // Use shared prize data for lottery winner
+  const { lotteryWinners, lotteryAmounts } = useSharedPrizeData();
 
-  // Get MON reserve (contract balance)
-  const { data: monBalance } = useBalance({
-    address: CONTRACT_ADDRESS,
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+  // Memoized calculations
+  const { timeUntilDraw, lastLotteryWinner } = useMemo(() => {
+    // Calculate time until next lottery draw
+    const calculateTimeUntilDraw = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const deploymentTime = Number(contractConstants.deploymentTime);
+      const pseudoDayLength = 90000; // 25 hours
 
-  // Get daily accumulated fees (MONSTR balance of FEES_POOL)
-  const { data: feesBalance } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'balanceOf',
-    args: ['0x00000000000fee50000000AdD2E5500000000000'],
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+      const timeSinceDeployment = now - deploymentTime;
+      const timeUntilNextDraw = pseudoDayLength - (timeSinceDeployment % pseudoDayLength);
 
-  // Get lottery pool
-  const { data: lotteryPool } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'currentLotteryPool',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+      const hours = Math.floor(timeUntilNextDraw / 3600);
+      const minutes = Math.floor((timeUntilNextDraw % 3600) / 60);
 
-  // Get unclaimed prizes to find last lottery winner
-  const { data: unclaimedPrizes } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'getAllUnclaimedPrizes',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 30000 },
-  });
+      return `${hours}h ${minutes}m`;
+    };
 
-  // Get current auction info
-  const { data: auctionData } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: parsedAbi,
-    functionName: 'currentAuction',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: { enabled: !!CONTRACT_ADDRESS, refetchInterval: 10000 },
-  });
+    // Format address
+    const formatAddress = (addr) => {
+      if (!addr || addr === '0x0000000000000000000000000000000000000000') return 'None';
+      return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    };
 
-  // Calculate time until next lottery draw
-  const calculateTimeUntilDraw = () => {
-    const now = Math.floor(Date.now() / 1000);
-    const deploymentTime = Number(contractConstants.deploymentTime);
-    const pseudoDayLength = 90000; // 25 hours
+    // Get last lottery winner
+    const getLastLotteryWinner = () => {
+      if (!lotteryWinners || !lotteryAmounts) return 'None';
 
-    const timeSinceDeployment = now - deploymentTime;
-    const timeUntilNextDraw = pseudoDayLength - (timeSinceDeployment % pseudoDayLength);
-
-    const hours = Math.floor(timeUntilNextDraw / 3600);
-    const minutes = Math.floor((timeUntilNextDraw % 3600) / 60);
-
-    return `${hours}h ${minutes}m`;
-  };
-
-  // Format address
-  const formatAddress = (addr) => {
-    if (!addr || addr === '0x0000000000000000000000000000000000000000') return 'None';
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
-  };
-
-  // Get last lottery winner
-  const getLastLotteryWinner = () => {
-    if (!unclaimedPrizes) return 'None';
-    const [lotteryWinners, lotteryAmounts] = unclaimedPrizes;
-
-    // Find the most recent non-zero winner
-    for (let i = 6; i >= 0; i--) {
-      if (lotteryWinners[i] !== '0x0000000000000000000000000000000000000000' && lotteryAmounts[i] > 0n) {
-        return formatAddress(lotteryWinners[i]);
+      // Find the most recent non-zero winner
+      for (let i = 6; i >= 0; i--) {
+        if (lotteryWinners[i] !== '0x0000000000000000000000000000000000000000' && lotteryAmounts[i] > 0n) {
+          return formatAddress(lotteryWinners[i]);
+        }
       }
-    }
-    return 'None';
-  };
+      return 'None';
+    };
 
-  // Get last auction proceeds
-  const getLastAuctionProceeds = () => {
-    if (!unclaimedPrizes) return 0;
-    const [, , , auctionAmounts] = unclaimedPrizes;
-
-    // Find the most recent auction amount
-    for (let i = 6; i >= 0; i--) {
-      if (auctionAmounts[i] > 0n) {
-        return parseFloat(formatEther(auctionAmounts[i]));
-      }
-    }
-    return 0;
-  };
-
-  const monReserve = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
-  const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
-  const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
-  const dailyFees = feesBalance ? parseFloat(formatEther(feesBalance)) : 0;
-  const lastLotteryWinner = getLastLotteryWinner();
-  const timeUntilDraw = calculateTimeUntilDraw();
+    return {
+      timeUntilDraw: calculateTimeUntilDraw(),
+      lastLotteryWinner: getLastLotteryWinner(),
+    };
+  }, [lotteryWinners, lotteryAmounts]);
 
   return (
     <div className="data-strip">
@@ -148,7 +79,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Reserve</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={monReserve} significant={3} /> MON
+            <DisplayFormattedNumber num={tvl} significant={3} /> MON
           </span>
         </span>
 
@@ -164,7 +95,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Daily fees</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={dailyFees} significant={3} /> MONSTR
+            <DisplayFormattedNumber num={feesPoolAmount} significant={3} /> MONSTR
           </span>
         </span>
 

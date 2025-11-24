@@ -12,17 +12,12 @@ import { GET_RECENT_TRANSACTIONS, subgraphClient } from '../config/graphql';
  * @returns {Object} { transactions, loading, error }
  */
 export function useRecentTransactions(limit = 10, pollInterval = 10000) {
-  console.log('[useRecentTransactions] Hook called with:', { limit, pollInterval });
-  console.log('[useRecentTransactions] subgraphClient:', subgraphClient);
-
   const { data, loading, error } = useQuery(GET_RECENT_TRANSACTIONS, {
     client: subgraphClient,
     variables: { limit },
     pollInterval, // Auto-refresh for real-time updates
     fetchPolicy: 'cache-and-network', // Show cached data first, then update
   });
-
-  console.log('[useRecentTransactions] Query result:', { data, loading, error });
 
   return {
     transactions: data?.transactions || [],

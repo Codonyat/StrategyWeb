@@ -15,15 +15,11 @@ import '@rainbow-me/rainbowkit/styles.css';
 const queryClient = new QueryClient();
 
 function App() {
-  console.log('[APP] Rendering App component');
-
   // Add error handling for wagmi config
   if (!config) {
     console.error('[APP] ERROR: wagmi config is undefined!');
     return <div style={{color: 'white', padding: '20px'}}>Error: Wagmi config failed to load. Check console.</div>;
   }
-
-  console.log('[APP] wagmi config loaded:', config);
 
   return (
     <WagmiProvider config={config}>
