@@ -46,14 +46,14 @@ export function useAuctionData() {
         const amount = auctionAmounts[i];
 
         // Check if this slot has data (non-zero address means there's a prize)
-        if (winner !== '0x0000000000000000000000000000000000000000') {
+        if (winner && winner !== '0x0000000000000000000000000000000000000000') {
           const dayNumber = currentDayNumber - i - 1; // Auction history is offset by 1 day
           auctionHistory.push({
             day: dayNumber,
             winner,
-            amount: parseFloat(formatEther(amount)),
+            amount: amount ? parseFloat(formatEther(amount)) : 0,
             status: 'unclaimed', // All prizes in the array are unclaimed
-            isUserWinner: address && winner.toLowerCase() === address.toLowerCase(),
+            isUserWinner: address && winner && winner.toLowerCase() === address.toLowerCase(),
           });
         }
       }

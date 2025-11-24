@@ -23,7 +23,7 @@ export function useLotteryPrizeHistory(limit = 7, pollInterval = 30000) {
 
   // Format lottery prizes data for the UI
   const lotteryHistory = (data?.lotteryPrizes || []).map(prize => {
-    const isUserWinner = address && prize.winner.toLowerCase() === address.toLowerCase();
+    const isUserWinner = address && prize.winner?.toLowerCase() === address.toLowerCase();
 
     // Determine status
     let status = 'unclaimed';
@@ -34,15 +34,15 @@ export function useLotteryPrizeHistory(limit = 7, pollInterval = 30000) {
     }
 
     return {
-      day: parseInt(prize.day),
-      winner: prize.winner,
-      amount: parseFloat(formatEther(BigInt(prize.amount))),
+      day: parseInt(prize.day || '0'),
+      winner: prize.winner || '0x0000000000000000000000000000000000000000',
+      amount: prize.amount ? parseFloat(formatEther(BigInt(prize.amount))) : 0,
       status,
       claimed: prize.claimed,
       claimTimestamp: prize.claimTimestamp ? parseInt(prize.claimTimestamp) : null,
       expired: prize.expired,
       expiryTimestamp: prize.expiryTimestamp ? parseInt(prize.expiryTimestamp) : null,
-      timestamp: parseInt(prize.timestamp),
+      timestamp: parseInt(prize.timestamp || '0'),
       txHash: prize.txHash,
       isUserWinner,
     };
