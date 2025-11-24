@@ -31,12 +31,6 @@ export default function Lottery() {
   const { timeRemaining } = useLotteryCountdown();
   const { isMintingPeriod } = useProtocolStats();
 
-  // Get last lottery day from history
-  const lastLotteryDay = lotteryHistory.length > 0 ? lotteryHistory[0].day : 0;
-
-  // Get last winner from history
-  const lastWinner = lotteryHistory.length > 0 ? lotteryHistory[0] : null;
-
   // Calculate total unclaimed in the 7-day ring
   const totalUnclaimed = lotteryHistory.reduce((sum, entry) => sum + entry.amount, 0);
 
@@ -105,7 +99,10 @@ export default function Lottery() {
                     </span>
                   </div>
                   <div className="info-row">
-                    <span className="info-label">Share of supply</span>
+                    <span className="info-label">
+                      Share of qualifiable supply
+                      <span className="info-tooltip" data-tooltip="Only holders with balances are included in the qualifiable supply for lottery calculations">ⓘ</span>
+                    </span>
                     <span className="info-value">
                       <DisplayFormattedNumber num={sharePercent} significant={2} />%
                     </span>
@@ -113,17 +110,7 @@ export default function Lottery() {
                   <div className="info-row">
                     <span className="info-label">Estimated odds today</span>
                     <span className="info-value">
-                      {sharePercent > 0 ? `~1 in ${Math.round(100 / sharePercent)}` : 'N/A'}
-                    </span>
-                  </div>
-                  <div className={`info-row ${hasUnclaimedPrizes ? 'highlight-row' : ''}`}>
-                    <span className="info-label">Unclaimed prizes</span>
-                    <span className={`info-value ${hasUnclaimedPrizes ? 'highlight-value' : ''}`}>
-                      {hasUnclaimedPrizes ? (
-                        <><DisplayFormattedNumber num={userClaimable} significant={4} /> MONSTR</>
-                      ) : (
-                        'None'
-                      )}
+                      {sharePercent > 0 ? `~1 in ${Math.round(100 / sharePercent)}` : '0'}
                     </span>
                   </div>
                 </div>
@@ -131,22 +118,6 @@ export default function Lottery() {
                 <p className="lottery-explainer-text">
                   You stay entered as long as you hold MONSTR. Snapshots are taken once per day.
                 </p>
-
-                {hasUnclaimedPrizes && (
-                  <button
-                    className="claim-btn"
-                    onClick={handleClaim}
-                    disabled={isClaimConfirming || claimStatus === 'claiming'}
-                  >
-                    {isClaimConfirming || claimStatus === 'claiming'
-                      ? 'Claiming...'
-                      : claimStatus === 'success'
-                      ? '✓ Claimed!'
-                      : claimStatus === 'error'
-                      ? 'Error - Try again'
-                      : 'Claim now'}
-                  </button>
-                )}
               </>
             ) : (
               <div className="connect-prompt">
@@ -165,7 +136,8 @@ export default function Lottery() {
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>
               <span className="pool-amount">
-                <DisplayFormattedNumber num={currentPool} significant={4} /> MONSTR
+                <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" />
+                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={4} /> MONSTR</span>
               </span>
             </div>
 
@@ -176,12 +148,6 @@ export default function Lottery() {
                 <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
               </div>
             </div>
-
-            <p className="draw-explainer-text">
-              Fees from transfers fill the pool. Snapshot taken at end of day, winner chosen from holders.
-            </p>
-
-            <p className="last-executed-text">Last executed: day {lastLotteryDay}</p>
           </div>
         </div>
       </section>
@@ -227,7 +193,27 @@ export default function Lottery() {
                       <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
                     </span>
                     <span className={`td-status status-${entry.status}`}>
-                      {entry.status === 'claimed' ? '✓ Claimed' : entry.status === 'expired' ? '⚠ Expired' : 'Unclaimed'}
+                      {entry.status === 'claimed' ? (
+                        '✓ Claimed'
+                      ) : entry.status === 'expired' ? (
+                        '⚠ Expired'
+                      ) : entry.isUserWinner ? (
+                        <button
+                          className="claim-btn-inline"
+                          onClick={handleClaim}
+                          disabled={isClaimConfirming || claimStatus === 'claiming'}
+                        >
+                          {isClaimConfirming || claimStatus === 'claiming'
+                            ? 'Claiming...'
+                            : claimStatus === 'success'
+                            ? '✓ Claimed!'
+                            : claimStatus === 'error'
+                            ? 'Try again'
+                            : 'Claim'}
+                        </button>
+                      ) : (
+                        'Unclaimed'
+                      )}
                     </span>
                   </div>
                 ))

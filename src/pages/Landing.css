@@ -65,6 +65,11 @@
   font-weight: 600;
 }
 
+.balance-value {
+  display: inline;
+  white-space: nowrap;
+}
+
 .balance-icon {
   width: 16px;
   height: 16px;

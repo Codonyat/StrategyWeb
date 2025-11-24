@@ -134,12 +134,12 @@ export default function Landing() {
               <span className="balances-label">Your balances:</span>
               <div className="balance-item">
                 <img src="/coins/mon-logo.png" alt="MON" className="balance-icon" />
-                <DisplayFormattedNumber num={monValue} significant={3} /> MON
+                <span className="balance-value"><DisplayFormattedNumber num={monValue} significant={3} /> MON</span>
               </div>
               <span className="balance-separator">·</span>
               <div className="balance-item">
                 <img src="/coins/monstr-logo.png" alt="MONSTR" className="balance-icon" />
-                <DisplayFormattedNumber num={monstrValue} significant={3} /> MONSTR
+                <span className="balance-value"><DisplayFormattedNumber num={monstrValue} significant={3} /> MONSTR</span>
               </div>
             </div>
           )}
