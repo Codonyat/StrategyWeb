@@ -774,6 +774,11 @@
     gap: var(--spacing-xl);
   }
 
+  /* Override landing-specific 2fr 3fr grid on mobile */
+  .landing-page .hero-content-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-actions {
     flex-direction: column;
     width: 100%;
