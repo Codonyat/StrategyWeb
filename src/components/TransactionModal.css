@@ -505,6 +505,156 @@
   }
 }
 
+/* Success View */
+.success-view {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.success-icon {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.success-view .success-message {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.success-view .success-message strong {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.success-view.burn-farewell .success-message strong {
+  color: var(--color-primary);
+}
+
+.success-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Share Button */
+.share-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: var(--color-background-card);
+  border: 2px solid var(--color-border-light);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.share-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-purple));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.share-button:hover::before {
+  opacity: 0.1;
+}
+
+.share-button:hover {
+  border-color: var(--color-secondary);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+}
+
+.share-button svg {
+  position: relative;
+  z-index: 1;
+}
+
+.share-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Close Success Button */
+.close-success-button {
+  width: 100%;
+  padding: 0.75rem 2rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.close-success-button:hover {
+  border-color: var(--color-border-light);
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.close-success-button:active {
+  transform: scale(0.98);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .modal-content {
@@ -540,5 +690,27 @@
   .balance-shortcuts {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .success-view {
+    padding: 1.5rem 1rem;
+  }
+
+  .success-icon {
+    font-size: 3rem;
+  }
+
+  .success-title {
+    font-size: 1.25rem;
+  }
+
+  .success-view .success-message {
+    font-size: 0.9rem;
+  }
+
+  .share-button,
+  .close-success-button {
+    font-size: 0.9rem;
+    padding: 0.875rem 1.5rem;
   }
 }

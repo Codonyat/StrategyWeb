@@ -57,18 +57,8 @@ export function BurnModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Auto-close on success
-  useEffect(() => {
-    // Only auto-close if modal is open and we have an amount (actual transaction success)
-    if (isSuccess && isOpen && amount) {
-      const timer = setTimeout(() => {
-        setAmount('');
-        setError('');
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isSuccess, isOpen, amount, onClose]);
+  // Don't auto-close on success - show farewell message
+  // (Removed auto-close effect)
 
   // Handle transaction errors
   useEffect(() => {
@@ -174,18 +164,39 @@ export function BurnModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const isLoading = isPending || isConfirming;
+  const showSuccessView = isSuccess && amount;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Burn {CONTRACT_CONFIG.strategyCoin.symbol}</h2>
+          <h2>{showSuccessView ? 'Farewell!' : `Burn ${CONTRACT_CONFIG.strategyCoin.symbol}`}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        {showSuccessView ? (
+          <div className="success-view burn-farewell">
+            <div className="success-icon">👋</div>
+            <h3 className="success-title">We're sorry to see you go!</h3>
+            <p className="success-message">
+              You've successfully burned <strong><DisplayFormattedNumber num={parseFloat(amount)} significant={4} /> {CONTRACT_CONFIG.strategyCoin.symbol}</strong> and received <strong><DisplayFormattedNumber num={estimatedOutput()} significant={4} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>.
+            </p>
+            <p className="success-subtitle">
+              We hope you had fun and you're always welcome back!
+            </p>
+            <div className="success-actions">
+              <button
+                className="close-success-button"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
             <label htmlFor="amount">Amount</label>
             <div className="input-wrapper">
@@ -309,6 +320,7 @@ export function BurnModal({ isOpen, onClose }) {
             </button>
           )}
         </form>
+        )}
       </div>
     </div>
   );

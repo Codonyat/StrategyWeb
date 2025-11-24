@@ -53,18 +53,8 @@ export function MintModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Auto-close on success
-  useEffect(() => {
-    // Only auto-close if modal is open and we have an amount (actual transaction success)
-    if (isSuccess && isOpen && amount) {
-      const timer = setTimeout(() => {
-        setAmount('');
-        setError('');
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isSuccess, isOpen, amount, onClose]);
+  // Don't auto-close on success - let user share or close manually
+  // (Removed auto-close effect)
 
   // Handle transaction errors
   useEffect(() => {
@@ -178,18 +168,69 @@ export function MintModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const isLoading = isPending || isConfirming;
+  const showSuccessView = isSuccess && amount;
+
+  // Generate X share URL with prepopulated tweet
+  const generateShareUrl = () => {
+    const announcementLink = import.meta.env.VITE_ANNOUNCEMENT_LINK || 'https://twitter.com/yourhandle/status/123456789';
+    const tweetText = `I just minted MONSTR, a strategy coin on Monad:\n\n◈ 100% backed by MON, redeemable anytime\n◈ with a floor price that can only go up as fees accrue, and\n◈ a daily no-loss lottery for holders.\n\nCheck the launch thread and join in: ${announcementLink}`;
+    return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+  };
+
+  // Open X share in pop-up window
+  const handleShare = () => {
+    const url = generateShareUrl();
+    const width = 550;
+    const height = 420;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    window.open(
+      url,
+      'Share on X',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Deposit MON</h2>
+          <h2>{showSuccessView ? 'Success!' : 'Deposit MON'}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        {showSuccessView ? (
+          <div className="success-view">
+            <div className="success-icon">🎉</div>
+            <h3 className="success-title">Congratulations!</h3>
+            <p className="success-message">
+              You've successfully minted <strong><DisplayFormattedNumber num={estimatedOutput()} significant={4} /> {CONTRACT_CONFIG.strategyCoin.symbol}</strong>!
+            </p>
+            <p className="success-subtitle">
+              Share your success with the community!
+            </p>
+            <div className="success-actions">
+              <button
+                className="share-button"
+                onClick={handleShare}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Share on X
+              </button>
+              <button
+                className="close-success-button"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
             <label htmlFor="amount">Amount</label>
             <div className="input-wrapper">
@@ -307,6 +348,7 @@ export function MintModal({ isOpen, onClose }) {
             </button>
           )}
         </form>
+        )}
       </div>
     </div>
   );
