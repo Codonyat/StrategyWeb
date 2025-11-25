@@ -1,13 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useReadContract, useBalance } from 'wagmi';
 import { formatEther, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
+import contractConstants from '../config/contract-constants.json';
 
 // FEES_POOL synthetic address where fees accumulate
 const FEES_POOL = '0x00000000000fee50000000AdD2E5500000000000';
 
 // Standardized polling interval: 30 seconds
 const POLLING_INTERVAL = 30000;
+
+// Minting period constants from contract
+const DEPLOYMENT_TIME = Number(contractConstants.deploymentTime);
+const MINTING_PERIOD = Number(contractConstants.MINTING_PERIOD);
+const MINTING_END_TIME = DEPLOYMENT_TIME + MINTING_PERIOD;
 
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
@@ -24,6 +30,16 @@ const parsedAbi = parseAbi([
  * Uses standardized 30s polling interval and memoized calculations.
  */
 export function useGlobalContractData() {
+  // Track current time for minting period calculation
+  const [currentTime, setCurrentTime] = useState(() => Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Math.floor(Date.now() / 1000));
+    }, POLLING_INTERVAL);
+    return () => clearInterval(interval);
+  }, []);
+
   // Get total supply of MONSTR tokens
   const { data: totalSupply, error: totalSupplyError, isLoading: totalSupplyLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -112,7 +128,7 @@ export function useGlobalContractData() {
     const tvl = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
     const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
     const backingRatio = supply > 0 ? tvl / supply : 0;
-    const isMintingPeriod = currentDay === 0n;
+    const isMintingPeriod = currentTime < MINTING_END_TIME;
     const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
     const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
 
@@ -137,7 +153,7 @@ export function useGlobalContractData() {
       currentBidder,
       auctionDay,
     };
-  }, [monBalance, totalSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction]);
+  }, [monBalance, totalSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
 
   // Aggregate errors and loading states
   const hasError =
