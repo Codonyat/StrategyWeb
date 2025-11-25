@@ -47,6 +47,11 @@ const EVENTS = {
 let recentTransactions = [];
 const MAX_TRANSACTIONS = 50;
 
+// Track txHashes from Minted/Redeemed to avoid duplicate fee entries
+// (Mints and redeems already include fee info, so we skip their Transfer events)
+const mintRedeemTxHashes = new Set();
+const TX_HASH_TTL = 60000; // Clear after 60s to prevent memory growth
+
 // Viem client and cleanup functions
 let client = null;
 let unwatchFunctions = [];
@@ -144,49 +149,99 @@ function setupWebSocket() {
  */
 function handleMintedEvents(logs) {
   logs.forEach(log => {
-    const tx = {
-      id: `${log.transactionHash}-${log.logIndex}`,
+    const txHash = log.transactionHash;
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    // Track this txHash to skip duplicate Transfer event
+    mintRedeemTxHashes.add(txHash);
+    setTimeout(() => mintRedeemTxHashes.delete(txHash), TX_HASH_TTL);
+
+    // Emit MINT transaction
+    addTransaction({
+      id: `${txHash}-${log.logIndex}`,
       type: 'MINT',
       user: log.args.to,
       monAmount: log.args.monAmount.toString(),
       stratAmount: log.args.stratAmount.toString(),
       fee: log.args.fee.toString(),
-      timestamp: Math.floor(Date.now() / 1000),
-      txHash: log.transactionHash,
-    };
-    addTransaction(tx);
+      timestamp,
+      txHash,
+    });
+
+    // Emit FEE transaction (if fee > 0)
+    if (log.args.fee > 0n) {
+      addTransaction({
+        id: `${txHash}-${log.logIndex}-fee`,
+        type: 'TRANSFER',
+        user: log.args.to,
+        monAmount: '0',
+        stratAmount: log.args.fee.toString(),
+        fee: '0',
+        timestamp,
+        txHash,
+      });
+    }
   });
 }
 
 function handleRedeemedEvents(logs) {
   logs.forEach(log => {
-    const tx = {
-      id: `${log.transactionHash}-${log.logIndex}`,
+    const txHash = log.transactionHash;
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    // Track this txHash to skip duplicate Transfer event
+    mintRedeemTxHashes.add(txHash);
+    setTimeout(() => mintRedeemTxHashes.delete(txHash), TX_HASH_TTL);
+
+    // Emit REDEEM transaction
+    addTransaction({
+      id: `${txHash}-${log.logIndex}`,
       type: 'REDEEM',
       user: log.args.from,
       monAmount: log.args.monAmount.toString(),
       stratAmount: log.args.stratAmount.toString(),
       fee: log.args.fee.toString(),
-      timestamp: Math.floor(Date.now() / 1000),
-      txHash: log.transactionHash,
-    };
-    addTransaction(tx);
+      timestamp,
+      txHash,
+    });
+
+    // Emit FEE transaction (if fee > 0)
+    if (log.args.fee > 0n) {
+      addTransaction({
+        id: `${txHash}-${log.logIndex}-fee`,
+        type: 'TRANSFER',
+        user: log.args.from,
+        monAmount: '0',
+        stratAmount: log.args.fee.toString(),
+        fee: '0',
+        timestamp,
+        txHash,
+      });
+    }
   });
 }
 
 function handleFeeTransferEvents(logs) {
   logs.forEach(log => {
-    const tx = {
-      id: `${log.transactionHash}-${log.logIndex}`,
+    const txHash = log.transactionHash;
+
+    // Skip if this Transfer is from a Mint/Redeem (already handled)
+    if (mintRedeemTxHashes.has(txHash)) {
+      console.log('[WS] Skipping duplicate fee transfer for mint/redeem:', txHash.slice(0, 10));
+      return;
+    }
+
+    // This is a fee from a regular transfer (not mint/redeem)
+    addTransaction({
+      id: `${txHash}-${log.logIndex}`,
       type: 'TRANSFER',
       user: log.args.from,
       monAmount: '0',
       stratAmount: log.args.value.toString(),
       fee: '0',
       timestamp: Math.floor(Date.now() / 1000),
-      txHash: log.transactionHash,
-    };
-    addTransaction(tx);
+      txHash,
+    });
   });
 }
 
