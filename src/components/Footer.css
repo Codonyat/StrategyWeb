@@ -233,3 +233,13 @@
     font-size: 0.7rem;
   }
 }
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .footer-disclaimer {
+    padding: var(--spacing-lg) var(--spacing-sm) 0;
+  }
+}

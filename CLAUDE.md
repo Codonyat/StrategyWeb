@@ -2,6 +2,7 @@
 
 ## Development Rules
 - Prefer simplicity over complexity
+- **Keep CSS/HTML minimal**: Avoid verbose or redundant styles. Fix specific issues directly rather than adding layers of overrides.
 - Use relative paths for file operations (e.g., `src/config/abi.js`)
 - Read queries: Use internal RPC from `.env` (work without wallet)
 - Write transactions: Use wallet's RPC (requires connection)

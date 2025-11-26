@@ -709,50 +709,73 @@
     padding: var(--spacing-lg) var(--spacing-sm);
   }
 
-  .td-day::before {
+  /* Scope to auctions-page to avoid affecting Lottery page */
+  .auctions-page .td-day::before {
     content: 'Day: ';
     color: var(--color-text-muted);
     font-weight: 400;
   }
 
-  .td-auctioned::before {
+  .auctions-page .td-auctioned::before {
     content: 'Auctioned: ';
     color: var(--color-text-muted);
     font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  .td-bid::before {
+  .auctions-page .td-bid::before {
     content: 'Winning bid: ';
     color: var(--color-text-muted);
     font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  .td-winner::before {
+  .auctions-page .td-winner::before {
     content: 'Winner: ';
     color: var(--color-text-muted);
     font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  .td-status::before {
+  .auctions-page .td-status::before {
     content: 'Status: ';
     color: var(--color-text-muted);
     font-weight: 400;
     text-transform: none;
   }
 
-  .td-status {
+  .auctions-page .td-status {
     text-align: left;
   }
 
-  .td-auctioned,
-  .td-bid {
+  .auctions-page .td-auctioned,
+  .auctions-page .td-bid {
     text-align: left; /* Left-align on mobile */
   }
 
   .auctions-page .step-number {
     font-size: 62px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Consistent 16px horizontal padding on very small screens */
+  .minting-period-message-section,
+  .auction-cards-section,
+  .auction-history {
+    padding: 0 var(--spacing-sm);
+  }
+
+  /* Tighter card padding */
+  .minting-period-card,
+  .current-auction-card,
+  .your-bids-card,
+  .history-table-card {
+    padding: var(--spacing-sm);
+  }
+
+  /* Reduce gaps */
+  .auctions-page .hero-content-grid {
+    gap: var(--spacing-md);
   }
 }

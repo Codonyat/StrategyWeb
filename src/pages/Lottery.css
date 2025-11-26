@@ -446,9 +446,9 @@
 }
 
 .table-header {
-  display: grid;
-  grid-template-columns: 100px 1fr 200px 120px;
-  gap: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.75rem var(--spacing-sm);
   border-bottom: 2px solid var(--color-border);
   font-size: 0.75rem;
@@ -458,19 +458,20 @@
   color: var(--color-text-secondary);
 }
 
-.th-prize {
-  text-align: right;
-}
+/* Column widths for alignment */
+.th-day, .td-day { flex: 0 0 50px; }
+.th-winner, .td-winner { flex: 1; }
+.th-prize, .td-prize { flex: 0 0 140px; text-align: right; }
+.th-status, .td-status { flex: 0 0 90px; text-align: right; }
 
 .table-row {
-  display: grid;
-  grid-template-columns: 100px 1fr 200px 120px;
-  gap: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.875rem var(--spacing-sm);
-  border-top: 1px solid rgba(255, 255, 255, 0.03); /* Subtle top border for separation */
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 2px solid transparent;
-  align-items: center;
 }
 
 .table-row:first-child {
@@ -500,6 +501,7 @@
   font-weight: 600;
   color: var(--color-text-primary);
   font-family: 'Courier New', monospace;
+  white-space: nowrap;
 }
 
 .td-winner {
@@ -509,6 +511,15 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  white-space: nowrap;
+}
+
+.td-prize {
+  white-space: nowrap;
+}
+
+.td-status {
+  white-space: nowrap;
 }
 
 .winner-link {
@@ -520,6 +531,29 @@
 .winner-link:hover {
   color: var(--color-secondary);
   text-decoration: underline;
+}
+
+/* Address variants - full for large, medium for tablet, compact for mobile */
+.winner-address-full,
+.winner-address-medium,
+.winner-address-compact {
+  display: inline-block;
+  line-height: 1;
+}
+
+.winner-address-medium,
+.winner-address-compact {
+  display: none;
+}
+
+@media (max-width: 890px) {
+  .winner-address-full { display: none; }
+  .winner-address-medium { display: inline-block; }
+}
+
+@media (max-width: 540px) {
+  .winner-address-medium { display: none; }
+  .winner-address-compact { display: inline-block; }
 }
 
 .you-badge {
@@ -615,21 +649,20 @@
 }
 
 .empty-history-row {
-  display: grid;
-  grid-template-columns: 100px 1fr 200px 120px;
-  gap: var(--spacing-md);
+  display: flex;
+  justify-content: center;
   padding: var(--spacing-lg) var(--spacing-sm);
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   text-align: center;
 }
 
 .empty-history-row p {
-  grid-column: 1 / -1;
   color: var(--color-text-muted);
   font-size: 0.875rem;
   margin: 0;
   font-weight: 400;
 }
+
 
 /* ========================================
    Band 4: How It Works - Lottery Specific
@@ -717,16 +750,6 @@
 
 /* Shared responsive rules for .hero-content-grid and .steps-grid are in Landing.css */
 
-@media (max-width: 1024px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 80px 1fr 150px 100px;
-  }
-
-  .empty-history-row {
-    grid-template-columns: 80px 1fr 150px 100px;
-  }
-}
 
 @media (max-width: 768px) {
   .lottery-main-title {
@@ -749,6 +772,17 @@
     padding: 0 var(--spacing-sm);
   }
 
+  /* Tighter card padding on mobile */
+  .your-lottery-card,
+  .today-draw-card {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .history-table-card {
+    padding: var(--spacing-sm);
+  }
+
   .lottery-info-rows {
     min-height: auto;
   }
@@ -759,52 +793,42 @@
     transform: none;
   }
 
-  .table-header {
-    display: none;
-  }
-
-  .table-row {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm);
-  }
-
-  .empty-history-row {
-    grid-template-columns: 1fr;
-    padding: var(--spacing-lg) var(--spacing-sm);
-  }
-
-  .td-day::before {
-    content: 'Day: ';
-    color: var(--color-text-muted);
-    font-weight: 400;
-  }
-
-  .td-winner::before {
-    content: 'Winner: ';
-    color: var(--color-text-muted);
-    font-weight: 400;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
-  .td-prize::before {
-    content: 'Prize: ';
-    color: var(--color-text-muted);
-    font-weight: 400;
-  }
-
-  .td-status::before {
-    content: 'Status: ';
-    color: var(--color-text-muted);
-    font-weight: 400;
-    text-transform: none;
-  }
-
-  .td-status {
-    text-align: left;
-  }
-
   .lottery-page .step-number {
     font-size: 62px;
   }
+}
+
+@media (max-width: 540px) {
+  /* Use flex-start with gap for consistent alignment */
+  .table-header,
+  .table-row {
+    justify-content: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  /* Smaller font sizes */
+  .table-header {
+    font-size: 0.6rem;
+  }
+
+  .td-day,
+  .td-winner,
+  .td-prize {
+    font-size: 0.7rem;
+  }
+
+  .td-status {
+    font-size: 0.6rem;
+  }
+
+  .you-badge {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  /* Fixed column widths for alignment */
+  .th-day, .td-day { flex: 0 0 28px; }
+  .th-winner, .td-winner { flex: 1; }
+  .th-prize, .td-prize { flex: 0 0 85px; text-align: right; }
+  .th-status, .td-status { flex: 0 0 65px; text-align: right; }
 }

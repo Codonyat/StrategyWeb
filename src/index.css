@@ -288,3 +288,9 @@ sup {
     padding: var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   }
 }
+
+@media (max-width: 480px) {
+  .page-header-section {
+    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
+  }
+}

@@ -395,7 +395,6 @@
   gap: var(--spacing-xs);
   max-height: 500px;
   overflow-y: auto;
-  padding-right: var(--spacing-xs);
   position: relative;
   mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
@@ -852,17 +851,8 @@
   .desktop-only {
     display: none;
   }
-}
-/* Mobile layout fixes - Add to end of Landing.css */
 
-@media (max-width: 480px) {
-  /* Consistent 16px horizontal padding on very small screens */
-  .landing-page {
-    width: 100%;
-    overflow-x: hidden;
-  }
-
-
+  /* 16px horizontal padding at 768px */
   .explainer-section {
     padding: 0 var(--spacing-sm);
   }
@@ -873,6 +863,35 @@
 
   .deep-links {
     padding: 0 var(--spacing-sm) var(--spacing-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Reduce gaps inside hero section */
+  .hero-content-grid {
+    gap: var(--spacing-lg);
+  }
+
+  .hero-left {
+    gap: var(--spacing-md);
+  }
+
+  .hero-right {
+    gap: var(--spacing-sm);
+  }
+
+  /* Tighter card padding inside sections */
+  .explainer-content {
+    padding: 0;
+  }
+
+  .balance-strip {
+    padding: var(--spacing-sm);
   }
 
   /* Transaction row - show compact address on small screens */
@@ -1060,10 +1079,6 @@
   right: 8px;
   margin-bottom: 0;
   z-index: 1;
-}
-
-.transactions-wrapper .transactions-list {
-  padding-right: calc(var(--spacing-xs) + 4px);
 }
 
 /* Add top padding to transactions-list for LIVE indicator space */

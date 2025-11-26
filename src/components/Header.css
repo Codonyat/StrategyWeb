@@ -480,7 +480,7 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 545px) {
   /* Hide status chips in header, show in mobile menu */
   .status-chips {
     display: none !important;

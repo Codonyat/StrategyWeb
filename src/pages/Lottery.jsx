@@ -10,6 +10,18 @@ import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Lottery.css';
 
+// Helper to truncate address for desktop
+const truncateAddress = (addr) => {
+  if (!addr) return '0x0000...0000';
+  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+};
+
+// Compact address for mobile (shorter)
+const compactAddress = (addr) => {
+  if (!addr) return '0x00..00';
+  return `${addr.slice(0, 4)}..${addr.slice(-2)}`;
+};
+
 export default function Lottery() {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -192,7 +204,9 @@ export default function Lottery() {
                         rel="noopener noreferrer"
                         className="winner-link"
                       >
-                        {entry.winner.slice(0, 6)}...{entry.winner.slice(-4)}
+                        <span className="winner-address-full">{entry.winner}</span>
+                        <span className="winner-address-medium">{truncateAddress(entry.winner)}</span>
+                        <span className="winner-address-compact">{compactAddress(entry.winner)}</span>
                       </a>
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
