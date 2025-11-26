@@ -202,59 +202,37 @@ export default function Landing() {
                   <span className="tx-type">No recent transactions</span>
                 </div>
               ) : (
-                (() => {
-                  // Expand transactions to include fee entries for mints/burns
-                  const expandedTransactions = [];
-                  transactions.forEach(tx => {
-                    // Add the main transaction
-                    expandedTransactions.push(tx);
+                transactions.slice(0, 7).map((tx, index) => {
+                  const isFaded = index >= 4;
+                  const isDesktopOnly = index >= 5;
+                  const type = tx.type.toLowerCase();
+                  // Map transaction types for display
+                  const displayType = type === 'redeem' ? 'burn' :
+                                     type === 'transfer' ? 'fee' : type;
+                  const formattedAmount = formatEther(BigInt(tx.stratAmount));
+                  const sign = type === 'mint' ? '+' :
+                              type === 'transfer' ? '' : '-';
 
-                    // Add fee transaction if it has a fee and is a mint (burns already have fee tx from subgraph)
-                    const type = tx.type.toLowerCase();
-                    if (type === 'mint' && tx.fee && BigInt(tx.fee) > 0) {
-                      // Create a synthetic fee transaction
-                      expandedTransactions.push({
-                        ...tx,
-                        id: `${tx.id}-fee`,
-                        type: 'TRANSFER',
-                        stratAmount: tx.fee, // Fee amount in MONSTR
-                        isSyntheticFee: true,
-                      });
-                    }
-                  });
-
-                  return expandedTransactions.slice(0, 7).map((tx, index) => {
-                    const isFaded = index >= 4;
-                    const isDesktopOnly = index >= 5;
-                    const type = tx.type.toLowerCase();
-                    // Map transaction types for display
-                    const displayType = type === 'redeem' ? 'burn' :
-                                       type === 'transfer' ? 'fee' : type;
-                    const formattedAmount = formatEther(BigInt(tx.stratAmount));
-                    const sign = type === 'mint' ? '+' :
-                                type === 'transfer' ? '' : '-';
-
-                    return (
-                      <div
-                        key={tx.id}
-                        className={`transaction-row ${displayType} ${isFaded ? 'fade' : ''} ${isDesktopOnly ? 'desktop-only' : ''} ${tx.isNew ? 'new' : ''}`}
+                  return (
+                    <div
+                      key={tx.id}
+                      className={`transaction-row ${displayType} ${isFaded ? 'fade' : ''} ${isDesktopOnly ? 'desktop-only' : ''} ${tx.isNew ? 'new' : ''}`}
+                    >
+                      <span className="tx-indicator"></span>
+                      <span className="tx-type">{displayType.toUpperCase()}</span>
+                      <a
+                        href={`${CONTRACT_CONFIG.explorerUrl}/address/${tx.user}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tx-address"
                       >
-                        <span className="tx-indicator"></span>
-                        <span className="tx-type">{displayType.toUpperCase()}</span>
-                        <a
-                          href={`${CONTRACT_CONFIG.explorerUrl}/address/${tx.user}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="tx-address"
-                        >
-                          {truncateAddress(tx.user)}
-                        </a>
-                        <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
-                        <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
-                      </div>
-                    );
-                  });
-                })()
+                        {truncateAddress(tx.user)}
+                      </a>
+                      <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
+                      <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
+                    </div>
+                  );
+                })
               )}
               </div>
             </div>
