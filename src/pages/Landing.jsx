@@ -68,6 +68,12 @@ export default function Landing() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  // Compact address for mobile (0x + first 2 + last 2 hex chars)
+  const compactAddress = (address) => {
+    if (!address) return '0x00..00';
+    return `${address.slice(0, 4)}..${address.slice(-2)}`;
+  };
+
   const handleCoinClick = () => {
     setShowStrategy(!showStrategy);
   };
@@ -226,7 +232,8 @@ export default function Landing() {
                         rel="noopener noreferrer"
                         className="tx-address"
                       >
-                        {truncateAddress(tx.user)}
+                        <span className="tx-address-full">{truncateAddress(tx.user)}</span>
+                        <span className="tx-address-compact">{compactAddress(tx.user)}</span>
                       </a>
                       <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
                       <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
