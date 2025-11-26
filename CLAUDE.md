@@ -5,6 +5,7 @@
 - Use relative paths for file operations (e.g., `src/config/abi.js`)
 - Read queries: Use internal RPC from `.env` (work without wallet)
 - Write transactions: Use wallet's RPC (requires connection)
+- **Number formatting**: Use 3 significant digits by default via `<DisplayFormattedNumber num={value} significant={3} />`
 
 ## Contract Mechanics
 
@@ -36,7 +37,23 @@
 - `src/config/abi.js` - Contract ABI
 - `src/config/contract.js` - Chain-indexed config (network, tokens, branding, colors)
 - `src/config/contract-constants.json` - Build-time constants (deploymentTime, MINTING_PERIOD)
+- `api/` - Vercel serverless functions (production)
 - `.env` - Runtime config
+
+### API Routes / Serverless Functions
+**Development** (`npm run dev`): Vite proxies in `vite.config.js` handle `/api/*` routes, forwarding requests to external services with server-side env vars.
+
+**Production** (Vercel): Serverless functions in `api/` folder handle the same routes.
+
+**Pattern**: When adding a new API route:
+1. Create serverless function in `api/{route}.js`
+2. Add corresponding Vite proxy in `vite.config.js` under `server.proxy`
+3. Hook/component fetches from `/api/{route}` - works in both environments
+
+**Current routes:**
+- `/api/rpc` → Alchemy RPC (uses `RPC_URL`)
+- `/api/subgraph` → Goldsky GraphQL (uses `GOLDSKY_SUBGRAPH_URL`, `GOLDSKY_API_TOKEN`)
+- `/api/mon-price` → Alchemy Price API (extracts key from `RPC_URL`)
 
 ### Contract Constants
 **CRITICAL**: `deploymentTime` and `MINTING_PERIOD` are fetched at build time and saved to `contract-constants.json`. Never refetch at runtime.

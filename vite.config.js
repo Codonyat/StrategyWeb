@@ -42,6 +42,24 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
+        // Proxy /api/mon-price to Alchemy Price API in development
+        '/api/mon-price': {
+          target: 'https://api.g.alchemy.com',
+          changeOrigin: true,
+          rewrite: (path) => '/prices/v1/tokens/by-symbol?symbols=MON',
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              // Extract API key from RPC_URL
+              const rpcUrl = env.RPC_URL || '';
+              const match = rpcUrl.match(/\/v2\/([a-zA-Z0-9_-]+)$/);
+              const apiKey = match ? match[1] : '';
+              if (apiKey) {
+                proxyReq.setHeader('Authorization', `Bearer ${apiKey}`);
+              }
+              proxyReq.setHeader('Accept', 'application/json');
+            });
+          },
+        },
       },
     },
   }

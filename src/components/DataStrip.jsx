@@ -3,6 +3,7 @@ import { formatEther } from 'viem';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { useSharedPrizeData } from '../hooks/useSharedPrizeData';
+import { useMonPrice } from '../hooks/useMonPrice';
 import contractConstants from '../config/contract-constants.json';
 import './DataStrip.css';
 
@@ -21,6 +22,9 @@ export function DataStrip() {
 
   // Use shared prize data for lottery winner
   const { lotteryWinners, lotteryAmounts } = useSharedPrizeData();
+
+  // Get MON price from Alchemy
+  const { price: monPrice } = useMonPrice();
 
   // Memoized calculations
   const { timeUntilDraw, lastLotteryWinner } = useMemo(() => {
@@ -110,7 +114,9 @@ export function DataStrip() {
 
         <span className="ticker-item">
           <span className="ticker-label">MON price</span>{' '}
-          <span className="ticker-value">N/A</span>
+          <span className="ticker-value">
+            {monPrice !== null ? <><DisplayFormattedNumber num={monPrice} significant={3} /> USD</> : 'N/A'}
+          </span>
         </span>
 
       </div>
