@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
+import { EnsAddress } from '../components/EnsAddress';
 import { useLotteryData } from '../hooks/useLotteryData';
 import { useLotteryPrizeHistory } from '../hooks/useLotteryPrizeHistory';
 import { useLotteryCountdown } from '../hooks/useLotteryCountdown';
@@ -204,9 +205,9 @@ export default function Lottery() {
                         rel="noopener noreferrer"
                         className="winner-link"
                       >
-                        <span className="winner-address-full">{entry.winner}</span>
-                        <span className="winner-address-medium">{truncateAddress(entry.winner)}</span>
-                        <span className="winner-address-compact">{compactAddress(entry.winner)}</span>
+                        <EnsAddress address={entry.winner} format="full" className="winner-address-full" />
+                        <EnsAddress address={entry.winner} format="medium" className="winner-address-medium" />
+                        <EnsAddress address={entry.winner} format="compact" className="winner-address-compact" />
                       </a>
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>

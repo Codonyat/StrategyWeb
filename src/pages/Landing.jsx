@@ -6,6 +6,7 @@ import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
 import { useRealtimeTransactions } from '../hooks/useRealtimeTransactions';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
+import { EnsAddress } from '../components/EnsAddress';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import './Landing.css';
 
@@ -232,8 +233,8 @@ export default function Landing() {
                         rel="noopener noreferrer"
                         className="tx-address"
                       >
-                        <span className="tx-address-full">{truncateAddress(tx.user)}</span>
-                        <span className="tx-address-compact">{compactAddress(tx.user)}</span>
+                        <EnsAddress address={tx.user} format="medium" className="tx-address-full" />
+                        <EnsAddress address={tx.user} format="compact" className="tx-address-compact" />
                       </a>
                       <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
                       <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>

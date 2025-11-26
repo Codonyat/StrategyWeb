@@ -3,11 +3,12 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagm
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { StatusChip } from '../components/StatusChip';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
+import { EnsAddress } from '../components/EnsAddress';
 import { BidModal } from '../components/BidModal';
 import { useAuctionData } from '../hooks/useAuctionData';
 import { useAuctionCountdown } from '../hooks/useAuctionCountdown';
 import { useProtocolStats } from '../hooks/useProtocolStats';
-import { CONTRACT_ADDRESS } from '../config/contract';
+import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Auctions.css';
 
@@ -281,7 +282,16 @@ export default function Auctions() {
                       <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MON
                     </span>
                     <span className="td-winner">
-                      {entry.winner.slice(0, 6)}...{entry.winner.slice(-4)}
+                      <a
+                        href={`${CONTRACT_CONFIG.explorerUrl}/address/${entry.winner}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="winner-link"
+                      >
+                        <EnsAddress address={entry.winner} format="full" className="winner-address-full" />
+                        <EnsAddress address={entry.winner} format="medium" className="winner-address-medium" />
+                        <EnsAddress address={entry.winner} format="compact" className="winner-address-compact" />
+                      </a>
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
                     <span className={`td-status status-${entry.status}`}>
