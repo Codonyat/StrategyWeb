@@ -277,4 +277,13 @@
   .nav-mobile-stats .capsule-right {
     border-radius: 0 9999px 9999px 0 !important;
   }
+
+  /* During minting period: 30% left, 70% right */
+  .nav-mobile-stats .status-capsule.fixed-width .capsule-left {
+    flex: 0 0 35%;
+  }
+
+  .nav-mobile-stats .status-capsule.fixed-width .capsule-right {
+    flex: 0 0 65%;
+  }
 }
