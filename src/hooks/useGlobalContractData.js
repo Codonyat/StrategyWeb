@@ -150,7 +150,10 @@ export function useGlobalContractData() {
     const currentDayNumber = currentDay ? Number(currentDay) : 0;
     // Calculate which day is the last day of minting period
     const mintingEndDay = Math.floor(MINTING_PERIOD / PSEUDO_DAY_SECONDS);
-    const isLastMintingDay = isMintingPeriod && currentDayNumber === mintingEndDay;
+    // On the minting end day, show preview UI for entire day (even after minting time passes)
+    const isLastMintingDay = currentDayNumber === mintingEndDay;
+    // Auctions can only happen starting the day AFTER minting ends
+    const isAuctionActive = currentDayNumber > mintingEndDay;
     const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
     const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
 
@@ -169,6 +172,7 @@ export function useGlobalContractData() {
       isMintingPeriod,
       isAtMaxSupply,
       isLastMintingDay,
+      isAuctionActive,
       currentDayNumber,
       feesPoolAmount,
       lotteryPoolAmount,

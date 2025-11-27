@@ -28,6 +28,7 @@ export default function Auctions() {
     estimatedAuctionPool,
     isMintingPeriod,
     isLastMintingDay,
+    isAuctionActive,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -95,7 +96,8 @@ export default function Auctions() {
       </section>
 
       {/* Band 2: Two columns - Your position + Today's auction */}
-      {isMintingPeriod ? (
+      {/* Show preview UI during minting period AND on the last minting day (entire day) */}
+      {!isAuctionActive ? (
         <section className="auction-cards-section">
           <div className="page-header-content">
             <div className="hero-content-grid">
