@@ -18,6 +18,7 @@ export function useAuctionData() {
     auctionDay,
     feesPoolAmount,
     isMintingPeriod,
+    isLastMintingDay,
     isLoading: globalLoading,
     hasError: globalError,
   } = useGlobalContractData();
@@ -87,6 +88,7 @@ export function useAuctionData() {
     auctionHistory: calculations.auctionHistory,
     estimatedAuctionPool: calculations.estimatedAuctionPool,
     isMintingPeriod,
+    isLastMintingDay,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,

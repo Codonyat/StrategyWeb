@@ -5,6 +5,7 @@ import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { useSharedPrizeData } from '../hooks/useSharedPrizeData';
 import { useMonPrice } from '../hooks/useMonPrice';
 import contractConstants from '../config/contract-constants.json';
+import { PSEUDO_DAY_SECONDS } from '../config/contract';
 import './DataStrip.css';
 
 /**
@@ -32,10 +33,9 @@ export function DataStrip() {
     const calculateTimeUntilDraw = () => {
       const now = Math.floor(Date.now() / 1000);
       const deploymentTime = Number(contractConstants.deploymentTime);
-      const pseudoDayLength = 90000; // 25 hours
 
       const timeSinceDeployment = now - deploymentTime;
-      const timeUntilNextDraw = pseudoDayLength - (timeSinceDeployment % pseudoDayLength);
+      const timeUntilNextDraw = PSEUDO_DAY_SECONDS - (timeSinceDeployment % PSEUDO_DAY_SECONDS);
 
       const hours = Math.floor(timeUntilNextDraw / 3600);
       const minutes = Math.floor((timeUntilNextDraw % 3600) / 60);

@@ -366,6 +366,20 @@
   border-color: var(--color-primary);
 }
 
+.action-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-btn.disabled:hover,
+.action-btn.disabled:hover::before {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--color-border-light);
+  opacity: 0;
+}
+
 .action-line {
   font-size: 0.875rem;
   font-weight: 600;
@@ -378,6 +392,15 @@
   color: var(--color-text-secondary);
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+.action-line-single {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  position: relative;
+  z-index: 1;
+  line-height: 2.4;
 }
 
 /* Recent Transactions */

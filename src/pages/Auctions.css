@@ -594,7 +594,7 @@
 
 .empty-history-row {
   display: grid;
-  grid-template-columns: 80px 150px 150px 1fr 120px;
+  grid-template-columns: 80px 1fr 150px 150px 120px;
   gap: var(--spacing-md);
   padding: var(--spacing-lg) var(--spacing-sm);
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
@@ -698,11 +698,11 @@
 @media (max-width: 1024px) {
   .table-header,
   .table-row {
-    grid-template-columns: 70px 120px 120px 1fr 100px;
+    grid-template-columns: 70px 1fr 120px 120px 100px;
   }
 
   .empty-history-row {
-    grid-template-columns: 70px 120px 120px 1fr 100px;
+    grid-template-columns: 70px 1fr 120px 120px 100px;
   }
 }
 

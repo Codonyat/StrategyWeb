@@ -27,6 +27,7 @@ export default function Auctions() {
     auctionHistory,
     estimatedAuctionPool,
     isMintingPeriod,
+    isLastMintingDay,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -111,25 +112,36 @@ export default function Auctions() {
             </div>
           </div>
 
-          {/* Right: Estimated auction lot card */}
-          <div className="today-auction-card">
-            <h2 className="card-section-title">First auction preview</h2>
+          {/* Right: Estimated auction lot card - only shown on last minting day */}
+          {isLastMintingDay ? (
+            <div className="today-auction-card">
+              <h2 className="card-section-title">First auction preview</h2>
 
-            <div className="today-pool-display">
-              <span className="pool-label">Estimated lot</span>
-              <span className="pool-amount">
-                <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
-              </span>
-            </div>
+              <div className="today-pool-display">
+                <span className="pool-label">Estimated lot</span>
+                <span className="pool-amount">
+                  <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                </span>
+              </div>
 
-            <div className="countdown-display">
-              <span className="countdown-label">Auction starts in</span>
-              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
-              <div className="countdown-progress">
-                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+              <div className="countdown-display">
+                <span className="countdown-label">Auction starts in</span>
+                <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+                <div className="countdown-progress">
+                  <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="today-auction-card">
+              <h2 className="card-section-title">Coming soon</h2>
+              <div className="minting-info-content">
+                <p className="minting-info-text">
+                  The first auction preview will be available on the last day of the minting period.
+                </p>
+              </div>
+            </div>
+          )}
           </div>
         </div>
         </section>

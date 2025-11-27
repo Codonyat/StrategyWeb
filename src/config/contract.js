@@ -97,3 +97,8 @@ export const CONTRACT_CONFIG = {
 
 // Export contract address separately for convenience
 export const CONTRACT_ADDRESS = CONTRACT_CONFIG.address;
+
+// Day duration based on network
+// Testnet (10143): 15 minutes = 900 seconds
+// Mainnet (143): 25 hours = 90000 seconds
+export const PSEUDO_DAY_SECONDS = chainId === 10143 ? 900 : 90000;

@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
 import { useRealtimeTransactions } from '../hooks/useRealtimeTransactions';
+import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { EnsAddress } from '../components/EnsAddress';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
@@ -51,6 +52,11 @@ export default function Landing() {
 
   // Fetch recent transactions via WebSocket (real-time) or fallback to loading state
   const { transactions, loading: txLoading, connected } = useRealtimeTransactions(10);
+
+  // Check if max supply has been reached or minting is disabled
+  const { isAtMaxSupply, isMintingPeriod, maxSupplyValue } = useGlobalContractData();
+  // Disable minting if at max supply OR if minting period is over and max supply not yet set
+  const isMintingDisabled = isAtMaxSupply || (!isMintingPeriod && maxSupplyValue === 0);
 
   // Force re-render every minute to update "time ago" timestamps
   const [, setTick] = useState(0);
@@ -180,15 +186,24 @@ export default function Landing() {
               </div>
 
               <div className="coin-actions">
-                <button
-                  className="action-btn deposit-btn"
-                  onMouseEnter={handleDepositHover}
-                  onMouseLeave={handleButtonLeave}
-                  onClick={() => setIsMintModalOpen(true)}
-                >
-                  <span className="action-line">Deposit MON</span>
-                  <span className="action-line">Mint MONSTR</span>
-                </button>
+                {isMintingDisabled ? (
+                  <button
+                    className="action-btn deposit-btn disabled"
+                    disabled
+                  >
+                    <span className="action-line-single">Supply capped</span>
+                  </button>
+                ) : (
+                  <button
+                    className="action-btn deposit-btn"
+                    onMouseEnter={handleDepositHover}
+                    onMouseLeave={handleButtonLeave}
+                    onClick={() => setIsMintModalOpen(true)}
+                  >
+                    <span className="action-line">Deposit MON</span>
+                    <span className="action-line">Mint MONSTR</span>
+                  </button>
+                )}
                 <button
                   className="action-btn withdraw-btn"
                   onMouseEnter={handleWithdrawHover}

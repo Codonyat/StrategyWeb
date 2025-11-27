@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import contractConstants from '../config/contract-constants.json';
+import { PSEUDO_DAY_SECONDS } from '../config/contract';
 import { useProtocolStats } from './useProtocolStats';
-
-const PSEUDO_DAY_SECONDS = 90000; // 25 hours
 const LOTTERY_GAP_SECONDS = 60; // 1 minute gap
 
 export function useAuctionCountdown() {

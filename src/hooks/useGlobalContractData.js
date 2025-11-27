@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useReadContract, useBalance } from 'wagmi';
 import { formatEther, parseAbi } from 'viem';
-import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
+import { CONTRACT_CONFIG, CONTRACT_ADDRESS, PSEUDO_DAY_SECONDS } from '../config/contract';
 import contractConstants from '../config/contract-constants.json';
 
 // FEES_POOL synthetic address where fees accumulate
@@ -18,6 +18,7 @@ const MINTING_END_TIME = DEPLOYMENT_TIME + MINTING_PERIOD;
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
   'function totalSupply() view returns (uint256)',
+  'function maxSupplyEver() view returns (uint256)',
   'function getCurrentDay() view returns (uint256)',
   'function currentLotteryPool() view returns (uint256)',
   'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 monstrAmount, uint8 auctionDay)',
@@ -45,6 +46,20 @@ export function useGlobalContractData() {
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'totalSupply',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Get max supply cap
+  const { data: maxSupply, error: maxSupplyError, isLoading: maxSupplyLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'maxSupplyEver',
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
@@ -127,8 +142,15 @@ export function useGlobalContractData() {
   const calculations = useMemo(() => {
     const tvl = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
     const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
+    const maxSupplyValue = maxSupply ? parseFloat(formatEther(maxSupply)) : 0;
     const backingRatio = supply > 0 ? tvl / supply : 0;
     const isMintingPeriod = currentTime < MINTING_END_TIME;
+    // Check if supply has reached max (with small tolerance for rounding)
+    const isAtMaxSupply = maxSupplyValue > 0 && supply >= maxSupplyValue - 0.000001;
+    const currentDayNumber = currentDay ? Number(currentDay) : 0;
+    // Calculate which day is the last day of minting period
+    const mintingEndDay = Math.floor(MINTING_PERIOD / PSEUDO_DAY_SECONDS);
+    const isLastMintingDay = isMintingPeriod && currentDayNumber === mintingEndDay;
     const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
     const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
 
@@ -142,9 +164,12 @@ export function useGlobalContractData() {
     return {
       tvl,
       supply,
+      maxSupplyValue,
       backingRatio,
       isMintingPeriod,
-      currentDayNumber: currentDay ? Number(currentDay) : 0,
+      isAtMaxSupply,
+      isLastMintingDay,
+      currentDayNumber,
       feesPoolAmount,
       lotteryPoolAmount,
       auctionPool,
@@ -153,11 +178,12 @@ export function useGlobalContractData() {
       currentBidder,
       auctionDay,
     };
-  }, [monBalance, totalSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
+  }, [monBalance, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
 
   // Aggregate errors and loading states
   const hasError =
     totalSupplyError ||
+    maxSupplyError ||
     balanceError ||
     currentDayError ||
     feesPoolError ||
@@ -166,6 +192,7 @@ export function useGlobalContractData() {
 
   const isLoading =
     totalSupplyLoading ||
+    maxSupplyLoading ||
     balanceLoading ||
     currentDayLoading ||
     feesPoolLoading ||
@@ -179,6 +206,7 @@ export function useGlobalContractData() {
       chainId: CONTRACT_CONFIG.chainId,
       errors: {
         totalSupply: totalSupplyError?.message,
+        maxSupply: maxSupplyError?.message,
         balance: balanceError?.message,
         currentDay: currentDayError?.message,
         feesPool: feesPoolError?.message,
@@ -191,6 +219,7 @@ export function useGlobalContractData() {
   return {
     // Raw data
     totalSupply,
+    maxSupply,
     monBalance,
     currentDay,
     feesPoolBalance,
@@ -205,6 +234,7 @@ export function useGlobalContractData() {
     hasError,
     error: hasError ? (
       totalSupplyError ||
+      maxSupplyError ||
       balanceError ||
       currentDayError ||
       feesPoolError ||
