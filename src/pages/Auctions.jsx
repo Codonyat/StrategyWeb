@@ -186,14 +186,6 @@ export default function Auctions() {
                       <DisplayFormattedNumber num={auctionPool} significant={3} /> MONSTR
                     </span>
                   </div>
-                  {hasUnclaimedPrizes && (
-                    <div className="info-row highlight-row">
-                      <span className="info-label">Unclaimed prize</span>
-                      <span className="info-value highlight-value">
-                        <DisplayFormattedNumber num={userClaimable} significant={3} /> MONSTR
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {isUserLeading && (
@@ -203,25 +195,11 @@ export default function Auctions() {
                   </div>
                 )}
 
-                {hasUnclaimedPrizes ? (
-                  <button
-                    className="claim-btn"
-                    onClick={handleClaim}
-                    disabled={isClaimConfirming || claimStatus === 'claiming'}
-                  >
-                    {isClaimConfirming || claimStatus === 'claiming'
-                      ? 'Claiming...'
-                      : claimStatus === 'success'
-                      ? '✓ Claimed!'
-                      : claimStatus === 'error'
-                      ? 'Error - Try again'
-                      : 'Claim prize'}
-                  </button>
-                ) : !isUserLeading ? (
+                {!isUserLeading && (
                   <button className="bid-btn" onClick={handlePlaceBid}>
                     Place bid
                   </button>
-                ) : null}
+                )}
               </>
             ) : (
               <div className="connect-prompt">
@@ -327,7 +305,25 @@ export default function Auctions() {
                       <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MON
                     </span>
                     <span className={`td-status status-${entry.status}`}>
-                      {entry.status === 'unclaimed' ? 'Unclaimed' : 'Claimed'}
+                      {entry.status === 'claimed' ? (
+                        '✓ Claimed'
+                      ) : entry.isUserWinner ? (
+                        <button
+                          className="claim-btn-inline"
+                          onClick={handleClaim}
+                          disabled={isClaimConfirming || claimStatus === 'claiming'}
+                        >
+                          {isClaimConfirming || claimStatus === 'claiming'
+                            ? 'Claiming...'
+                            : claimStatus === 'success'
+                            ? '✓ Claimed!'
+                            : claimStatus === 'error'
+                            ? 'Try again'
+                            : 'Claim'}
+                        </button>
+                      ) : (
+                        'Unclaimed'
+                      )}
                     </span>
                   </div>
                 ))

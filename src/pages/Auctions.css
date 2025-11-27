@@ -312,7 +312,6 @@
 /* Buttons */
 .claim-btn,
 .bid-btn {
-  width: 100%;
   padding: 1rem 2rem;
   background: var(--color-background-card);
   border: 2px solid var(--color-border-light);
@@ -323,6 +322,14 @@
   color: var(--color-text-primary);
   position: relative;
   overflow: hidden;
+}
+
+.claim-btn {
+  width: 100%;
+}
+
+.bid-btn {
+  width: auto;
 }
 
 .claim-btn::before,
@@ -687,6 +694,57 @@
   line-height: 1.5;
   opacity: 0.85;
   margin: 0;
+}
+
+/* Inline Claim Button */
+.claim-btn-inline {
+  padding: 0.375rem 0.875rem;
+  background: var(--color-background-card);
+  border: 1.5px solid var(--color-border-light);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--color-text-primary);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.claim-btn-inline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.claim-btn-inline:hover:not(:disabled)::before {
+  opacity: 0.15;
+}
+
+.claim-btn-inline:hover:not(:disabled) {
+  border-color: var(--color-success);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 255, 136, 0.3);
+}
+
+.claim-btn-inline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.claim-btn-inline > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ========================================

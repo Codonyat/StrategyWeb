@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { parseEther, formatEther, parseAbi, maxUint256 } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
@@ -19,10 +19,21 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
   const [error, setError] = useState('');
   const [selectedPercentage, setSelectedPercentage] = useState(null);
   const [needsApproval, setNeedsApproval] = useState(false);
+  const [useNativeMon, setUseNativeMon] = useState(true); // Default to native MON
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { bid, isPending: isBidPending, isConfirming: isBidConfirming, isSuccess: isBidSuccess, error: bidError } = useStrategyContract();
+
+  // Get native MON balance
+  const { data: monBalance, refetch: refetchMonBalance } = useBalance({
+    address,
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!address,
+      refetchInterval: 10000,
+    },
+  });
 
   // Get WMON address from contract
   const { data: wmonAddress } = useReadContract({
@@ -71,9 +82,9 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     hash: approvalHash,
   });
 
-  // Check if approval is needed
+  // Check if approval is needed (only for WMON)
   useEffect(() => {
-    if (!amount || !wmonAllowance) {
+    if (useNativeMon || !amount || !wmonAllowance) {
       setNeedsApproval(false);
       return;
     }
@@ -84,15 +95,16 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     } catch {
       setNeedsApproval(false);
     }
-  }, [amount, wmonAllowance]);
+  }, [amount, wmonAllowance, useNativeMon]);
 
   // Refetch balances and allowances when modal opens or approval succeeds
   useEffect(() => {
     if ((isOpen || isApprovalSuccess) && address) {
       refetchBalance();
       refetchAllowance();
+      refetchMonBalance();
     }
-  }, [isOpen, isApprovalSuccess, address, refetchBalance, refetchAllowance]);
+  }, [isOpen, isApprovalSuccess, address, refetchBalance, refetchAllowance, refetchMonBalance]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -168,27 +180,30 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     }
 
     // Validate minimum bid
+    const tokenSymbol = useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol;
     if (parseFloat(amount) < minBid) {
-      setError(`Bid must be at least ${minBid.toFixed(6)} ${CONTRACT_CONFIG.wrappedCoin.symbol}`);
+      setError(`Bid must be at least ${minBid.toFixed(6)} ${tokenSymbol}`);
       return;
     }
 
     // Validate balance
-    if (wmonBalance && parseEther(amount) > wmonBalance) {
-      setError(`Insufficient ${CONTRACT_CONFIG.wrappedCoin.symbol} balance`);
+    const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
+    if (currentBalance && parseEther(amount) > currentBalance) {
+      setError(`Insufficient ${tokenSymbol} balance`);
       return;
     }
 
     try {
-      await bid(amount);
+      await bid(amount, useNativeMon);
     } catch (err) {
       setError(err.message || 'Failed to place bid');
     }
   };
 
   const handlePercentageClick = (percentage) => {
-    if (wmonBalance !== undefined && wmonBalance !== null) {
-      const balance = parseFloat(formatEther(wmonBalance));
+    const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
+    if (currentBalance !== undefined && currentBalance !== null) {
+      const balance = parseFloat(formatEther(currentBalance));
       const newAmount = (balance * percentage).toFixed(6);
       setAmount(newAmount);
       setSelectedPercentage(percentage * 100);
@@ -210,6 +225,36 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
+          {/* Token Toggle */}
+          <div className="token-toggle">
+            <button
+              type="button"
+              className={`toggle-btn ${useNativeMon ? 'active' : ''}`}
+              onClick={() => {
+                setUseNativeMon(true);
+                setAmount('');
+                setSelectedPercentage(null);
+                setError('');
+              }}
+              disabled={isLoading}
+            >
+              {CONTRACT_CONFIG.nativeCoin.symbol}
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${!useNativeMon ? 'active' : ''}`}
+              onClick={() => {
+                setUseNativeMon(false);
+                setAmount('');
+                setSelectedPercentage(null);
+                setError('');
+              }}
+              disabled={isLoading}
+            >
+              {CONTRACT_CONFIG.wrappedCoin.symbol}
+            </button>
+          </div>
+
           <div className="form-group">
             <label htmlFor="amount">Bid Amount</label>
             <div className="input-wrapper">
@@ -228,53 +273,73 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
                 disabled={isLoading}
                 className={error ? 'error' : ''}
               />
-              <span className="token-symbol">{CONTRACT_CONFIG.wrappedCoin.symbol}</span>
+              <span className="token-symbol">{useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol}</span>
             </div>
-            {isBalanceLoading ? (
-              <div className="balance-info disabled">
-                Balance: <strong>Loading...</strong>
-              </div>
-            ) : isBalanceError ? (
-              <div className="balance-info disabled">
-                Balance: <strong>Error loading balance</strong>
-              </div>
-            ) : wmonBalance !== undefined && wmonBalance !== null ? (
-              <div className="balance-row">
-                <div className="balance-info-text">
-                  Balance: <strong><DisplayFormattedNumber num={formatEther(wmonBalance)} significant={6} /> {CONTRACT_CONFIG.wrappedCoin.symbol}</strong>
-                </div>
-                <div className="balance-shortcuts">
-                  <button
-                    type="button"
-                    className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(0.25)}
-                    disabled={isLoading || parseFloat(formatEther(wmonBalance)) === 0}
-                  >
-                    25%
-                  </button>
-                  <button
-                    type="button"
-                    className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(0.5)}
-                    disabled={isLoading || parseFloat(formatEther(wmonBalance)) === 0}
-                  >
-                    50%
-                  </button>
-                  <button
-                    type="button"
-                    className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(1.0)}
-                    disabled={isLoading || parseFloat(formatEther(wmonBalance)) === 0}
-                  >
-                    MAX
-                  </button>
-                </div>
-              </div>
-            ) : address ? (
-              <div className="balance-info disabled">
-                Balance: <strong>0 {CONTRACT_CONFIG.wrappedCoin.symbol}</strong>
-              </div>
-            ) : null}
+            {(() => {
+              const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
+              const tokenSymbol = useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol;
+              const balanceLoading = useNativeMon ? false : isBalanceLoading;
+              const balanceError = useNativeMon ? false : isBalanceError;
+
+              if (balanceLoading) {
+                return (
+                  <div className="balance-info disabled">
+                    Balance: <strong>Loading...</strong>
+                  </div>
+                );
+              }
+              if (balanceError) {
+                return (
+                  <div className="balance-info disabled">
+                    Balance: <strong>Error loading balance</strong>
+                  </div>
+                );
+              }
+              if (currentBalance !== undefined && currentBalance !== null) {
+                const balanceNum = parseFloat(formatEther(currentBalance));
+                return (
+                  <div className="balance-row">
+                    <div className="balance-info-text">
+                      Balance: <strong><DisplayFormattedNumber num={balanceNum} significant={6} /> {tokenSymbol}</strong>
+                    </div>
+                    <div className="balance-shortcuts">
+                      <button
+                        type="button"
+                        className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
+                        onClick={() => handlePercentageClick(0.25)}
+                        disabled={isLoading || balanceNum === 0}
+                      >
+                        25%
+                      </button>
+                      <button
+                        type="button"
+                        className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
+                        onClick={() => handlePercentageClick(0.5)}
+                        disabled={isLoading || balanceNum === 0}
+                      >
+                        50%
+                      </button>
+                      <button
+                        type="button"
+                        className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
+                        onClick={() => handlePercentageClick(1.0)}
+                        disabled={isLoading || balanceNum === 0}
+                      >
+                        MAX
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+              if (address) {
+                return (
+                  <div className="balance-info disabled">
+                    Balance: <strong>0 {tokenSymbol}</strong>
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
 
           <div className="transaction-info">

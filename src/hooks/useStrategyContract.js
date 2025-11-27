@@ -79,15 +79,28 @@ export function useStrategyContract() {
 
   /**
    * Place a bid in the current auction
-   * @param {string} amount - Bid amount in WMON (in ether units)
+   * @param {string} amount - Bid amount (in ether units)
+   * @param {boolean} useNativeMon - If true, bid with native MON instead of WMON
    */
-  const bid = async (amount) => {
+  const bid = async (amount, useNativeMon = false) => {
     if (!address) {
       throw new Error('Wallet not connected');
     }
 
     const bidAmount = parseEther(amount);
 
+    if (useNativeMon) {
+      // Bid with native MON - contract will wrap it
+      return writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_CONFIG.abi,
+        functionName: 'bid',
+        args: [bidAmount],
+        value: bidAmount,
+      });
+    }
+
+    // Bid with WMON (requires prior approval)
     return writeContract({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_CONFIG.abi,
