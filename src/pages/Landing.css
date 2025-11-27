@@ -288,8 +288,22 @@
 
 .coin-actions {
   display: flex;
+  align-items: flex-start;
   gap: var(--spacing-md);
   margin-top: var(--spacing-sm);
+}
+
+.mint-action-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mintable-info {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-align: center;
 }
 
 .action-btn {

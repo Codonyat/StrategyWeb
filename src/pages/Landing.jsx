@@ -54,9 +54,11 @@ export default function Landing() {
   const { transactions, loading: txLoading, connected } = useRealtimeTransactions(10);
 
   // Check if max supply has been reached or minting is disabled
-  const { isAtMaxSupply, isMintingPeriod, maxSupplyValue } = useGlobalContractData();
+  const { isAtMaxSupply, isMintingPeriod, maxSupplyValue, supply } = useGlobalContractData();
   // Disable minting if at max supply OR if minting period is over and max supply not yet set
   const isMintingDisabled = isAtMaxSupply || (!isMintingPeriod && maxSupplyValue === 0);
+  // Calculate remaining mintable MONSTR (only relevant after minting period when supply < max)
+  const remainingMintable = maxSupplyValue > 0 ? maxSupplyValue - supply : 0;
 
   // Force re-render every minute to update "time ago" timestamps
   const [, setTick] = useState(0);
@@ -191,18 +193,25 @@ export default function Landing() {
                     className="action-btn deposit-btn disabled"
                     disabled
                   >
-                    <span className="action-line-single">Supply capped</span>
+                    <span className="action-line-single">Max supply reached</span>
                   </button>
                 ) : (
-                  <button
-                    className="action-btn deposit-btn"
-                    onMouseEnter={handleDepositHover}
-                    onMouseLeave={handleButtonLeave}
-                    onClick={() => setIsMintModalOpen(true)}
-                  >
-                    <span className="action-line">Deposit MON</span>
-                    <span className="action-line">Mint MONSTR</span>
-                  </button>
+                  <div className="mint-action-wrapper">
+                    <button
+                      className="action-btn deposit-btn"
+                      onMouseEnter={handleDepositHover}
+                      onMouseLeave={handleButtonLeave}
+                      onClick={() => setIsMintModalOpen(true)}
+                    >
+                      <span className="action-line">Deposit MON</span>
+                      <span className="action-line">Mint MONSTR</span>
+                    </button>
+                    {!isMintingPeriod && remainingMintable > 0 && (
+                      <span className="mintable-info">
+                        <DisplayFormattedNumber num={remainingMintable} significant={3} /> MONSTR mintable
+                      </span>
+                    )}
+                  </div>
                 )}
                 <button
                   className="action-btn withdraw-btn"
