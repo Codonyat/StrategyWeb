@@ -109,11 +109,12 @@ body {
   overflow-x: hidden;
 }
 
-/* Subscript/Superscript Styling */
+/* Subscript/Superscript Styling - for small number notation like 0.0₄5 */
 sub {
-  font-size: 0.65em;
+  font-size: 0.75em;
   vertical-align: sub;
-  line-height: 0;
+  line-height: 1;
+  margin: 0 -0.05em;
 }
 
 sup {
