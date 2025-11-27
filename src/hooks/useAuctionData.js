@@ -16,6 +16,8 @@ export function useAuctionData() {
     minBid,
     currentBidder,
     auctionDay,
+    feesPoolAmount,
+    isMintingPeriod,
     isLoading: globalLoading,
     hasError: globalError,
   } = useGlobalContractData();
@@ -32,6 +34,10 @@ export function useAuctionData() {
 
   // Memoized calculations
   const calculations = useMemo(() => {
+    // Estimated auction pool is 50% of accumulated fees
+    // This is shown during minting period before actual auctions start
+    const estimatedAuctionPool = feesPoolAmount * 0.5;
+
     // Calculate backing value (what the MONSTR is worth)
     const backingValue = auctionPool * backingRatio;
 
@@ -63,8 +69,9 @@ export function useAuctionData() {
       backingValue,
       isUserLeading,
       auctionHistory,
+      estimatedAuctionPool,
     };
-  }, [auctionPool, backingRatio, address, currentBidder, auctionWinners, auctionAmounts, currentDayNumber]);
+  }, [auctionPool, backingRatio, address, currentBidder, auctionWinners, auctionAmounts, currentDayNumber, feesPoolAmount]);
 
   const hasError = globalError || prizeError;
   const isLoading = globalLoading || prizeLoading;
@@ -78,6 +85,8 @@ export function useAuctionData() {
     backingValue: calculations.backingValue,
     isUserLeading: calculations.isUserLeading,
     auctionHistory: calculations.auctionHistory,
+    estimatedAuctionPool: calculations.estimatedAuctionPool,
+    isMintingPeriod,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,

@@ -19,7 +19,7 @@ export function useLotteryData() {
   const { address } = useAccount();
 
   // Use centralized global data (eliminates duplicate calls)
-  const { isMintingPeriod, feesPoolAmount } = useGlobalContractData();
+  const { feesPoolAmount } = useGlobalContractData();
 
   // Use shared prize data (eliminates duplicate calls)
   const {
@@ -77,9 +77,9 @@ export function useLotteryData() {
   // Memoized calculations
   const calculations = useMemo(() => {
     // Calculate lottery's share of fees pool
-    // During minting period: 100% of fees go to lottery
-    // After minting period: 50% of fees go to lottery (other 50% to auction)
-    const currentPool = isMintingPeriod ? feesPoolAmount : feesPoolAmount * 0.5;
+    // Fees are split 50/50 between lottery and auction at the end of each day
+    // Even during minting period, show 50% since that's what lottery will receive
+    const currentPool = feesPoolAmount * 0.5;
 
     // Extract latestValue from totalHolderBalance struct (excludes contracts)
     const totalWeight = totalHolderBalance && totalHolderBalance[1]
@@ -117,7 +117,7 @@ export function useLotteryData() {
       sharePercent,
       lotteryHistory,
     };
-  }, [isMintingPeriod, feesPoolAmount, totalHolderBalance, userBalance, lotteryWinners, lotteryAmounts, lastLotteryDay, address]);
+  }, [feesPoolAmount, totalHolderBalance, userBalance, lotteryWinners, lotteryAmounts, lastLotteryDay, address]);
 
   const hasError = dayError || holderBalanceError || balanceError || prizeError;
   const isLoading = dayLoading || holderBalanceLoading || balanceLoading || prizeLoading;

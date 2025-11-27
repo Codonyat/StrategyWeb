@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { StatusChip } from '../components/StatusChip';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { EnsAddress } from '../components/EnsAddress';
 import { BidModal } from '../components/BidModal';
 import { useAuctionData } from '../hooks/useAuctionData';
 import { useAuctionCountdown } from '../hooks/useAuctionCountdown';
-import { useProtocolStats } from '../hooks/useProtocolStats';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
 import './Auctions.css';
@@ -18,8 +16,6 @@ export default function Auctions() {
   const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, success, error
   const [showBidModal, setShowBidModal] = useState(false);
 
-  const { isMintingPeriod } = useProtocolStats();
-
   const {
     auctionPool,
     currentBid,
@@ -29,6 +25,8 @@ export default function Auctions() {
     backingValue,
     isUserLeading,
     auctionHistory,
+    estimatedAuctionPool,
+    isMintingPeriod,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -95,22 +93,45 @@ export default function Auctions() {
         </div>
       </section>
 
-      {/* Band 2: Minting period message OR Two columns - Your position + Today's auction */}
+      {/* Band 2: Two columns - Your position + Today's auction */}
       {isMintingPeriod ? (
-        <section className="minting-period-message-section">
+        <section className="auction-cards-section">
           <div className="page-header-content">
-            <div className="minting-period-card">
-              <h2 className="minting-message-title">Auctions begin after the minting period</h2>
-              <p className="minting-message-text">
-                During the initial 3-day minting period, all 1% transfer fees are directed to the lottery pool.
-                Once the minting period ends, daily auctions will commence.
+            <div className="hero-content-grid">
+          {/* Left: Minting period info card */}
+          <div className="your-position-card">
+            <h2 className="card-section-title">Bidding starts soon</h2>
+            <div className="minting-info-content">
+              <p className="minting-info-text">
+                Auctions begin after the minting period ends. Each day, 50% of daily fees will be converted to MONSTR and auctioned to the highest bidder.
               </p>
-              <p className="minting-message-text">
-                Each day, 50% of the previous day's fees are converted to MONSTR and auctioned to the highest bidder.
+              <p className="minting-info-text">
                 Bids are placed in MON or WMON, allowing you to acquire MONSTR below its backing value.
               </p>
             </div>
           </div>
+
+          {/* Right: Estimated auction lot card */}
+          <div className="today-auction-card">
+            <h2 className="card-section-title">First auction preview</h2>
+
+            <div className="today-pool-display">
+              <span className="pool-label">Estimated lot</span>
+              <span className="pool-amount">
+                <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+              </span>
+            </div>
+
+            <div className="countdown-display">
+              <span className="countdown-label">Auction starts in</span>
+              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+              <div className="countdown-progress">
+                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
         </section>
       ) : (
         <section className="auction-cards-section">
@@ -205,9 +226,9 @@ export default function Auctions() {
             <h2 className="card-section-title">Today's auction</h2>
 
             <div className="today-pool-display">
-              <span className="pool-label">Today's pool</span>
+              <span className="pool-label">Today's lot</span>
               <span className="pool-amount">
-                <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={4} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
               </span>
             </div>
 
@@ -251,8 +272,7 @@ export default function Auctions() {
         </section>
       )}
 
-      {/* Band 3: History - Last 7 auctions (only show after minting period) */}
-      {!isMintingPeriod && (
+      {/* Band 3: History - Last 7 auctions */}
       <section className="explainer-section auction-history">
         <div className="explainer-content">
           <div className="history-header">
@@ -263,9 +283,9 @@ export default function Auctions() {
             <div className="history-table">
               <div className="table-header">
                 <span className="th-day">Day</span>
+                <span className="th-winner">Winner</span>
                 <span className="th-auctioned">Auctioned</span>
                 <span className="th-bid">Winning bid</span>
-                <span className="th-winner">Winner</span>
                 <span className="th-status">Status</span>
               </div>
               {auctionHistory.length > 0 ? (
@@ -275,12 +295,6 @@ export default function Auctions() {
                     className={`table-row ${entry.isUserWinner ? 'user-winner' : ''}`}
                   >
                     <span className="td-day">{entry.day}</span>
-                    <span className="td-auctioned">
-                      <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
-                    </span>
-                    <span className="td-bid">
-                      <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MON
-                    </span>
                     <span className="td-winner">
                       <a
                         href={`${CONTRACT_CONFIG.explorerUrl}/address/${entry.winner}`}
@@ -294,6 +308,12 @@ export default function Auctions() {
                       </a>
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
+                    <span className="td-auctioned">
+                      <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
+                    </span>
+                    <span className="td-bid">
+                      <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MON
+                    </span>
                     <span className={`td-status status-${entry.status}`}>
                       {entry.status === 'unclaimed' ? 'Unclaimed' : 'Claimed'}
                     </span>
@@ -301,14 +321,13 @@ export default function Auctions() {
                 ))
               ) : (
                 <div className="empty-history-row">
-                  <p>No auction history yet. The first auction will happen after day 0.</p>
+                  <p>No auctions have completed yet.</p>
                 </div>
               )}
             </div>
           </div>
         </div>
       </section>
-      )}
 
       {/* Bid Modal */}
       <BidModal
