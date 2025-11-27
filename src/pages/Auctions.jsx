@@ -150,14 +150,14 @@ export default function Auctions() {
                   <div className="info-row">
                     <span className="info-label">Potential winnings</span>
                     <span className="info-value">
-                      <DisplayFormattedNumber num={auctionPool} significant={4} /> MONSTR
+                      <DisplayFormattedNumber num={auctionPool} significant={3} /> MONSTR
                     </span>
                   </div>
                   {hasUnclaimedPrizes && (
                     <div className="info-row highlight-row">
                       <span className="info-label">Unclaimed prize</span>
                       <span className="info-value highlight-value">
-                        <DisplayFormattedNumber num={userClaimable} significant={4} /> MONSTR
+                        <DisplayFormattedNumber num={userClaimable} significant={3} /> MONSTR
                       </span>
                     </div>
                   )}

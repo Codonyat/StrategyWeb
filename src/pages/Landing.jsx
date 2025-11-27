@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEther, parseAbi } from 'viem';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
@@ -51,6 +51,13 @@ export default function Landing() {
 
   // Fetch recent transactions via WebSocket (real-time) or fallback to loading state
   const { transactions, loading: txLoading, connected } = useRealtimeTransactions(10);
+
+  // Force re-render every minute to update "time ago" timestamps
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Helper function to format time ago
   const formatTimeAgo = (timestamp) => {

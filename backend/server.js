@@ -148,19 +148,35 @@ function handleMintedEvents(logs) {
   logs.forEach(log => {
     const txHash = log.transactionHash;
     const timestamp = Math.floor(Date.now() / 1000);
+    const user = log.args.to;
+    const fee = log.args.fee.toString();
 
-    // Emit MINT transaction (fee is included in the event data)
-    // The fee Transfer event is handled separately by handleFeeTransferEvents
+    // Emit MINT transaction
     addTransaction({
       id: `${txHash}-${log.logIndex}`,
       type: 'MINT',
-      user: log.args.to,
+      user,
       monAmount: log.args.monAmount.toString(),
       stratAmount: log.args.stratAmount.toString(),
-      fee: log.args.fee.toString(),
+      fee,
       timestamp,
       txHash,
     });
+
+    // Emit separate TRANSFER (fee) transaction for the activity feed
+    // This uses the minter's address since mint fees come from zero address
+    if (BigInt(fee) > 0n) {
+      addTransaction({
+        id: `${txHash}-${log.logIndex}-fee`,
+        type: 'TRANSFER',
+        user,
+        monAmount: '0',
+        stratAmount: fee,
+        fee: '0',
+        timestamp,
+        txHash,
+      });
+    }
   });
 }
 
@@ -188,16 +204,17 @@ function handleFeeTransferEvents(logs) {
   logs.forEach(log => {
     const txHash = log.transactionHash;
     const from = log.args.from;
-    const to = log.args.to;
 
-    // Use receiver if sender is zero address (for mint fee transfers)
-    const user = from.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? to : from;
+    // Skip mint fee transfers (from zero address) - these are handled in handleMintedEvents
+    if (from.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+      return;
+    }
 
-    // Emit fee transfer (covers fees from mints, redeems, and regular transfers)
+    // Emit fee transfer (covers fees from redeems and regular transfers)
     addTransaction({
       id: `${txHash}-${log.logIndex}`,
       type: 'TRANSFER',
-      user: user,
+      user: from,
       monAmount: '0',
       stratAmount: log.args.value.toString(),
       fee: '0',

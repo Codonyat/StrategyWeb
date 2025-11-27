@@ -6,7 +6,7 @@
 - Use relative paths for file operations (e.g., `src/config/abi.js`)
 - Read queries: Use internal RPC from `.env` (work without wallet)
 - Write transactions: Use wallet's RPC (requires connection)
-- **Number formatting**: Use 3 significant digits by default via `<DisplayFormattedNumber num={value} significant={3} />`
+- **Number formatting**: ALWAYS use 3 significant digits via `<DisplayFormattedNumber num={value} significant={3} />`. Exception: modals may use higher precision (e.g., 6) for transaction amounts and balances.
 
 ## Contract Mechanics
 

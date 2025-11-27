@@ -115,7 +115,7 @@ export default function Lottery() {
                   <div className="info-row">
                     <span className="info-label">Your MONSTR balance</span>
                     <span className="info-value">
-                      <DisplayFormattedNumber num={userBalance} significant={4} /> MONSTR
+                      <DisplayFormattedNumber num={userBalance} significant={3} /> MONSTR
                     </span>
                   </div>
                   <div className="info-row">
@@ -124,7 +124,7 @@ export default function Lottery() {
                       <span className="info-tooltip" data-tooltip="Contract balances don't count toward lottery eligibility">i</span>
                     </span>
                     <span className="info-value">
-                      <DisplayFormattedNumber num={sharePercent} significant={2} />%
+                      <DisplayFormattedNumber num={sharePercent} significant={3} />%
                     </span>
                   </div>
                   <div className="info-row">
@@ -156,7 +156,7 @@ export default function Lottery() {
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>
               <span className="pool-amount">
-                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={4} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
               </span>
             </div>
 
