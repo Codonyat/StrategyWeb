@@ -164,6 +164,17 @@ export function useGlobalContractData() {
     const currentBidder = currentAuction ? currentAuction[0] : null;
     const auctionDay = currentAuction && currentAuction[4] !== undefined ? Number(currentAuction[4]) : 0;
 
+    // Auction staleness detection:
+    // - auctionDay is the day whose fees are being auctioned (set as currentDay - 1 when auction starts)
+    // - A valid current auction has auctionDay == currentDayNumber - 1
+    // - If auctionDay < currentDayNumber - 1, the auction is stale (from a previous day)
+    // - If auctionDay == 0 and we're past minting, no auction has started yet
+    const isAuctionStale = isAuctionActive && auctionDay > 0 && auctionDay < currentDayNumber - 1;
+    const needsLotteryExecution = isAuctionActive && (auctionDay === 0 || auctionDay < currentDayNumber - 1);
+
+    // Estimated next auction pool is 50% of accumulated fees in FEES_POOL
+    const estimatedNextAuctionPool = feesPoolAmount * 0.5;
+
     return {
       tvl,
       supply,
@@ -181,6 +192,9 @@ export function useGlobalContractData() {
       minBid,
       currentBidder,
       auctionDay,
+      isAuctionStale,
+      needsLotteryExecution,
+      estimatedNextAuctionPool,
     };
   }, [monBalance, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
 

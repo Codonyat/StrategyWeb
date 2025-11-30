@@ -19,7 +19,7 @@ export function useLotteryData() {
   const { address } = useAccount();
 
   // Use centralized global data (eliminates duplicate calls)
-  const { feesPoolAmount, isMintingPeriod } = useGlobalContractData();
+  const { feesPoolAmount, isMintingPeriod, needsLotteryExecution, currentDayNumber } = useGlobalContractData();
 
   // Use shared prize data (eliminates duplicate calls)
   const {
@@ -123,6 +123,9 @@ export function useLotteryData() {
   const hasError = dayError || holderBalanceError || balanceError || prizeError;
   const isLoading = dayLoading || holderBalanceLoading || balanceLoading || prizeLoading;
 
+  // The pending draw is for the previous day (currentDayNumber - 1)
+  const pendingDrawDay = currentDayNumber > 0 ? currentDayNumber - 1 : 0;
+
   return {
     currentPool: calculations.currentPool,
     lastLotteryDay: lastLotteryDay ? Number(lastLotteryDay) : 0,
@@ -132,6 +135,8 @@ export function useLotteryData() {
     sharePercent: calculations.sharePercent,
     userClaimable,
     hasUnclaimedPrizes,
+    needsLotteryExecution,
+    pendingDrawDay,
     isLoading,
     hasError,
     error: dayError || holderBalanceError || balanceError,

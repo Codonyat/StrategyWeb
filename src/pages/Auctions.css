@@ -372,7 +372,8 @@
   box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3);
 }
 
-.claim-btn:disabled {
+.claim-btn:disabled,
+.bid-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;

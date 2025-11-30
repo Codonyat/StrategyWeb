@@ -29,6 +29,8 @@ export default function Auctions() {
     isMintingPeriod,
     isLastMintingDay,
     isAuctionActive,
+    isAuctionStale,
+    needsLotteryExecution,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -157,50 +159,77 @@ export default function Auctions() {
 
             {address ? (
               <>
-                <div className="auction-info-rows">
-                  <div className="info-row">
-                    <span className="info-label">Your last bid</span>
-                    <span className="info-value">
-                      {isUserLeading ? (
-                        <>
-                          <DisplayFormattedNumber num={currentBid} significant={3} /> MON
-                        </>
-                      ) : (
-                        'No active bid'
-                      )}
-                    </span>
-                  </div>
-                  <div className="info-row">
-                    <span className="info-label">Your status</span>
-                    <span className="info-value">
-                      {isUserLeading ? (
-                        <span className="status-badge winning">Currently leading</span>
-                      ) : hasBids ? (
-                        <span className="status-badge outbid">Outbid</span>
-                      ) : (
-                        <span className="status-badge no-bid">No bids</span>
-                      )}
-                    </span>
-                  </div>
-                  <div className="info-row">
-                    <span className="info-label">Potential winnings</span>
-                    <span className="info-value">
-                      <DisplayFormattedNumber num={auctionPool > 0 ? auctionPool : estimatedAuctionPool} significant={3} /> MONSTR
-                    </span>
-                  </div>
-                </div>
+                {needsLotteryExecution ? (
+                  <>
+                    <div className="auction-info-rows">
+                      <div className="info-row">
+                        <span className="info-label">Your status</span>
+                        <span className="info-value">
+                          <span className="status-badge no-bid">Waiting for auction</span>
+                        </span>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-label">Estimated winnings</span>
+                        <span className="info-value">
+                          <DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> MONSTR
+                        </span>
+                      </div>
+                    </div>
 
-                {isUserLeading && (
-                  <div className="winning-banner">
-                    <span className="winning-icon">🏆</span>
-                    You are currently winning
-                  </div>
-                )}
+                    <div className="minting-info-content">
+                      <p className="minting-info-text">
+                        Execute the draw on the Lottery page to start today's auction.
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="auction-info-rows">
+                      <div className="info-row">
+                        <span className="info-label">Your last bid</span>
+                        <span className="info-value">
+                          {isUserLeading ? (
+                            <>
+                              <DisplayFormattedNumber num={currentBid} significant={3} /> MON
+                            </>
+                          ) : (
+                            'No active bid'
+                          )}
+                        </span>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-label">Your status</span>
+                        <span className="info-value">
+                          {isUserLeading ? (
+                            <span className="status-badge winning">Currently leading</span>
+                          ) : hasBids ? (
+                            <span className="status-badge outbid">Outbid</span>
+                          ) : (
+                            <span className="status-badge no-bid">No bids</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-label">Potential winnings</span>
+                        <span className="info-value">
+                          <DisplayFormattedNumber num={auctionPool} significant={3} /> MONSTR
+                        </span>
+                      </div>
+                    </div>
 
-                {!isUserLeading && (
-                  <button className="bid-btn" onClick={handlePlaceBid}>
-                    Place bid
-                  </button>
+                    {isUserLeading && (
+                      <div className="winning-banner">
+                        <span className="winning-icon">🏆</span>
+                        You are currently winning
+                      </div>
+                    )}
+
+                    {!isUserLeading && (
+                      <button className="bid-btn" onClick={handlePlaceBid}>
+                        Place bid
+                      </button>
+                    )}
+                  </>
                 )}
               </>
             ) : (
@@ -217,55 +246,76 @@ export default function Auctions() {
           <div className="today-auction-card">
             <h2 className="card-section-title">Today's auction</h2>
 
-            <div className="today-pool-display">
-              <span className="pool-label">{auctionPool > 0 ? "Today's lot" : "Estimated lot"}</span>
-              <span className="pool-amount">
-                <span className="pool-value"><DisplayFormattedNumber num={auctionPool > 0 ? auctionPool : estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
-              </span>
-            </div>
+            {needsLotteryExecution ? (
+              <>
+                <div className="today-pool-display">
+                  <span className="pool-label">Estimated lot</span>
+                  <span className="pool-amount">
+                    <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                  </span>
+                </div>
 
-            {auctionPool > 0 ? (
-              <div className="auction-info-rows">
-                <div className="info-row">
-                  <span className="info-label">Current highest</span>
-                  <span className="info-value">
-                    {hasBids ? (
-                      <>
-                        <DisplayFormattedNumber num={currentBid} significant={3} /> MON
-                      </>
-                    ) : (
-                      <span className="no-bids-text">No bids yet</span>
-                    )}
-                  </span>
+                <div className="minting-info-content">
+                  <p className="minting-info-text">
+                    {isAuctionStale
+                      ? "Previous day's draw is pending. Draw the winner on the Lottery page to start the new auction."
+                      : "Yesterday's draw is pending. Draw the winner on the Lottery page to start today's auction."}
+                  </p>
                 </div>
-                <div className="info-row">
-                  <span className="info-label">Min bid</span>
-                  <span className="info-value">
-                    <DisplayFormattedNumber num={minBid} significant={3} /> MON
-                  </span>
+
+                <div className="countdown-display">
+                  <span className="countdown-label">Day ends in</span>
+                  <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+                  <div className="countdown-progress">
+                    <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+                  </div>
                 </div>
-                <div className="info-row">
-                  <span className="info-label">Backing value</span>
-                  <span className="info-value">
-                    ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MON
-                  </span>
-                </div>
-              </div>
+              </>
             ) : (
-              <div className="minting-info-content">
-                <p className="minting-info-text">
-                  Auction not started yet. Execute the lottery to start the first auction.
-                </p>
-              </div>
-            )}
+              <>
+                <div className="today-pool-display">
+                  <span className="pool-label">Today's lot</span>
+                  <span className="pool-amount">
+                    <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                  </span>
+                </div>
 
-            <div className="countdown-display">
-              <span className="countdown-label">{auctionPool > 0 ? "Auction ends in" : "Day ends in"}</span>
-              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
-              <div className="countdown-progress">
-                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
-              </div>
-            </div>
+                <div className="auction-info-rows">
+                  <div className="info-row">
+                    <span className="info-label">Current highest</span>
+                    <span className="info-value">
+                      {hasBids ? (
+                        <>
+                          <DisplayFormattedNumber num={currentBid} significant={3} /> MON
+                        </>
+                      ) : (
+                        <span className="no-bids-text">No bids yet</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Min bid</span>
+                    <span className="info-value">
+                      <DisplayFormattedNumber num={minBid} significant={3} /> MON
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Backing value</span>
+                    <span className="info-value">
+                      ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MON
+                    </span>
+                  </div>
+                </div>
+
+                <div className="countdown-display">
+                  <span className="countdown-label">Auction ends in</span>
+                  <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+                  <div className="countdown-progress">
+                    <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
           </div>
         </div>

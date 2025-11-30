@@ -27,6 +27,7 @@ export default function Lottery() {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, success, error
+  const [drawStatus, setDrawStatus] = useState('idle'); // idle, drawing, success, error
 
   const {
     currentPool,
@@ -35,6 +36,8 @@ export default function Lottery() {
     sharePercent,
     userClaimable,
     hasUnclaimedPrizes,
+    needsLotteryExecution,
+    pendingDrawDay,
     isLoading,
   } = useLotteryData();
 
@@ -48,10 +51,17 @@ export default function Lottery() {
   const totalUnclaimed = lotteryHistory.reduce((sum, entry) => sum + entry.amount, 0);
 
   // Claim contract interaction
-  const { writeContract, data: claimHash, error: claimError } = useWriteContract();
+  const { writeContract: writeClaimContract, data: claimHash, error: claimError } = useWriteContract();
 
   const { isLoading: isClaimConfirming, isSuccess: isClaimConfirmed } = useWaitForTransactionReceipt({
     hash: claimHash,
+  });
+
+  // Draw winner contract interaction
+  const { writeContract: writeDrawContract, data: drawHash, error: drawError } = useWriteContract();
+
+  const { isLoading: isDrawConfirming, isSuccess: isDrawConfirmed } = useWaitForTransactionReceipt({
+    hash: drawHash,
   });
 
   const handleClaim = async () => {
@@ -62,7 +72,7 @@ export default function Lottery() {
 
     try {
       setClaimStatus('claiming');
-      writeContract({
+      writeClaimContract({
         address: CONTRACT_ADDRESS,
         abi: STRATEGY_ABI,
         functionName: 'claim',
@@ -70,6 +80,25 @@ export default function Lottery() {
     } catch (error) {
       console.error('Claim error:', error);
       setClaimStatus('error');
+    }
+  };
+
+  const handleDrawWinner = async () => {
+    if (!address) {
+      openConnectModal?.();
+      return;
+    }
+
+    try {
+      setDrawStatus('drawing');
+      writeDrawContract({
+        address: CONTRACT_ADDRESS,
+        abi: STRATEGY_ABI,
+        functionName: 'executeLottery',
+      });
+    } catch (error) {
+      console.error('Draw winner error:', error);
+      setDrawStatus('error');
     }
   };
 
@@ -89,6 +118,22 @@ export default function Lottery() {
       setTimeout(() => setClaimStatus('idle'), 5000);
     }
   }, [claimError, claimStatus]);
+
+  // Handle draw confirmation
+  useEffect(() => {
+    if (isDrawConfirmed && drawStatus === 'drawing') {
+      setDrawStatus('success');
+      refetchHistory();
+      setTimeout(() => setDrawStatus('idle'), 3000);
+    }
+  }, [isDrawConfirmed, drawStatus, refetchHistory]);
+
+  useEffect(() => {
+    if (drawError && drawStatus === 'drawing') {
+      setDrawStatus('error');
+      setTimeout(() => setDrawStatus('idle'), 5000);
+    }
+  }, [drawError, drawStatus]);
 
   return (
     <div className="lottery-page">
@@ -159,6 +204,27 @@ export default function Lottery() {
                 <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
               </span>
             </div>
+
+            {needsLotteryExecution && (
+              <div className="draw-pending-section">
+                <p className="draw-pending-text">
+                  Day {pendingDrawDay}'s draw is ready. Anyone can trigger it to select a winner.
+                </p>
+                <button
+                  className="draw-winner-btn"
+                  onClick={handleDrawWinner}
+                  disabled={isDrawConfirming || drawStatus === 'drawing'}
+                >
+                  {isDrawConfirming || drawStatus === 'drawing'
+                    ? 'Drawing...'
+                    : drawStatus === 'success'
+                    ? 'Winner drawn!'
+                    : drawStatus === 'error'
+                    ? 'Try again'
+                    : 'Draw winner'}
+                </button>
+              </div>
+            )}
 
             <div className="countdown-display">
               <span className="countdown-label">Next draw in</span>
