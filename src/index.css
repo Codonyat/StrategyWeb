@@ -4,37 +4,37 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Theme Colors - Bold, vibrant palette inspired by punk.auction */
-  --color-background: #0d0d0d;
-  --color-background-light: #1a1a1a;
-  --color-background-card: #1f1f1f;
+  /* Theme Colors - GigaETH synthwave palette */
+  --color-background: #0a0f14;
+  --color-background-light: #131a22;
+  --color-background-card: #1a2230;
 
-  --color-primary: #ff3864;
-  --color-primary-hover: #ff1a4d;
-  --color-primary-light: #ff5b7f;
+  --color-primary: #ff2d6a;
+  --color-primary-hover: #ff1a5c;
+  --color-primary-light: #ff5a8a;
 
   --color-secondary: #00d4ff;
   --color-secondary-hover: #00b8e6;
   --color-secondary-light: #33ddff;
 
-  --color-purple: #8a2be2;
-  --color-purple-hover: #9d4ced;
-  --color-purple-light: #a561f1;
+  --color-orange: #ff6b35;
+  --color-orange-hover: #ff7d4d;
+  --color-orange-light: #ff8f66;
 
-  --color-accent: #ffd700;
-  --color-accent-hover: #ffed4e;
+  --color-accent: #ffaa00;
+  --color-accent-hover: #ffbb33;
 
   --color-text-primary: #ffffff;
   --color-text-secondary: #b0b0b0;
   --color-text-muted: #707070;
 
-  --color-border: #2a2a2a;
-  --color-border-light: #404040;
-  --color-border-hover: #555555;
+  --color-border: #1e2836;
+  --color-border-light: #2d3a4a;
+  --color-border-hover: #3d4a5a;
 
   --color-success: #00ff88;
-  --color-error: #ff3864;
-  --color-warning: #ffd700;
+  --color-error: #ff2d6a;
+  --color-warning: #ffaa00;
   --color-info: #00d4ff;
 
   /* Aliases for component compatibility */
@@ -169,7 +169,7 @@ sup {
 
 .btn:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3);
 }
 
 .btn:active {
@@ -194,7 +194,7 @@ sup {
 
 .btn-primary:hover {
   border-color: var(--color-primary-hover);
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.4);
 }
 
 .btn-secondary {
@@ -233,7 +233,7 @@ sup {
 
 .btn-error:hover {
   border-color: var(--color-error);
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.4);
 }
 
 /* Button Sizes */

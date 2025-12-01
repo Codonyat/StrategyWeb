@@ -141,7 +141,7 @@ export default function Lottery() {
       <section className="page-header-section">
         <div className="page-header-content">
           <p className="page-tagline">
-            Hodl MONSTR, win daily prizes, no loss lottery.
+            Hodl GIGA, win daily prizes, no loss lottery.
           </p>
         </div>
       </section>
@@ -158,9 +158,9 @@ export default function Lottery() {
               <>
                 <div className="lottery-info-rows">
                   <div className="info-row">
-                    <span className="info-label">Your MONSTR balance</span>
+                    <span className="info-label">Your GIGA balance</span>
                     <span className="info-value">
-                      <DisplayFormattedNumber num={userBalance} significant={3} /> MONSTR
+                      <DisplayFormattedNumber num={userBalance} significant={3} /> GIGA
                     </span>
                   </div>
                   <div className="info-row">
@@ -181,7 +181,7 @@ export default function Lottery() {
                 </div>
 
                 <p className="lottery-explainer-text">
-                  You stay entered as long as you hold MONSTR. Snapshots are taken once per day.
+                  You stay entered as long as you hold GIGA. Snapshots are taken once per day.
                 </p>
               </>
             ) : (
@@ -201,7 +201,7 @@ export default function Lottery() {
             <div className="today-pool-display">
               <span className="pool-label">Today's pool</span>
               <span className="pool-amount">
-                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                <span className="pool-value"><DisplayFormattedNumber num={currentPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
               </span>
             </div>
 
@@ -278,7 +278,7 @@ export default function Lottery() {
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
                     <span className="td-prize">
-                      <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
+                      <DisplayFormattedNumber num={entry.amount} significant={3} /> GIGA
                     </span>
                     <span className={`td-status status-${entry.status}`}>
                       {entry.status === 'claimed' ? (

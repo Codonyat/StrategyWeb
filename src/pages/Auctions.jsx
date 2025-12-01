@@ -92,7 +92,7 @@ export default function Auctions() {
       <section className="page-header-section">
         <div className="page-header-content">
           <p className="page-tagline">
-            Bid with MON, win MONSTR below market price.
+            Bid with MEGA, win GIGA below market price.
           </p>
         </div>
       </section>
@@ -108,10 +108,10 @@ export default function Auctions() {
             <h2 className="card-section-title">Bidding starts soon</h2>
             <div className="minting-info-content">
               <p className="minting-info-text">
-                Auctions begin after the minting period ends. Each day, 50% of daily fees will be converted to MONSTR and auctioned to the highest bidder.
+                Auctions begin after the minting period ends. Each day, 50% of daily fees will be converted to GIGA and auctioned to the highest bidder.
               </p>
               <p className="minting-info-text">
-                Bids are placed in MON or WMON, allowing you to acquire MONSTR below its backing value.
+                Bids are placed in MEGA or WMEGA, allowing you to acquire GIGA below its backing value.
               </p>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function Auctions() {
               <div className="today-pool-display">
                 <span className="pool-label">Estimated lot</span>
                 <span className="pool-amount">
-                  <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                  <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
                 </span>
               </div>
 
@@ -171,7 +171,7 @@ export default function Auctions() {
                       <div className="info-row">
                         <span className="info-label">Estimated winnings</span>
                         <span className="info-value">
-                          <DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> MONSTR
+                          <DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> GIGA
                         </span>
                       </div>
                     </div>
@@ -190,7 +190,7 @@ export default function Auctions() {
                         <span className="info-value">
                           {isUserLeading ? (
                             <>
-                              <DisplayFormattedNumber num={currentBid} significant={3} /> MON
+                              <DisplayFormattedNumber num={currentBid} significant={3} /> MEGA
                             </>
                           ) : (
                             'No active bid'
@@ -212,7 +212,7 @@ export default function Auctions() {
                       <div className="info-row">
                         <span className="info-label">Potential winnings</span>
                         <span className="info-value">
-                          <DisplayFormattedNumber num={auctionPool} significant={3} /> MONSTR
+                          <DisplayFormattedNumber num={auctionPool} significant={3} /> GIGA
                         </span>
                       </div>
                     </div>
@@ -251,7 +251,7 @@ export default function Auctions() {
                 <div className="today-pool-display">
                   <span className="pool-label">Estimated lot</span>
                   <span className="pool-amount">
-                    <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                    <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
                   </span>
                 </div>
 
@@ -276,7 +276,7 @@ export default function Auctions() {
                 <div className="today-pool-display">
                   <span className="pool-label">Today's lot</span>
                   <span className="pool-amount">
-                    <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/monstr-logo.png" alt="MONSTR" className="pool-icon" /><span className="pool-symbol">MONSTR</span></span>
+                    <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
                   </span>
                 </div>
 
@@ -286,7 +286,7 @@ export default function Auctions() {
                     <span className="info-value">
                       {hasBids ? (
                         <>
-                          <DisplayFormattedNumber num={currentBid} significant={3} /> MON
+                          <DisplayFormattedNumber num={currentBid} significant={3} /> MEGA
                         </>
                       ) : (
                         <span className="no-bids-text">No bids yet</span>
@@ -296,13 +296,13 @@ export default function Auctions() {
                   <div className="info-row">
                     <span className="info-label">Min bid</span>
                     <span className="info-value">
-                      <DisplayFormattedNumber num={minBid} significant={3} /> MON
+                      <DisplayFormattedNumber num={minBid} significant={3} /> MEGA
                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Backing value</span>
                     <span className="info-value">
-                      ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MON
+                      ≈ <DisplayFormattedNumber num={backingValue} significant={3} /> MEGA
                     </span>
                   </div>
                 </div>
@@ -359,10 +359,10 @@ export default function Auctions() {
                       {entry.isUserWinner && <span className="you-badge">You</span>}
                     </span>
                     <span className="td-auctioned">
-                      <DisplayFormattedNumber num={entry.amount} significant={3} /> MONSTR
+                      <DisplayFormattedNumber num={entry.amount} significant={3} /> GIGA
                     </span>
                     <span className="td-bid">
-                      <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MON
+                      <DisplayFormattedNumber num={entry.amount * 0.5} significant={3} /> MEGA
                     </span>
                     <span className={`td-status status-${entry.status}`}>
                       {entry.status === 'claimed' ? (
@@ -422,9 +422,9 @@ export default function Auctions() {
             <div className="step-card" tabIndex="0">
               <div className="step-number">2</div>
               <div className="step-content">
-                <h3 className="step-title">Daily MONSTR auction</h3>
+                <h3 className="step-title">Daily GIGA auction</h3>
                 <p className="step-description">
-                  Yesterday's fees are converted to MONSTR and auctioned.
+                  Yesterday's fees are converted to GIGA and auctioned.
                 </p>
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function Auctions() {
               <div className="step-content">
                 <h3 className="step-title">Highest bid wins</h3>
                 <p className="step-description">
-                  Bids are placed in MON/WMON. Highest bid at day end receives the MONSTR.
+                  Bids are placed in MEGA/WMEGA. Highest bid at day end receives the GIGA.
                 </p>
               </div>
             </div>

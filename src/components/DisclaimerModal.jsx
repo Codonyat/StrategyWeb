@@ -24,7 +24,7 @@ export function DisclaimerModal({ isOpen, onClose }) {
           <section className="disclaimer-section">
             <h3>No Investment Advice</h3>
             <p>
-              The information provided on this website does not constitute investment advice, financial advice, trading advice, or any other sort of advice. You should not treat any of the website's content as such. MONSTR does not recommend that any cryptocurrency should be bought, sold, or held by you. Conduct your own due diligence and consult your financial advisor before making any investment decisions.
+              The information provided on this website does not constitute investment advice, financial advice, trading advice, or any other sort of advice. You should not treat any of the website's content as such. GIGA does not recommend that any cryptocurrency should be bought, sold, or held by you. Conduct your own due diligence and consult your financial advisor before making any investment decisions.
             </p>
           </section>
 
@@ -38,7 +38,7 @@ export function DisclaimerModal({ isOpen, onClose }) {
           <section className="disclaimer-section">
             <h3>Smart Contract Risks</h3>
             <p>
-              While the Strategy contract has been audited for Ethereum and adapted for Monad, smart contracts are complex systems that may contain undiscovered vulnerabilities. Audits do not guarantee security. Blockchain technology and smart contracts are subject to inherent risks including, but not limited to, bugs, malfunctions, cyber attacks, changes to the protocol, and regulatory actions.
+              While the Strategy contract has been audited for Ethereum and adapted for MegaETH, smart contracts are complex systems that may contain undiscovered vulnerabilities. Audits do not guarantee security. Blockchain technology and smart contracts are subject to inherent risks including, but not limited to, bugs, malfunctions, cyber attacks, changes to the protocol, and regulatory actions.
             </p>
           </section>
 
@@ -52,7 +52,7 @@ export function DisclaimerModal({ isOpen, onClose }) {
           <section className="disclaimer-section">
             <h3>Limitation of Liability</h3>
             <p>
-              To the maximum extent permitted by applicable law, the creators, developers, contributors, and affiliates of MONSTR shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
+              To the maximum extent permitted by applicable law, the creators, developers, contributors, and affiliates of GIGA shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
             </p>
             <ul>
               <li>Your access to or use of or inability to access or use the protocol;</li>
@@ -79,7 +79,7 @@ export function DisclaimerModal({ isOpen, onClose }) {
           <section className="disclaimer-section">
             <h3>Affiliation</h3>
             <p>
-              MONSTR is an independent project and is not affiliated with, endorsed by, or sponsored by Monad Labs or the Monad blockchain. The Strategy contract was audited for Ethereum and adapted for Monad.
+              GIGA is an independent project and is not affiliated with, endorsed by, or sponsored by MegaETH Labs or the MegaETH blockchain. The Strategy contract was audited for Ethereum and adapted for MegaETH.
             </p>
           </section>
 

@@ -56,8 +56,8 @@ export function AnimatedLogo() {
   return (
     <img
       key={showGif ? `gif-${gifKey}` : 'static'}
-      src={showGif ? `/coins/monstr.gif?${gifKey}` : '/coins/monstr-icon.png'}
-      alt="MONSTR"
+      src={showGif ? `/coins/giga.gif?${gifKey}` : '/coins/giga-icon.png'}
+      alt="GIGA"
       className="logo-icon"
     />
   );

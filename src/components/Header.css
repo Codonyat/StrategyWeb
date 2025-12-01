@@ -101,7 +101,7 @@
   border-radius: 24px;
   padding: 1px;
   background: linear-gradient(180deg,
-    rgba(138, 43, 226, 0.15) 0%,
+    rgba(255, 107, 53, 0.15) 0%,
     rgba(0, 255, 136, 0.2) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);

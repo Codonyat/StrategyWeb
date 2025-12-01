@@ -15,11 +15,11 @@ export default function HowItWorks() {
       faqs: [
         {
           id: 'what-is-monstr',
-          question: 'What is MONSTR?',
+          question: 'What is GIGA?',
           answer: (
             <>
               <p>
-                <strong>MONSTR is a strategy coin backed 100% by MON.</strong> You can always burn MONSTR to withdraw MON from the backing pool, and protocol fees create an up-only backing ratio over time.
+                <strong>GIGA is a strategy coin backed 100% by MEGA.</strong> You can always burn GIGA to withdraw MEGA from the backing pool, and protocol fees create an up-only backing ratio over time.
               </p>
             </>
           ),
@@ -30,10 +30,10 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1 MON mints 1 MONSTR at a 1:1 ratio, before the 1% transfer fee is applied.
+                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1 MEGA mints 1 GIGA at a 1:1 ratio, before the 1% transfer fee is applied.
               </p>
               <p>
-                After the minting period ends, you can still mint MONSTR at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn MONSTR, this opens up supply capacity for new minting. You can also acquire MONSTR on the secondary market.
+                After the minting period ends, you can still mint GIGA at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn GIGA, this opens up supply capacity for new minting. You can also acquire GIGA on the secondary market.
               </p>
             </>
           ),
@@ -44,18 +44,18 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Yes.</strong> You can burn MONSTR at any time to redeem MON from the backing pool at the current backing ratio. A 1% protocol fee is applied on redemptions.
+                <strong>Yes.</strong> You can burn GIGA at any time to redeem MEGA from the backing pool at the current backing ratio. A 1% protocol fee is applied on redemptions.
               </p>
             </>
           ),
         },
         {
           id: 'risky',
-          question: 'Is MONSTR risky?',
+          question: 'Is GIGA risky?',
           answer: (
             <>
               <p>
-                <strong>MONSTR has been audited and uses a transparent, on-chain backing mechanism.</strong> The contract allows you to redeem MONSTR for MON at any time, creating a price floor at the backing ratio. Like all crypto protocols, you should be aware of smart contract risk and exposure to MON price volatility. Always review the audit and source code yourself before participating.
+                <strong>GIGA has been audited and uses a transparent, on-chain backing mechanism.</strong> The contract allows you to redeem GIGA for MEGA at any time, creating a price floor at the backing ratio. Like all crypto protocols, you should be aware of smart contract risk and exposure to MEGA price volatility. Always review the audit and source code yourself before participating.
               </p>
             </>
           ),
@@ -71,7 +71,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>All MON sent into the protocol</strong> (minting, fees, and auction proceeds) stays in the reserve. MONSTR supply fluctuates: it decreases when tokens are burned and can increase when new tokens are minted (if below the max supply cap). Because the reserve grows but the max supply stays capped, the backing per MONSTR will increase over time as long as the protocol collects fees.
+                <strong>All MEGA sent into the protocol</strong> (minting, fees, and auction proceeds) stays in the reserve. GIGA supply fluctuates: it decreases when tokens are burned and can increase when new tokens are minted (if below the max supply cap). Because the reserve grows but the max supply stays capped, the backing per GIGA will increase over time as long as the protocol collects fees.
               </p>
             </>
           ),
@@ -82,7 +82,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>There is a 1% fee on mint, burn, and transfers of MONSTR.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool. The auction mechanism converts collected fees back into MON by auctioning MONSTR tokens to bidders, thereby increasing the net amount of MON in the reserve and strengthening the backing ratio.
+                <strong>There is a 1% fee on mint, burn, and transfers of GIGA.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool. The auction mechanism converts collected fees back into MEGA by auctioning GIGA tokens to bidders, thereby increasing the net amount of MEGA in the reserve and strengthening the backing ratio.
               </p>
             </>
           ),
@@ -93,21 +93,21 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>The backing ratio</strong> tells you how much MON sits behind each MONSTR in the reserve. <strong>The exchange price</strong> is whatever the token trades for on the market. Since anyone can redeem MONSTR for MON at the backing ratio at any time, arbitrageurs will buy below backing and redeem for profit, creating a price floor. In practice, MONSTR should trade at or above the backing ratio.
+                <strong>The backing ratio</strong> tells you how much MEGA sits behind each GIGA in the reserve. <strong>The exchange price</strong> is whatever the token trades for on the market. Since anyone can redeem GIGA for MEGA at the backing ratio at any time, arbitrageurs will buy below backing and redeem for profit, creating a price floor. In practice, GIGA should trade at or above the backing ratio.
               </p>
             </>
           ),
         },
         {
           id: 'flywheel-effect',
-          question: 'How does MONSTR create value over time?',
+          question: 'How does GIGA create value over time?',
           answer: (
             <>
               <p>
-                <strong>MONSTR has a built-in flywheel effect.</strong> Minting generates fees, which increase the backing ratio. A higher backing ratio creates profit expectations, driving secondary market buying. This buying generates more fees, further increasing the backing. If the exchange price diverges too much from backing and drops, increased trading activity generates even more fees, strengthening the backing and restarting the cycle.
+                <strong>GIGA has a built-in flywheel effect.</strong> Minting generates fees, which increase the backing ratio. A higher backing ratio creates profit expectations, driving secondary market buying. This buying generates more fees, further increasing the backing. If the exchange price diverges too much from backing and drops, increased trading activity generates even more fees, strengthening the backing and restarting the cycle.
               </p>
               <p>
-                This mechanism makes MONSTR a safe leverage bet on MON. As long as MON has value and the protocol sees activity, the backing ratio trends upward over time.
+                This mechanism makes GIGA a safe leverage bet on MEGA. As long as MEGA has value and the protocol sees activity, the backing ratio trends upward over time.
               </p>
             </>
           ),
@@ -118,7 +118,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Each day the protocol snapshots MONSTR holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. Only regular wallet addresses participate—smart contracts are excluded from lottery draws. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
+                <strong>Each day the protocol snapshots GIGA holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. Only regular wallet addresses participate—smart contracts are excluded from lottery draws. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
               </p>
             </>
           ),
@@ -129,7 +129,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Another share of protocol fees is converted to MONSTR and auctioned once per day.</strong> Users bid with MON or WMON. At the end of the day the highest bid wins the pool of MONSTR. Losing bidders keep their MON.
+                <strong>Another share of protocol fees is converted to GIGA and auctioned once per day.</strong> Users bid with MEGA or WMEGA. At the end of the day the highest bid wins the pool of GIGA. Losing bidders keep their MEGA.
               </p>
             </>
           ),
@@ -147,11 +147,11 @@ export default function HowItWorks() {
         },
         {
           id: 'auction-bidding',
-          question: 'Can I bid with MON or WMON?',
+          question: 'Can I bid with MEGA or WMEGA?',
           answer: (
             <>
               <p>
-                <strong>You can bid with either MON or WMON.</strong> The contract accepts both. WMON support allows the contract to pull bids safely with <code>transferFrom</code> and prevents certain denial-of-service issues. MON support provides direct convenience for bidders.
+                <strong>You can bid with either MEGA or WMEGA.</strong> The contract accepts both. WMEGA support allows the contract to pull bids safely with <code>transferFrom</code> and prevents certain denial-of-service issues. MEGA support provides direct convenience for bidders.
               </p>
             </>
           ),
@@ -222,18 +222,18 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>The MONSTR contract has been audited for Ethereum and then adapted for Monad testnet.</strong> Audits reduce but do not remove risk. Always review the code and audit reports yourself.
+                <strong>The GIGA contract has been audited for Ethereum and then adapted for MegaETH testnet.</strong> Audits reduce but do not remove risk. Always review the code and audit reports yourself.
               </p>
             </>
           ),
         },
         {
           id: 'stake-lock',
-          question: 'Do I need to stake or lock MONSTR to enter the lottery?',
+          question: 'Do I need to stake or lock GIGA to enter the lottery?',
           answer: (
             <>
               <p>
-                <strong>No.</strong> You stay entered in the daily lottery as long as you hold MONSTR in your wallet at the time of the daily snapshot. Note that only regular wallets participate, smart contracts are excluded from lottery draws.
+                <strong>No.</strong> You stay entered in the daily lottery as long as you hold GIGA in your wallet at the time of the daily snapshot. Note that only regular wallets participate, smart contracts are excluded from lottery draws.
               </p>
             </>
           ),
@@ -244,7 +244,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>MONSTR currently runs on {CONTRACT_CONFIG.chainName}</strong> and supports any wallet that can connect to EVM-compatible networks, such as MetaMask or Rabby.
+                <strong>GIGA currently runs on {CONTRACT_CONFIG.chainName}</strong> and supports any wallet that can connect to EVM-compatible networks, such as MetaMask or Rabby.
               </p>
             </>
           ),

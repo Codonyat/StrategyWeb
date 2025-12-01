@@ -33,7 +33,7 @@ export default function Landing() {
     },
   });
 
-  // Get MONSTR balance
+  // Get GIGA balance
   const { data: monstrBalance } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
@@ -57,7 +57,7 @@ export default function Landing() {
   const { isAtMaxSupply, isMintingPeriod, maxSupplyValue, supply } = useGlobalContractData();
   // Disable minting if at max supply OR if minting period is over and max supply not yet set
   const isMintingDisabled = isAtMaxSupply || (!isMintingPeriod && maxSupplyValue === 0);
-  // Calculate remaining mintable MONSTR (only relevant after minting period when supply < max)
+  // Calculate remaining mintable GIGA (only relevant after minting period when supply < max)
   const remainingMintable = maxSupplyValue > 0 ? maxSupplyValue - supply : 0;
 
   // Force re-render every minute to update "time ago" timestamps
@@ -101,7 +101,7 @@ export default function Landing() {
       setAnimationTimeout(null);
     }
 
-    // Only animate if not already showing MONSTR or if currently animating
+    // Only animate if not already showing GIGA or if currently animating
     if (!showStrategy || hoverState === 'withdraw') {
       setHoverState('deposit');
       // After animation completes, update the permanent state
@@ -144,7 +144,7 @@ export default function Landing() {
       <section className="hero-section page-header-section">
         <div className="hero-wrapper page-header-content">
           <p className="page-tagline">
-            100% backed by MON, withdraw anytime, up-only price.
+            100% backed by MEGA, withdraw anytime, up-only price.
           </p>
 
           {/* Balance Strip - Only show if wallet connected */}
@@ -152,13 +152,13 @@ export default function Landing() {
             <div className="balances-strip">
               <span className="balances-label">Your balances:</span>
               <div className="balance-item">
-                <img src="/coins/mon-logo.png" alt="MON" className="balance-icon" />
-                <span className="balance-value"><DisplayFormattedNumber num={monValue} significant={3} /> MON</span>
+                <img src="/coins/mega-icon.png" alt="MEGA" className="balance-icon" />
+                <span className="balance-value"><DisplayFormattedNumber num={monValue} significant={3} /> MEGA</span>
               </div>
               <span className="balance-separator">·</span>
               <div className="balance-item">
-                <img src="/coins/monstr-logo.png" alt="MONSTR" className="balance-icon" />
-                <span className="balance-value"><DisplayFormattedNumber num={monstrValue} significant={3} /> MONSTR</span>
+                <img src="/coins/giga-icon.png" alt="GIGA" className="balance-icon" />
+                <span className="balance-value"><DisplayFormattedNumber num={monstrValue} significant={3} /> GIGA</span>
               </div>
             </div>
           )}
@@ -173,15 +173,15 @@ export default function Landing() {
               >
                 <div className="coin-face coin-native">
                   <img
-                    src={"/coins/mon.png"}
-                    alt={"MON"}
+                    src={"/coins/mega.png"}
+                    alt={"MEGA"}
                     className="coin-image"
                   />
                 </div>
                 <div className="coin-face coin-strategy">
                   <img
-                    src={"/coins/monstr.png"}
-                    alt={"MONSTR"}
+                    src={"/coins/giga.png"}
+                    alt={"GIGA"}
                     className="coin-image"
                   />
                 </div>
@@ -203,12 +203,12 @@ export default function Landing() {
                       onMouseLeave={handleButtonLeave}
                       onClick={() => setIsMintModalOpen(true)}
                     >
-                      <span className="action-line">Deposit MON</span>
-                      <span className="action-line">Mint MONSTR</span>
+                      <span className="action-line">Deposit MEGA</span>
+                      <span className="action-line">Mint GIGA</span>
                     </button>
                     {!isMintingPeriod && remainingMintable > 0 && (
                       <span className="mintable-info">
-                        <DisplayFormattedNumber num={remainingMintable} significant={3} /> MONSTR mintable
+                        <DisplayFormattedNumber num={remainingMintable} significant={3} /> GIGA mintable
                       </span>
                     )}
                   </div>
@@ -219,8 +219,8 @@ export default function Landing() {
                   onMouseLeave={handleButtonLeave}
                   onClick={() => setIsBurnModalOpen(true)}
                 >
-                  <span className="action-line">Burn MONSTR</span>
-                  <span className="action-line">Withdraw MON</span>
+                  <span className="action-line">Burn GIGA</span>
+                  <span className="action-line">Withdraw MEGA</span>
                 </button>
               </div>
               </div>
@@ -268,7 +268,7 @@ export default function Landing() {
                         <EnsAddress address={tx.user} format="compact" className="tx-address-compact" />
                       </a>
                       <span className="tx-time">{formatTimeAgo(tx.timestamp)}</span>
-                      <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> MONSTR</span>
+                      <span className="tx-amount">{sign}<DisplayFormattedNumber num={formattedAmount} significant={3} /> GIGA</span>
                     </div>
                   );
                 })
@@ -288,9 +288,9 @@ export default function Landing() {
           <div className="step-card" tabIndex="0">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3 className="step-title">Deposit MON to mint</h3>
+              <h3 className="step-title">Deposit MEGA to mint</h3>
               <p className="step-description">
-                <strong>Mint MONSTR</strong> 1:1 during first 3 days
+                <strong>Mint GIGA</strong> 1:1 during first 3 days
               </p>
             </div>
           </div>
@@ -315,7 +315,7 @@ export default function Landing() {
           <div className="step-card" tabIndex="0">
             <div className="step-number">4</div>
             <div className="step-content">
-              <h3 className="step-title">Withdraw MON anytime</h3>
+              <h3 className="step-title">Withdraw MEGA anytime</h3>
               <p className="step-description">
                 <strong>Withdraw</strong> by burning tokens at backing ratio
               </p>

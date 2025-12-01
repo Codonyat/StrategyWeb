@@ -23,7 +23,7 @@ export default function Stats() {
   };
 
   const chartTabs = [
-    { id: 'price', label: `Price vs $MON` },
+    { id: 'price', label: `Price vs $MEGA` },
     { id: 'floor', label: 'Floor vs Market' },
     { id: 'backing', label: 'Backing over time' },
   ];
@@ -37,22 +37,22 @@ export default function Stats() {
         <section className="page-header">
           <h1 className="page-title">Stats</h1>
           <p className="page-subtitle">
-            Market data and metrics for MONSTR
+            Market data and metrics for GIGA
           </p>
         </section>
 
         {/* Top Summary Strip */}
         <section className="summary-strip">
           <div className="metric-card">
-            <div className="metric-label">MONSTR price</div>
+            <div className="metric-label">GIGA price</div>
             <div className="metric-value">
-              {summaryMetrics.price} MON
+              {summaryMetrics.price} MEGA
             </div>
           </div>
           <div className="metric-card">
-            <div className="metric-label">Backing per MONSTR</div>
+            <div className="metric-label">Backing per GIGA</div>
             <div className="metric-value">
-              {summaryMetrics.floor} MON
+              {summaryMetrics.floor} MEGA
             </div>
           </div>
           <div className="metric-card">
@@ -62,7 +62,7 @@ export default function Stats() {
           <div className="metric-card">
             <div className="metric-label">Total backing in contract</div>
             <div className="metric-value">
-              {summaryMetrics.totalBacking} MON
+              {summaryMetrics.totalBacking} MEGA
             </div>
           </div>
         </section>
@@ -118,7 +118,7 @@ export default function Stats() {
             <div className="stat-box">
               <div className="stat-label">Circulating supply</div>
               <div className="stat-value">
-                {secondaryStats.circulatingSupply} MONSTR
+                {secondaryStats.circulatingSupply} GIGA
               </div>
             </div>
             <div className="stat-box">
@@ -132,7 +132,7 @@ export default function Stats() {
             <div className="stat-box">
               <div className="stat-label">24h volume</div>
               <div className="stat-value">
-                {secondaryStats.volume24h} MON
+                {secondaryStats.volume24h} MEGA
               </div>
             </div>
             <div className="stat-box">

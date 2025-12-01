@@ -299,7 +299,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-purple), var(--color-secondary));
+  background: linear-gradient(135deg, var(--color-orange), var(--color-secondary));
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
@@ -310,9 +310,9 @@
 }
 
 .connect-btn-lottery:hover {
-  border-color: var(--color-purple);
+  border-color: var(--color-orange);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
 }
 
 /* Today's Draw Display */
@@ -454,7 +454,7 @@
 
 .countdown-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-purple), var(--color-secondary));
+  background: linear-gradient(90deg, var(--color-orange), var(--color-secondary));
   border-radius: 2px;
   transition: width 1s linear;
 }
@@ -543,8 +543,8 @@
 }
 
 .table-row:hover {
-  background: rgba(138, 43, 226, 0.03);
-  border-left-color: var(--color-purple);
+  background: rgba(255, 107, 53, 0.03);
+  border-left-color: var(--color-orange);
 }
 
 .table-row.user-winner {
@@ -771,7 +771,7 @@
   font-size: 72px;
   font-weight: 600;
   line-height: 1;
-  color: var(--color-purple);
+  color: var(--color-orange);
   opacity: 0.4;
   transition: opacity 0.2s ease;
 }

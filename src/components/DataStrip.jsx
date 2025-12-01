@@ -74,7 +74,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Supply</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={supply} significant={3} /> MONSTR
+            <DisplayFormattedNumber num={supply} significant={3} /> GIGA
           </span>
         </span>
 
@@ -83,7 +83,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Reserve</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={tvl} significant={3} /> MON
+            <DisplayFormattedNumber num={tvl} significant={3} /> MEGA
           </span>
         </span>
 
@@ -99,21 +99,21 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">Daily fees</span>{' '}
           <span className="ticker-value">
-            <DisplayFormattedNumber num={feesPoolAmount} significant={3} /> MONSTR
+            <DisplayFormattedNumber num={feesPoolAmount} significant={3} /> GIGA
           </span>
         </span>
 
         <span className="ticker-separator">•</span>
 
         <span className="ticker-item">
-          <span className="ticker-label">MONSTR price</span>{' '}
+          <span className="ticker-label">GIGA price</span>{' '}
           <span className="ticker-value">N/A</span>
         </span>
 
         <span className="ticker-separator">•</span>
 
         <span className="ticker-item">
-          <span className="ticker-label">MON price</span>{' '}
+          <span className="ticker-label">MEGA price</span>{' '}
           <span className="ticker-value">
             {monPrice !== null ? <><DisplayFormattedNumber num={monPrice} significant={3} /> USD</> : 'N/A'}
           </span>

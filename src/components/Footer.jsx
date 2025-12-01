@@ -23,9 +23,9 @@ export function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h4 className="footer-subtitle">About MONSTR</h4>
+          <h4 className="footer-subtitle">About GIGA</h4>
           <p className="footer-description">
-            100% backed by MON, withdraw anytime, up-only floor price. Designed for Monad.
+            100% backed by MEGA, withdraw anytime, up-only floor price. Designed for MegaETH.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export function Footer() {
 
       <div className="footer-disclaimer">
         <p>
-          Contract audited for Ethereum, adapted for Monad. MONSTR is not affiliated with Monad.
+          Contract audited for Ethereum, adapted for MegaETH. GIGA is not affiliated with MegaETH.
         </p>
         <p>
           <button onClick={() => setShowDisclaimer(true)} className="disclaimer-link">
@@ -94,7 +94,7 @@ export function Footer() {
           </button>
         </p>
         <p className="footer-copyright">
-          © 2025 MONSTR. All rights reserved.
+          © 2025 GIGA. All rights reserved.
         </p>
       </div>
 

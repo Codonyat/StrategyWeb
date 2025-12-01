@@ -192,7 +192,7 @@
 /* Error state */
 .input-wrapper input.error {
   border-color: var(--color-error);
-  box-shadow: 0 0 0 3px rgba(255, 56, 100, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 45, 106, 0.1);
 }
 
 .input-wrapper input:disabled {
@@ -270,21 +270,21 @@
 }
 
 .shortcut-btn:hover:not(:disabled) {
-  background: var(--color-purple);
-  border-color: var(--color-purple);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
   color: white;
   transform: scale(1.05);
 }
 
 .shortcut-btn.selected {
-  background: var(--color-purple);
-  border-color: var(--color-purple);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
   color: white;
 }
 
 .shortcut-btn.selected:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 .shortcut-btn:active:not(:disabled) {
@@ -317,22 +317,22 @@
 }
 
 .quick-amount-btn:hover:not(:disabled) {
-  background: var(--color-purple);
-  border-color: var(--color-purple);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
   color: white;
   transform: translateY(-1px);
 }
 
 .quick-amount-btn.selected {
-  background: var(--color-purple);
-  border-color: var(--color-purple);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
   color: white;
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
 }
 
 .quick-amount-btn.selected:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3), 0 4px 12px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3), 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .quick-amount-btn:active:not(:disabled) {
@@ -384,7 +384,7 @@
 .warning-message {
   padding: 0.875rem 1rem;
   background: var(--color-background-light);
-  border: 1px solid rgba(255, 56, 100, 0.4);
+  border: 1px solid rgba(255, 45, 106, 0.4);
   border-left: 3px solid var(--color-primary);
   border-radius: var(--radius-md);
   margin-bottom: 1.25rem;
@@ -409,8 +409,8 @@
 }
 
 .error-message {
-  background: rgba(255, 56, 100, 0.1);
-  border: 1px solid rgba(255, 56, 100, 0.3);
+  background: rgba(255, 45, 106, 0.1);
+  border: 1px solid rgba(255, 45, 106, 0.3);
   color: var(--color-primary);
 }
 
@@ -500,17 +500,17 @@
 
 .submit-button.burn:hover:not(:disabled) {
   border-color: var(--color-primary) !important;
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3) !important;
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3) !important;
 }
 
 /* Bid Button - Purple gradient overlay */
 .submit-button.bid::before {
-  background: linear-gradient(135deg, var(--color-purple), var(--color-secondary));
+  background: linear-gradient(135deg, var(--color-orange), var(--color-secondary));
 }
 
 .submit-button.bid:hover:not(:disabled) {
-  border-color: var(--color-purple) !important;
-  box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3) !important;
+  border-color: var(--color-orange) !important;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3) !important;
 }
 
 /* Loading state */
@@ -645,7 +645,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-secondary), var(--color-purple));
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-orange));
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;

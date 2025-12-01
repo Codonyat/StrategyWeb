@@ -173,7 +173,7 @@ export function MintModal({ isOpen, onClose }) {
   // Generate X share URL with prepopulated tweet
   const generateShareUrl = () => {
     const announcementLink = import.meta.env.VITE_ANNOUNCEMENT_LINK || 'https://twitter.com/yourhandle/status/123456789';
-    const tweetText = `I just minted MONSTR, a strategy coin on Monad:\n\n◈ 100% backed by MON, redeemable anytime\n◈ with a floor price that can only go up as fees accrue, and\n◈ a daily no-loss lottery for holders.\n\nCheck the launch thread and join in: ${announcementLink}`;
+    const tweetText = `I just minted GIGA, a strategy coin on MegaETH:\n\n◈ 100% backed by MEGA, redeemable anytime\n◈ with a floor price that can only go up as fees accrue, and\n◈ a daily no-loss lottery for holders.\n\nCheck the launch thread and join in: ${announcementLink}`;
     return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
   };
 
@@ -195,7 +195,7 @@ export function MintModal({ isOpen, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{showSuccessView ? 'Success!' : 'Deposit MON'}</h2>
+          <h2>{showSuccessView ? 'Success!' : 'Deposit MEGA'}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
@@ -343,7 +343,7 @@ export function MintModal({ isOpen, onClose }) {
                 {isPending ? 'Waiting for approval' :
                  isConfirming ? 'Confirming' :
                  (isSuccess && amount) ? 'Success!' :
-                 'Deposit MON'}
+                 'Deposit MEGA'}
               </div>
             </button>
           )}

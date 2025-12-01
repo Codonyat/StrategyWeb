@@ -74,16 +74,16 @@ export const CONTRACT_CONFIG = {
 
   // Token configuration
   strategyCoin: {
-    symbol: 'MONSTR',
-    name: 'Monster Strategy',
+    symbol: 'GIGA',
+    name: 'Giga Strategy',
   },
   nativeCoin: {
-    symbol: 'MON',
-    name: 'Monad',
+    symbol: 'MEGA',
+    name: 'MegaETH',
   },
   wrappedCoin: {
-    symbol: 'WMON',
-    name: 'Wrapped Monad',
+    symbol: 'WMEGA',
+    name: 'Wrapped MEGA',
   },
 
   // External links (optional)

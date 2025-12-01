@@ -24,8 +24,8 @@
   height: 600px;
   background: radial-gradient(
     circle,
-    rgba(138, 43, 226, 0.08) 0%,
-    rgba(138, 43, 226, 0.04) 30%,
+    rgba(255, 107, 53, 0.08) 0%,
+    rgba(255, 107, 53, 0.04) 30%,
     transparent 70%
   );
   pointer-events: none;
@@ -343,11 +343,11 @@
 .action-btn:hover {
   border-color: var(--color-primary);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3);
 }
 
 .action-btn:focus-visible {
-  outline: 2px solid rgba(255, 56, 100, 0.6);
+  outline: 2px solid rgba(255, 45, 106, 0.6);
   outline-offset: 2px;
 }
 
@@ -372,11 +372,11 @@
 
 .withdraw-btn:hover {
   border-color: var(--color-primary) !important;
-  box-shadow: 0 10px 30px rgba(255, 56, 100, 0.3) !important;
+  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3) !important;
 }
 
 .withdraw-btn:focus-visible {
-  outline-color: rgba(255, 56, 100, 0.6);
+  outline-color: rgba(255, 45, 106, 0.6);
   border-color: var(--color-primary);
 }
 
@@ -489,7 +489,7 @@
 
 .transaction-row.burn .tx-indicator {
   background: var(--color-error);
-  box-shadow: 0 0 8px rgba(255, 56, 100, 0.4);
+  box-shadow: 0 0 8px rgba(255, 45, 106, 0.4);
 }
 
 .transaction-row.transfer .tx-indicator,
@@ -519,7 +519,7 @@
 
 .transaction-row.burn:hover {
   border-left-color: var(--color-error);
-  background: rgba(255, 56, 100, 0.03);
+  background: rgba(255, 45, 106, 0.03);
 }
 
 .transaction-row.transfer:hover,
@@ -662,7 +662,7 @@
 .stat-card:hover {
   border-color: var(--color-primary);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(255, 56, 100, 0.15);
+  box-shadow: 0 12px 40px rgba(255, 45, 106, 0.15);
 }
 
 .stat-label {
@@ -761,7 +761,7 @@
   font-size: 72px;
   font-weight: 600;
   line-height: 1;
-  color: var(--color-purple);
+  color: var(--color-orange);
   opacity: 0.4;
   transition: opacity 0.2s ease;
 }
@@ -1016,12 +1016,12 @@
   0% {
     opacity: 0;
     transform: translateX(-20px);
-    background: rgba(138, 43, 226, 0.3);
+    background: rgba(255, 107, 53, 0.3);
   }
   20% {
     opacity: 1;
     transform: translateX(0);
-    background: rgba(138, 43, 226, 0.2);
+    background: rgba(255, 107, 53, 0.2);
   }
   100% {
     background: var(--color-background-card);
@@ -1058,8 +1058,8 @@
   0% {
     opacity: 0;
     transform: translateX(-20px);
-    background: rgba(255, 56, 100, 0.3);
-    box-shadow: 0 0 20px rgba(255, 56, 100, 0.4);
+    background: rgba(255, 45, 106, 0.3);
+    box-shadow: 0 0 20px rgba(255, 45, 106, 0.4);
   }
   20% {
     opacity: 1;

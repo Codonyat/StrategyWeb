@@ -32,8 +32,8 @@ export function Header() {
         <Link to="/" className="header-logo">
           <AnimatedLogo />
           <div className="logo-text-container">
-            <span className="logo-text">Monstr</span>
-            <span className="logo-subtitle">Monad Strategy</span>
+            <span className="logo-text">GigaETH</span>
+            <span className="logo-subtitle">MegaETH Strategy</span>
           </div>
         </Link>
 
@@ -53,12 +53,12 @@ export function Header() {
                 leftValue={isMintingPeriod ? "1:1" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
                 leftTooltip={
                   <>
-                    Backing ratio: <strong>1 MONSTR = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
+                    Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
                   </>
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
                 rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
-                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing." : "Exchange rate between MONSTR and MON. Coming soon."}
+                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
                 fixedWidth={isMintingPeriod && isMintingActive}
               />
               </>
@@ -163,12 +163,12 @@ export function Header() {
                 leftValue={isMintingPeriod ? "1:1" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
                 leftTooltip={
                   <>
-                    Backing ratio: <strong>1 MONSTR = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MON</strong>. Each MONSTR can be redeemed for this amount of MON from the reserve.
+                    Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
                   </>
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
                 rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
-                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when MONSTR is burned to free up backing." : "Exchange rate between MONSTR and MON. Coming soon."}
+                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
                 fixedWidth={isMintingPeriod && isMintingActive}
               />
             </div>
