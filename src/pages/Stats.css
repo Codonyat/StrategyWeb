@@ -110,7 +110,7 @@
   color: var(--text-primary);
   border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 45, 106, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 47, 143, 0.2);
 }
 
 .chart-tab.active {

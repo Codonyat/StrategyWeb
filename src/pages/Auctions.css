@@ -189,10 +189,10 @@
 }
 
 .info-row.highlight-row {
-  background: rgba(0, 255, 136, 0.05);
+  background: rgba(49, 240, 255, 0.05);
   padding: 0.75rem var(--spacing-sm);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(0, 255, 136, 0.2);
+  border: 1px solid rgba(49, 240, 255, 0.2);
   margin-top: var(--spacing-xs);
   border-bottom: none;
 }
@@ -242,7 +242,7 @@
 }
 
 .status-badge.outbid {
-  background: rgba(255, 45, 106, 0.2);
+  background: rgba(255, 47, 143, 0.2);
   color: var(--color-primary);
 }
 
@@ -298,8 +298,8 @@
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  background: rgba(49, 240, 255, 0.1);
+  border: 1px solid rgba(49, 240, 255, 0.3);
   border-radius: var(--radius-md);
   color: var(--color-success);
   font-weight: 600;
@@ -363,13 +363,13 @@
 .claim-btn:hover:not(:disabled) {
   border-color: var(--color-success);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.3);
 }
 
 .bid-btn:hover:not(:disabled) {
   border-color: var(--color-primary);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 47, 143, 0.3);
 }
 
 .claim-btn:disabled,
@@ -428,7 +428,7 @@
 .connect-btn-auction:hover {
   border-color: var(--color-orange);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 138, 60, 0.3);
 }
 
 /* ========================================
@@ -515,18 +515,18 @@
 }
 
 .table-row:hover {
-  background: rgba(255, 107, 53, 0.03);
+  background: rgba(255, 138, 60, 0.03);
   border-left-color: var(--color-orange);
 }
 
 .table-row.user-winner {
-  background: rgba(0, 255, 136, 0.05);
+  background: rgba(49, 240, 255, 0.05);
   border-left-color: var(--color-success);
 }
 
 .table-row.user-winner:hover {
-  background: rgba(0, 255, 136, 0.08);
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.1);
+  background: rgba(49, 240, 255, 0.08);
+  box-shadow: 0 0 12px rgba(49, 240, 255, 0.1);
 }
 
 .td-day {
@@ -651,7 +651,7 @@
 .auctions-page .step-card:hover {
   border-color: var(--color-orange); /* Purple accent for auctions */
   transform: translateY(-1px);
-  box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 1px rgba(255, 138, 60, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .auctions-page .step-card:focus-visible {
@@ -739,7 +739,7 @@
 .claim-btn-inline:hover:not(:disabled) {
   border-color: var(--color-success);
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 255, 136, 0.3);
+  box-shadow: 0 6px 16px rgba(49, 240, 255, 0.3);
 }
 
 .claim-btn-inline:disabled {

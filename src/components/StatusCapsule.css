@@ -23,23 +23,23 @@
 }
 
 .capsule-left {
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  background: rgba(49, 240, 255, 0.1);
+  border: 1px solid rgba(49, 240, 255, 0.3);
   border-radius: 9999px 0 0 9999px;
   border-right: none;
 }
 
 .capsule-right {
-  background: rgba(255, 107, 53, 0.2);
-  border: 1px solid rgba(255, 107, 53, 0.6);
+  background: rgba(255, 138, 60, 0.2);
+  border: 1px solid rgba(255, 138, 60, 0.6);
   border-radius: 0 9999px 9999px 0;
   border-left: none;
 }
 
 /* Higher specificity to ensure purple shows */
 .status-capsule .capsule-right {
-  background: rgba(255, 107, 53, 0.2);
-  border: 1px solid rgba(255, 107, 53, 0.6);
+  background: rgba(255, 138, 60, 0.2);
+  border: 1px solid rgba(255, 138, 60, 0.6);
 }
 
 .capsule-segment.has-tooltip {
@@ -52,8 +52,8 @@
 
 /* Ensure right segment maintains purple colors even when disabled */
 .capsule-right.disabled {
-  background: rgba(255, 107, 53, 0.2);
-  border: 1px solid rgba(255, 107, 53, 0.6);
+  background: rgba(255, 138, 60, 0.2);
+  border: 1px solid rgba(255, 138, 60, 0.6);
   opacity: 0.6;
 }
 

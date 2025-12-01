@@ -4,38 +4,38 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Theme Colors - GigaETH synthwave palette */
-  --color-background: #0a0f14;
-  --color-background-light: #131a22;
-  --color-background-card: #1a2230;
+  /* Theme Colors - GigaETH neon synthwave palette */
+  --color-background: #050813;
+  --color-background-light: #11192C;
+  --color-background-card: #0A1020;
 
-  --color-primary: #ff2d6a;
-  --color-primary-hover: #ff1a5c;
-  --color-primary-light: #ff5a8a;
+  --color-primary: #FF2F8F;
+  --color-primary-hover: #FF4DA3;
+  --color-primary-light: #FF6BB5;
 
-  --color-secondary: #00d4ff;
-  --color-secondary-hover: #00b8e6;
-  --color-secondary-light: #33ddff;
+  --color-secondary: #31F0FF;
+  --color-secondary-hover: #5FF4FF;
+  --color-secondary-light: #8DF8FF;
 
-  --color-orange: #ff6b35;
-  --color-orange-hover: #ff7d4d;
-  --color-orange-light: #ff8f66;
+  --color-orange: #FF8A3C;
+  --color-orange-hover: #FFA05C;
+  --color-orange-light: #FFB67C;
 
-  --color-accent: #ffaa00;
-  --color-accent-hover: #ffbb33;
+  --color-accent: #FFD94A;
+  --color-accent-hover: #FFE16A;
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-text-muted: #707070;
+  --color-text-primary: #F5F4FF;
+  --color-text-secondary: #A0A6C5;
+  --color-text-muted: #6B718E;
 
-  --color-border: #1e2836;
-  --color-border-light: #2d3a4a;
-  --color-border-hover: #3d4a5a;
+  --color-border: #1B2237;
+  --color-border-light: #2A3347;
+  --color-border-hover: #3A4357;
 
-  --color-success: #00ff88;
-  --color-error: #ff2d6a;
-  --color-warning: #ffaa00;
-  --color-info: #00d4ff;
+  --color-success: #31F0FF;
+  --color-error: #FF2F8F;
+  --color-warning: #FFD94A;
+  --color-info: #31F0FF;
 
   /* Aliases for component compatibility */
   --background: var(--color-background);
@@ -169,7 +169,7 @@ sup {
 
 .btn:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 47, 143, 0.3);
 }
 
 .btn:active {
@@ -194,7 +194,7 @@ sup {
 
 .btn-primary:hover {
   border-color: var(--color-primary-hover);
-  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 47, 143, 0.4);
 }
 
 .btn-secondary {
@@ -207,7 +207,7 @@ sup {
 
 .btn-secondary:hover {
   border-color: var(--color-secondary-hover);
-  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.4);
 }
 
 .btn-success {
@@ -220,7 +220,7 @@ sup {
 
 .btn-success:hover {
   border-color: var(--color-success);
-  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.4);
 }
 
 .btn-error {
@@ -233,7 +233,7 @@ sup {
 
 .btn-error:hover {
   border-color: var(--color-error);
-  box-shadow: 0 10px 30px rgba(255, 45, 106, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 47, 143, 0.4);
 }
 
 /* Button Sizes */

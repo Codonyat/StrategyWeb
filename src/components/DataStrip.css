@@ -1,11 +1,14 @@
 .data-strip {
   width: 100%;
-  background: linear-gradient(180deg,
-    rgba(255, 107, 53, 0.18) 0%,
-    rgba(255, 107, 53, 0.22) 100%
-  );
-  border-top: 1px solid rgba(255, 107, 53, 0.35);
-  border-bottom: 1px solid rgba(255, 107, 53, 0.35);
+  background:
+    linear-gradient(90deg,
+      rgba(255, 138, 60, 0.12) 0%,
+      rgba(255, 47, 143, 0.12) 50%,
+      rgba(49, 240, 255, 0.12) 100%
+    ),
+    var(--color-background);
+  border-top: 1px solid rgba(255, 47, 143, 0.25);
+  border-bottom: 1px solid rgba(49, 240, 255, 0.25);
   position: relative;
   backdrop-filter: blur(8px);
 }

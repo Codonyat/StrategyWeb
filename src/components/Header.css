@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--color-background-light);
+  background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -93,7 +93,7 @@
   max-width: fit-content;
 }
 
-/* Inner border with purple to green gradient - muted at top, green at bottom */
+/* Inner border with orange to cyan gradient */
 .nav-desktop::before {
   content: '';
   position: absolute;
@@ -101,8 +101,8 @@
   border-radius: 24px;
   padding: 1px;
   background: linear-gradient(180deg,
-    rgba(255, 107, 53, 0.15) 0%,
-    rgba(0, 255, 136, 0.2) 100%
+    rgba(255, 138, 60, 0.15) 0%,
+    rgba(49, 240, 255, 0.2) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -121,7 +121,7 @@
   width: 85%;
   height: 6px;
   background: linear-gradient(180deg,
-    rgba(0, 255, 136, 0.05) 0%,
+    rgba(49, 240, 255, 0.05) 0%,
     transparent 100%
   );
   filter: blur(3px);
@@ -148,25 +148,25 @@
 
 .nav-link:hover {
   color: var(--color-text-primary);
-  border-color: var(--color-success);
+  border-color: var(--color-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.25);
+  box-shadow: 0 4px 15px rgba(49, 240, 255, 0.25);
   opacity: 1;
 }
 
 .nav-link:focus-visible {
-  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline: 2px solid rgba(49, 240, 255, 0.6);
   outline-offset: 2px;
-  border-color: var(--color-success);
+  border-color: var(--color-secondary);
   opacity: 1;
 }
 
 .nav-link.active {
   color: var(--color-text-primary);
   background-color: var(--color-background-card);
-  border: 1px solid rgba(0, 255, 136, 0.6);
-  box-shadow: 0 3px 16px rgba(0, 255, 136, 0.4),
-              0 0 0 1px rgba(0, 255, 136, 0.3);
+  border: 1px solid rgba(255, 47, 143, 0.6);
+  box-shadow: 0 3px 16px rgba(49, 240, 255, 0.3),
+              0 0 0 1px rgba(255, 47, 143, 0.3);
   opacity: 1;
 }
 
@@ -180,9 +180,9 @@
   height: 2px;
   background: linear-gradient(90deg,
     transparent,
-    rgba(0, 255, 136, 0.6) 20%,
-    rgba(0, 255, 136, 0.8) 50%,
-    rgba(0, 255, 136, 0.6) 80%,
+    rgba(255, 47, 143, 0.6) 20%,
+    rgba(255, 47, 143, 0.8) 50%,
+    rgba(255, 47, 143, 0.6) 80%,
     transparent
   );
   filter: blur(2px);
@@ -231,7 +231,7 @@
 .wallet-connect-btn:hover {
   border-color: var(--color-success);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+  box-shadow: 0 8px 25px rgba(49, 240, 255, 0.3);
 }
 
 .wallet-connect-btn:hover::before {
@@ -239,7 +239,7 @@
 }
 
 .wallet-connect-btn:focus-visible {
-  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline: 2px solid rgba(49, 240, 255, 0.6);
   outline-offset: 2px;
   border-color: var(--color-success);
 }
@@ -248,7 +248,7 @@
 .wallet-connected-btn {
   padding: 0.5rem 1.25rem;
   background: var(--color-background-light);
-  border: 2px solid rgba(0, 255, 136, 0.3);
+  border: 2px solid rgba(49, 240, 255, 0.3);
   border-radius: 9999px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -263,15 +263,15 @@
 }
 
 .wallet-connected-btn:hover {
-  border-color: rgba(0, 255, 136, 0.5);
+  border-color: rgba(49, 240, 255, 0.5);
   background: var(--color-background-card);
-  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+  box-shadow: 0 4px 15px rgba(49, 240, 255, 0.2);
 }
 
 .wallet-connected-btn:focus-visible {
-  outline: 2px solid rgba(0, 255, 136, 0.6);
+  outline: 2px solid rgba(49, 240, 255, 0.6);
   outline-offset: 2px;
-  border-color: rgba(0, 255, 136, 0.6);
+  border-color: rgba(49, 240, 255, 0.6);
 }
 
 .wallet-address-display {
@@ -419,10 +419,10 @@
 }
 
 .nav-mobile .nav-link.active {
-  background: rgba(0, 255, 136, 0.08);
+  background: rgba(49, 240, 255, 0.08);
   border-color: var(--color-success);
   color: var(--color-text-primary);
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 12px rgba(49, 240, 255, 0.2);
 }
 
 /* Stats in mobile menu - hidden by default, shown at <560px */

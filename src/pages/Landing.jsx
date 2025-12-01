@@ -173,14 +173,14 @@ export default function Landing() {
               >
                 <div className="coin-face coin-native">
                   <img
-                    src={"/coins/mega.png"}
+                    src={"/coins/mega.jpg"}
                     alt={"MEGA"}
                     className="coin-image"
                   />
                 </div>
                 <div className="coin-face coin-strategy">
                   <img
-                    src={"/coins/giga.png"}
+                    src={"/coins/giga.jpg"}
                     alt={"GIGA"}
                     className="coin-image"
                   />
