@@ -99,7 +99,5 @@ export const CONTRACT_CONFIG = {
 // Export contract address separately for convenience
 export const CONTRACT_ADDRESS = CONTRACT_CONFIG.address;
 
-// Day duration based on network
-// MegaETH Testnet (6342): 15 minutes = 900 seconds
-// MegaETH Mainnet: 25 hours = 90000 seconds
-export const PSEUDO_DAY_SECONDS = chainId === 6342 || chainId === 6343 ? 900 : 90000;
+// Pseudo-day duration: 25 hours = 90000 seconds
+export const PSEUDO_DAY_SECONDS = 90000;
