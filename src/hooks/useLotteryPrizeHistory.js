@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 import { useAccount } from 'wagmi';
-import { formatEther } from 'viem';
+import { formatUnits } from 'viem';
 import { GET_RECENT_LOTTERY_PRIZES, subgraphClient } from '../config/graphql';
 
 /**
@@ -36,7 +36,7 @@ export function useLotteryPrizeHistory(limit = 7, pollInterval = 30000) {
     return {
       day: parseInt(prize.day || '0'),
       winner: prize.winner || '0x0000000000000000000000000000000000000000',
-      amount: prize.amount ? parseFloat(formatEther(BigInt(prize.amount))) : 0,
+      amount: prize.amount ? parseFloat(formatUnits(BigInt(prize.amount), 21)) : 0,
       status,
       claimed: prize.claimed,
       claimTimestamp: prize.claimTimestamp ? parseInt(prize.claimTimestamp) : null,

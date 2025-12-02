@@ -1,12 +1,16 @@
 /**
- * Vercel Serverless Function - Goldsky Subgraph Proxy
+ * Vercel Serverless Function - Subgraph Proxy
  *
- * This function proxies GraphQL requests to the private Goldsky subgraph endpoint,
+ * This function proxies GraphQL requests to the subgraph endpoint,
  * adding the authentication token server-side to keep it secure.
  *
+ * Works with any GraphQL subgraph provider that uses Bearer token auth:
+ * - TheGraph (https://api.studio.thegraph.com/query/...)
+ * - Goldsky (https://api.goldsky.com/api/private/...)
+ *
  * Environment Variables Required:
- * - GOLDSKY_SUBGRAPH_URL: The private Goldsky subgraph endpoint
- * - GOLDSKY_API_TOKEN: Your Goldsky API token (server-side only, NOT prefixed with VITE_)
+ * - SUBGRAPH_URL: The subgraph GraphQL endpoint
+ * - SUBGRAPH_API_TOKEN: Your API token (server-side only, NOT prefixed with VITE_)
  */
 
 export default async function handler(req, res) {
@@ -15,27 +19,27 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
-  const GOLDSKY_SUBGRAPH_URL = process.env.GOLDSKY_SUBGRAPH_URL;
-  const GOLDSKY_API_TOKEN = process.env.GOLDSKY_API_TOKEN;
+  const SUBGRAPH_URL = process.env.SUBGRAPH_URL;
+  const SUBGRAPH_API_TOKEN = process.env.SUBGRAPH_API_TOKEN;
 
   // Validate environment variables
-  if (!GOLDSKY_SUBGRAPH_URL) {
-    console.error('GOLDSKY_SUBGRAPH_URL is not configured');
+  if (!SUBGRAPH_URL) {
+    console.error('SUBGRAPH_URL is not configured');
     return res.status(500).json({ error: 'Subgraph endpoint not configured' });
   }
 
-  if (!GOLDSKY_API_TOKEN) {
-    console.error('GOLDSKY_API_TOKEN is not configured');
+  if (!SUBGRAPH_API_TOKEN) {
+    console.error('SUBGRAPH_API_TOKEN is not configured');
     return res.status(500).json({ error: 'Authentication token not configured' });
   }
 
   try {
-    // Forward the GraphQL request to Goldsky with authentication
-    const response = await fetch(GOLDSKY_SUBGRAPH_URL, {
+    // Forward the GraphQL request to subgraph with authentication
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GOLDSKY_API_TOKEN}`,
+        'Authorization': `Bearer ${SUBGRAPH_API_TOKEN}`,
       },
       body: JSON.stringify(req.body),
     });
@@ -45,7 +49,7 @@ export default async function handler(req, res) {
 
     // Forward the status code and response
     if (!response.ok) {
-      console.error('Goldsky API error:', response.status, data);
+      console.error('Subgraph API error:', response.status, data);
       return res.status(response.status).json(data);
     }
 

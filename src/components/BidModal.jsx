@@ -1,110 +1,141 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { parseEther, formatEther, parseAbi, maxUint256 } from 'viem';
+import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import './TransactionModal.css';
 
-// Minimal ERC20 ABI for WMON interactions
-const ERC20_ABI = parseAbi([
-  'function balanceOf(address) view returns (uint256)',
-  'function allowance(address owner, address spender) view returns (uint256)',
-  'function approve(address spender, uint256 amount) returns (bool)',
-]);
+// ERC20 ABI for balance, allowance, and approve
+const ERC20_ABI = [
+  {
+    name: 'balanceOf',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'approve',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+];
+
+// MEGA uses 18 decimals
+const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;
 
 export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [selectedPercentage, setSelectedPercentage] = useState(null);
-  const [needsApproval, setNeedsApproval] = useState(false);
-  const [useNativeMon, setUseNativeMon] = useState(true); // Default to native MON
+  const [isApproving, setIsApproving] = useState(false);
+  const [useUnlimitedApproval, setUseUnlimitedApproval] = useState(false);
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { bid, isPending: isBidPending, isConfirming: isBidConfirming, isSuccess: isBidSuccess, error: bidError } = useStrategyContract();
+  const { bid, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
 
-  // Get native MON balance
-  const { data: monBalance, refetch: refetchMonBalance } = useBalance({
-    address,
-    chainId: CONTRACT_CONFIG.chainId,
-    query: {
-      enabled: !!address,
-      refetchInterval: 10000,
-    },
-  });
+  // Get MEGA token address
+  const megaTokenAddress = CONTRACT_CONFIG.megaTokenAddress;
 
-  // Get WMON address from contract
-  const { data: wmonAddress } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_CONFIG.abi,
-    functionName: 'wmon',
-    chainId: CONTRACT_CONFIG.chainId,
-    query: {
-      enabled: !!CONTRACT_ADDRESS,
-    },
-  });
-
-  // Get WMON balance
-  const { data: wmonBalance, isError: isBalanceError, isLoading: isBalanceLoading, refetch: refetchBalance } = useReadContract({
-    address: wmonAddress,
+  // Get MEGA balance
+  const { data: megaBalance, isError, isLoading: isBalanceLoading, refetch: refetchBalance } = useReadContract({
+    address: megaTokenAddress,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    chainId: CONTRACT_CONFIG.chainId,
     query: {
-      enabled: !!address && !!wmonAddress,
+      enabled: !!address && !!megaTokenAddress,
       retry: 3,
       retryDelay: 1000,
       refetchInterval: 10000,
     },
   });
 
-  // Get WMON allowance
-  const { data: wmonAllowance, refetch: refetchAllowance } = useReadContract({
-    address: wmonAddress,
+  // Get current allowance
+  const { data: currentAllowance, refetch: refetchAllowance } = useReadContract({
+    address: megaTokenAddress,
     abi: ERC20_ABI,
     functionName: 'allowance',
-    args: address && CONTRACT_ADDRESS ? [address, CONTRACT_ADDRESS] : undefined,
-    chainId: CONTRACT_CONFIG.chainId,
+    args: address ? [address, CONTRACT_ADDRESS] : undefined,
     query: {
-      enabled: !!address && !!wmonAddress && !!CONTRACT_ADDRESS,
+      enabled: !!address && !!megaTokenAddress && !!CONTRACT_ADDRESS,
       retry: 3,
       retryDelay: 1000,
-      refetchInterval: 10000,
+      refetchInterval: 5000,
     },
   });
 
-  // Approve WMON spending
-  const { writeContract: approveWmon, data: approvalHash, isPending: isApproving, error: approvalError } = useWriteContract();
-  const { isLoading: isApprovalConfirming, isSuccess: isApprovalSuccess } = useWaitForTransactionReceipt({
-    hash: approvalHash,
+  // Approval transaction
+  const {
+    writeContract: writeApprove,
+    data: approveHash,
+    isPending: isApprovePending,
+    error: approveError,
+    reset: resetApprove,
+  } = useWriteContract();
+
+  const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
+    hash: approveHash,
   });
 
-  // Check if approval is needed (only for WMON)
-  useEffect(() => {
-    if (useNativeMon || !amount || !wmonAllowance) {
-      setNeedsApproval(false);
-      return;
-    }
-
+  // Check if approval is needed
+  const needsApproval = () => {
+    if (!amount || parseFloat(amount) <= 0) return false;
+    if (!currentAllowance) return true;
     try {
-      const bidAmount = parseEther(amount);
-      setNeedsApproval(wmonAllowance < bidAmount);
+      const amountWei = parseUnits(amount, MEGA_DECIMALS);
+      return currentAllowance < amountWei;
     } catch {
-      setNeedsApproval(false);
+      return true;
     }
-  }, [amount, wmonAllowance, useNativeMon]);
+  };
 
-  // Refetch balances and allowances when modal opens or approval succeeds
+  // Reset state when modal opens
   useEffect(() => {
-    if ((isOpen || isApprovalSuccess) && address) {
+    if (isOpen) {
+      setAmount('');
+      setError('');
+      setSelectedPercentage(null);
+      setIsApproving(false);
+      setUseUnlimitedApproval(false);
+      reset();
+      resetApprove();
+    }
+  }, [isOpen, reset, resetApprove]);
+
+  // Refetch balance and allowance when modal opens
+  useEffect(() => {
+    if (isOpen && address) {
       refetchBalance();
       refetchAllowance();
-      refetchMonBalance();
     }
-  }, [isOpen, isApprovalSuccess, address, refetchBalance, refetchAllowance, refetchMonBalance]);
+  }, [isOpen, address, refetchBalance, refetchAllowance]);
+
+  // Refetch allowance after successful approval
+  useEffect(() => {
+    if (isApproveSuccess) {
+      refetchAllowance();
+      setIsApproving(false);
+    }
+  }, [isApproveSuccess, refetchAllowance]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -113,27 +144,27 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     }
   }, [isOpen]);
 
-  // Auto-close on success
-  useEffect(() => {
-    if (isBidSuccess) {
-      const timer = setTimeout(() => {
-        setAmount('');
-        setError('');
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isBidSuccess, onClose]);
-
   // Handle transaction errors
   useEffect(() => {
-    if (bidError) {
-      setError(bidError.message || 'Transaction failed');
+    if (txError) {
+      if (txError.message && txError.message.includes('User rejected')) {
+        return;
+      }
+      setError(txError.message || 'Transaction failed');
     }
-    if (approvalError) {
-      setError(approvalError.message || 'Approval failed');
+  }, [txError]);
+
+  // Handle approval errors
+  useEffect(() => {
+    if (approveError) {
+      if (approveError.message && approveError.message.includes('User rejected')) {
+        setIsApproving(false);
+        return;
+      }
+      setError(approveError.message || 'Approval failed');
+      setIsApproving(false);
     }
-  }, [bidError, approvalError]);
+  }, [approveError]);
 
   // Close on Escape key
   useEffect(() => {
@@ -146,28 +177,60 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  const handleApprove = async () => {
-    if (!address || !wmonAddress) {
-      setError('Please connect your wallet');
-      return;
+  // Check if amount exceeds balance
+  const exceedsBalance = () => {
+    if (!amount || parseFloat(amount) <= 0) return false;
+    if (megaBalance === undefined || megaBalance === null) return false;
+    try {
+      const amountWei = parseUnits(amount, MEGA_DECIMALS);
+      const tolerance = megaBalance / BigInt(1000000000) || BigInt(1000000);
+      return amountWei > megaBalance + tolerance;
+    } catch {
+      return false;
     }
+  };
+
+  // Update error message when amount changes
+  useEffect(() => {
+    if (exceedsBalance()) {
+      setError(`Amount exceeds your ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
+    } else if (error && error.includes('exceeds')) {
+      setError('');
+    }
+  }, [amount, megaBalance]);
+
+  const handleApprove = async () => {
+    setError('');
+    setIsApproving(true);
 
     try {
-      setError('');
-      approveWmon({
-        address: wmonAddress,
+      const approvalAmount = useUnlimitedApproval
+        ? maxUint256
+        : parseUnits(amount, MEGA_DECIMALS);
+
+      await writeApprove({
+        address: megaTokenAddress,
         abi: ERC20_ABI,
         functionName: 'approve',
-        args: [CONTRACT_ADDRESS, maxUint256], // Approve unlimited
+        args: [CONTRACT_ADDRESS, approvalAmount],
       });
     } catch (err) {
+      if (err.message && err.message.includes('User rejected')) {
+        setIsApproving(false);
+        return;
+      }
       setError(err.message || 'Failed to approve');
+      setIsApproving(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (isPending || isConfirming || isSuccess) {
+      return;
+    }
 
     if (!address) {
       setError('Please connect your wallet');
@@ -180,81 +243,93 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     }
 
     // Validate minimum bid
-    const tokenSymbol = useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol;
     if (parseFloat(amount) < minBid) {
-      setError(`Bid must be at least ${minBid.toFixed(6)} ${tokenSymbol}`);
+      setError(`Bid must be at least ${minBid.toFixed(6)} ${CONTRACT_CONFIG.nativeCoin.symbol}`);
       return;
     }
 
-    // Validate balance
-    const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
-    if (currentBalance && parseEther(amount) > currentBalance) {
-      setError(`Insufficient ${tokenSymbol} balance`);
+    if (exceedsBalance()) {
+      setError(`Insufficient ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
+      return;
+    }
+
+    // Check if approval is needed
+    if (needsApproval()) {
+      await handleApprove();
       return;
     }
 
     try {
-      await bid(amount, useNativeMon);
+      await bid(amount);
     } catch (err) {
+      if (err.message && err.message.includes('User rejected')) {
+        return;
+      }
       setError(err.message || 'Failed to place bid');
     }
   };
 
   const handlePercentageClick = (percentage) => {
-    const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
-    if (currentBalance !== undefined && currentBalance !== null) {
-      const balance = parseFloat(formatEther(currentBalance));
-      const newAmount = (balance * percentage).toFixed(6);
-      setAmount(newAmount);
+    if (megaBalance !== undefined && megaBalance !== null) {
+      const totalBalance = parseFloat(formatUnits(megaBalance, MEGA_DECIMALS));
+      if (percentage === 1.0) {
+        setAmount(formatUnits(megaBalance, MEGA_DECIMALS));
+      } else {
+        const newAmount = (totalBalance * percentage).toFixed(6);
+        setAmount(newAmount);
+      }
       setSelectedPercentage(percentage * 100);
     }
   };
 
   if (!isOpen) return null;
 
-  const isLoading = isBidPending || isBidConfirming || isApproving || isApprovalConfirming;
+  const isLoading = isPending || isConfirming || isApprovePending || isApproveConfirming;
+  const showSuccessView = isSuccess && amount;
+  const showApprovalNeeded = needsApproval() && !isApproveSuccess && amount && parseFloat(amount) > 0;
+
+  // Button text logic
+  const getButtonText = () => {
+    if (isApprovePending) return 'Waiting for approval';
+    if (isApproveConfirming) return 'Confirming approval';
+    if (isPending) return 'Waiting for confirmation';
+    if (isConfirming) return 'Confirming';
+    if (isSuccess && amount) return 'Success!';
+    if (showApprovalNeeded) return `Approve ${CONTRACT_CONFIG.nativeCoin.symbol}`;
+    return 'Place Bid';
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Place Bid</h2>
+          <h2>{showSuccessView ? 'Bid Placed!' : 'Place Bid'}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          {/* Token Toggle */}
-          <div className="token-toggle">
-            <button
-              type="button"
-              className={`toggle-btn ${useNativeMon ? 'active' : ''}`}
-              onClick={() => {
-                setUseNativeMon(true);
-                setAmount('');
-                setSelectedPercentage(null);
-                setError('');
-              }}
-              disabled={isLoading}
-            >
-              {CONTRACT_CONFIG.nativeCoin.symbol}
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn ${!useNativeMon ? 'active' : ''}`}
-              onClick={() => {
-                setUseNativeMon(false);
-                setAmount('');
-                setSelectedPercentage(null);
-                setError('');
-              }}
-              disabled={isLoading}
-            >
-              {CONTRACT_CONFIG.wrappedCoin.symbol}
-            </button>
+        {showSuccessView ? (
+          <div className="success-view">
+            <div className="success-icon">🎉</div>
+            <h3 className="success-title">Bid Successful!</h3>
+            <p className="success-message">
+              You've placed a bid of <strong><DisplayFormattedNumber num={parseFloat(amount)} significant={4} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>!
+            </p>
+            <p className="success-subtitle">
+              If you win, you'll receive <strong><DisplayFormattedNumber num={auctionPool} significant={4} /> {CONTRACT_CONFIG.strategyCoin.symbol}</strong>!
+            </p>
+            <div className="success-actions">
+              <button
+                className="close-success-button"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            </div>
           </div>
-
+        ) : (
+          <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
             <label htmlFor="amount">Bid Amount</label>
             <div className="input-wrapper">
@@ -273,73 +348,53 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
                 disabled={isLoading}
                 className={error ? 'error' : ''}
               />
-              <span className="token-symbol">{useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol}</span>
+              <span className="token-symbol">{CONTRACT_CONFIG.nativeCoin.symbol}</span>
             </div>
-            {(() => {
-              const currentBalance = useNativeMon ? monBalance?.value : wmonBalance;
-              const tokenSymbol = useNativeMon ? CONTRACT_CONFIG.nativeCoin.symbol : CONTRACT_CONFIG.wrappedCoin.symbol;
-              const balanceLoading = useNativeMon ? false : isBalanceLoading;
-              const balanceError = useNativeMon ? false : isBalanceError;
-
-              if (balanceLoading) {
-                return (
-                  <div className="balance-info disabled">
-                    Balance: <strong>Loading...</strong>
-                  </div>
-                );
-              }
-              if (balanceError) {
-                return (
-                  <div className="balance-info disabled">
-                    Balance: <strong>Error loading balance</strong>
-                  </div>
-                );
-              }
-              if (currentBalance !== undefined && currentBalance !== null) {
-                const balanceNum = parseFloat(formatEther(currentBalance));
-                return (
-                  <div className="balance-row">
-                    <div className="balance-info-text">
-                      Balance: <strong><DisplayFormattedNumber num={balanceNum} significant={6} /> {tokenSymbol}</strong>
-                    </div>
-                    <div className="balance-shortcuts">
-                      <button
-                        type="button"
-                        className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
-                        onClick={() => handlePercentageClick(0.25)}
-                        disabled={isLoading || balanceNum === 0}
-                      >
-                        25%
-                      </button>
-                      <button
-                        type="button"
-                        className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
-                        onClick={() => handlePercentageClick(0.5)}
-                        disabled={isLoading || balanceNum === 0}
-                      >
-                        50%
-                      </button>
-                      <button
-                        type="button"
-                        className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
-                        onClick={() => handlePercentageClick(1.0)}
-                        disabled={isLoading || balanceNum === 0}
-                      >
-                        MAX
-                      </button>
-                    </div>
-                  </div>
-                );
-              }
-              if (address) {
-                return (
-                  <div className="balance-info disabled">
-                    Balance: <strong>0 {tokenSymbol}</strong>
-                  </div>
-                );
-              }
-              return null;
-            })()}
+            {isBalanceLoading ? (
+              <div className="balance-info disabled">
+                Balance: <strong>Loading...</strong>
+              </div>
+            ) : isError || !megaTokenAddress ? (
+              <div className="balance-info disabled">
+                Balance: <strong>{!megaTokenAddress ? 'Token not configured' : 'Error loading balance'}</strong>
+              </div>
+            ) : megaBalance !== undefined && megaBalance !== null ? (
+              <div className="balance-row">
+                <div className="balance-info-text">
+                  Balance: <strong><DisplayFormattedNumber num={formatUnits(megaBalance, MEGA_DECIMALS)} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+                </div>
+                <div className="balance-shortcuts">
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(0.25)}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
+                  >
+                    25%
+                  </button>
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(0.5)}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
+                  >
+                    50%
+                  </button>
+                  <button
+                    type="button"
+                    className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
+                    onClick={() => handlePercentageClick(1.0)}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+            ) : address ? (
+              <div className="balance-info disabled">
+                Balance: <strong>0 {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+              </div>
+            ) : null}
           </div>
 
           <div className="transaction-info">
@@ -352,7 +407,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
             <div className="info-row">
               <span>Minimum bid</span>
               <span>
-                <DisplayFormattedNumber num={minBid} significant={6} /> {CONTRACT_CONFIG.wrappedCoin.symbol}
+                <DisplayFormattedNumber num={minBid} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}
               </span>
             </div>
             <div className="info-row">
@@ -361,9 +416,25 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
             </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-          {isBidSuccess && <div className="success-message">Bid placed successfully!</div>}
-          {isApprovalSuccess && !isBidSuccess && <div className="success-message">Approval successful! You can now place your bid.</div>}
+          {showApprovalNeeded && (
+            <label className="approval-toggle">
+              <input
+                type="checkbox"
+                checked={useUnlimitedApproval}
+                onChange={(e) => setUseUnlimitedApproval(e.target.checked)}
+                disabled={isLoading}
+              />
+              <span className="approval-toggle-text">
+                <span className="approval-toggle-label">Unlimited approval</span>
+                <span className="approval-toggle-hint">Skip approvals for future transactions (less secure)</span>
+              </span>
+            </label>
+          )}
+
+          <div className="error-text-reserved">
+            {error && <span className="error-text">{error}</span>}
+            {isSuccess && amount && !error && <span className="success-text">Bid placed successfully!</span>}
+          </div>
 
           {!address ? (
             <button
@@ -377,37 +448,20 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
                 Connect Wallet
               </div>
             </button>
-          ) : needsApproval ? (
-            <button
-              type="button"
-              className={`submit-button bid ${isLoading ? 'loading' : ''}`}
-              onClick={handleApprove}
-              disabled={isLoading}
-            >
-              <div className="button-content">
-                {isLoading && <span className="spinner"></span>}
-                {isApproving ? 'Waiting for approval' :
-                 isApprovalConfirming ? 'Confirming' :
-                 isApprovalSuccess ? 'Approved!' :
-                 `Approve ${CONTRACT_CONFIG.wrappedCoin.symbol}`}
-              </div>
-            </button>
           ) : (
             <button
               type="submit"
-              className={`submit-button bid ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading || !amount || parseFloat(amount) <= 0}
+              className={`submit-button bid ${isLoading || (isSuccess && amount) ? 'loading' : ''}`}
+              disabled={isLoading || (isSuccess && amount) || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}
-                {isBidPending ? 'Waiting for approval' :
-                 isBidConfirming ? 'Confirming' :
-                 isBidSuccess ? 'Success!' :
-                 'Place Bid'}
+                {getButtonText()}
               </div>
             </button>
           )}
         </form>
+        )}
       </div>
     </div>
   );

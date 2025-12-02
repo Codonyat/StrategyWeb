@@ -11,7 +11,7 @@
 ## Contract Mechanics
 
 ### Core Operations
-- **Minting period (24h)**: 1 MON = 1 MONSTR (1:1)
+- **Minting period (3 days)**: 1000 MEGA = 1 GIGA (1000:1)
 - **Post-minting**: Minting at backing ratio (if below max supply cap)
 - **Redemption**: Burn MONSTR → receive proportional MON
 - **Fee**: 1% on all mints, burns, transfers
@@ -53,7 +53,7 @@
 
 **Current routes:**
 - `/api/rpc` → Alchemy RPC (uses `RPC_URL`)
-- `/api/subgraph` → Goldsky GraphQL (uses `GOLDSKY_SUBGRAPH_URL`, `GOLDSKY_API_TOKEN`)
+- `/api/subgraph` → Subgraph GraphQL (uses `SUBGRAPH_URL`, `SUBGRAPH_API_TOKEN`) - works with TheGraph, Goldsky, etc.
 - `/api/mon-price` → Alchemy Price API (extracts key from `RPC_URL`)
 
 ### Contract Constants

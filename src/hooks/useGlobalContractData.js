@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
-import { useReadContract, useBalance } from 'wagmi';
-import { formatEther, parseAbi } from 'viem';
+import { useReadContract } from 'wagmi';
+import { formatUnits, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS, PSEUDO_DAY_SECONDS } from '../config/contract';
 import contractConstants from '../config/contract-constants.json';
 
@@ -15,14 +15,19 @@ const DEPLOYMENT_TIME = Number(contractConstants.deploymentTime);
 const MINTING_PERIOD = Number(contractConstants.MINTING_PERIOD);
 const MINTING_END_TIME = DEPLOYMENT_TIME + MINTING_PERIOD;
 
+// Token decimals
+const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals; // 21
+const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;   // 18
+
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
   'function totalSupply() view returns (uint256)',
   'function maxSupplyEver() view returns (uint256)',
   'function getCurrentDay() view returns (uint256)',
   'function currentLotteryPool() view returns (uint256)',
-  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 monstrAmount, uint8 auctionDay)',
+  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 auctionTokens, uint8 auctionDay)',
   'function balanceOf(address) view returns (uint256)',
+  'function getMegaReserve() view returns (uint256)',
 ]);
 
 /**
@@ -69,9 +74,11 @@ export function useGlobalContractData() {
     },
   });
 
-  // Get MON balance of the contract (TVL)
-  const { data: monBalance, error: balanceError, isLoading: balanceLoading } = useBalance({
+  // Get MEGA reserve (TVL) - uses getMegaReserve() which excludes escrowed bid amounts
+  const { data: megaReserve, error: balanceError, isLoading: balanceLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'getMegaReserve',
     chainId: CONTRACT_CONFIG.chainId,
     query: {
       enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
@@ -140,9 +147,11 @@ export function useGlobalContractData() {
 
   // Memoized calculations to prevent unnecessary re-renders
   const calculations = useMemo(() => {
-    const tvl = monBalance?.value ? parseFloat(formatEther(monBalance.value)) : 0;
-    const supply = totalSupply ? parseFloat(formatEther(totalSupply)) : 0;
-    const maxSupplyValue = maxSupply ? parseFloat(formatEther(maxSupply)) : 0;
+    // TVL in MEGA (18 decimals)
+    const tvl = megaReserve ? parseFloat(formatUnits(megaReserve, MEGA_DECIMALS)) : 0;
+    // Supply values in GIGA (21 decimals)
+    const supply = totalSupply ? parseFloat(formatUnits(totalSupply, GIGA_DECIMALS)) : 0;
+    const maxSupplyValue = maxSupply ? parseFloat(formatUnits(maxSupply, GIGA_DECIMALS)) : 0;
     const backingRatio = supply > 0 ? tvl / supply : 0;
     const isMintingPeriod = currentTime < MINTING_END_TIME;
     // Check if supply has reached max (with small tolerance for rounding)
@@ -154,13 +163,16 @@ export function useGlobalContractData() {
     const isLastMintingDay = currentDayNumber === mintingEndDay;
     // Auctions can only happen starting the day AFTER minting ends
     const isAuctionActive = currentDayNumber > mintingEndDay;
-    const feesPoolAmount = feesPoolBalance ? parseFloat(formatEther(feesPoolBalance)) : 0;
-    const lotteryPoolAmount = lotteryPool ? parseFloat(formatEther(lotteryPool)) : 0;
+    // Pool amounts in GIGA (21 decimals)
+    const feesPoolAmount = feesPoolBalance ? parseFloat(formatUnits(feesPoolBalance, GIGA_DECIMALS)) : 0;
+    const lotteryPoolAmount = lotteryPool ? parseFloat(formatUnits(lotteryPool, GIGA_DECIMALS)) : 0;
 
     // Process auction data
-    const auctionPool = currentAuction && currentAuction[3] ? parseFloat(formatEther(currentAuction[3])) : 0;
-    const currentBid = currentAuction && currentAuction[1] ? parseFloat(formatEther(currentAuction[1])) : 0;
-    const minBid = currentAuction && currentAuction[2] ? parseFloat(formatEther(currentAuction[2])) : 0;
+    // auctionTokens (index 3) is in GIGA (21 decimals)
+    const auctionPool = currentAuction && currentAuction[3] ? parseFloat(formatUnits(currentAuction[3], GIGA_DECIMALS)) : 0;
+    // currentBid and minBid (indices 1, 2) are in MEGA (18 decimals)
+    const currentBid = currentAuction && currentAuction[1] ? parseFloat(formatUnits(currentAuction[1], MEGA_DECIMALS)) : 0;
+    const minBid = currentAuction && currentAuction[2] ? parseFloat(formatUnits(currentAuction[2], MEGA_DECIMALS)) : 0;
     const currentBidder = currentAuction ? currentAuction[0] : null;
     const auctionDay = currentAuction && currentAuction[4] !== undefined ? Number(currentAuction[4]) : 0;
 
@@ -196,7 +208,7 @@ export function useGlobalContractData() {
       needsLotteryExecution,
       estimatedNextAuctionPool,
     };
-  }, [monBalance, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
+  }, [megaReserve, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
 
   // Aggregate errors and loading states
   const hasError =
@@ -238,7 +250,7 @@ export function useGlobalContractData() {
     // Raw data
     totalSupply,
     maxSupply,
-    monBalance,
+    megaReserve,
     currentDay,
     feesPoolBalance,
     lotteryPool,

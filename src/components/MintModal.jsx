@@ -1,33 +1,114 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { parseEther, formatEther } from 'viem';
+import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
 import { useProtocolStats } from '../hooks/useProtocolStats';
-import { CONTRACT_CONFIG } from '../config/contract';
+import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import './TransactionModal.css';
+
+// ERC20 ABI for balance, allowance, and approve
+const ERC20_ABI = [
+  {
+    name: 'balanceOf',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'approve',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+];
+
+// MEGA uses 18 decimals
+const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;
 
 export function MintModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [selectedPercentage, setSelectedPercentage] = useState(null);
+  const [isApproving, setIsApproving] = useState(false);
+  const [useUnlimitedApproval, setUseUnlimitedApproval] = useState(false);
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { mint, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
   const { isMintingPeriod, backingRatio } = useProtocolStats();
 
-  // Get MON balance
-  const { data: balance, isError, isLoading: isBalanceLoading, refetch } = useBalance({
-    address,
+  // Get MEGA token address
+  const megaTokenAddress = CONTRACT_CONFIG.megaTokenAddress;
+
+  // Get MEGA balance
+  const { data: megaBalance, isError, isLoading: isBalanceLoading, refetch: refetchBalance } = useReadContract({
+    address: megaTokenAddress,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
     query: {
-      enabled: !!address,
+      enabled: !!address && !!megaTokenAddress,
       retry: 3,
       retryDelay: 1000,
-      refetchInterval: 10000, // Refetch every 10 seconds
+      refetchInterval: 10000,
     },
   });
+
+  // Get current allowance
+  const { data: currentAllowance, refetch: refetchAllowance } = useReadContract({
+    address: megaTokenAddress,
+    abi: ERC20_ABI,
+    functionName: 'allowance',
+    args: address ? [address, CONTRACT_ADDRESS] : undefined,
+    query: {
+      enabled: !!address && !!megaTokenAddress && !!CONTRACT_ADDRESS,
+      retry: 3,
+      retryDelay: 1000,
+      refetchInterval: 5000,
+    },
+  });
+
+  // Approval transaction
+  const {
+    writeContract: writeApprove,
+    data: approveHash,
+    isPending: isApprovePending,
+    error: approveError,
+    reset: resetApprove,
+  } = useWriteContract();
+
+  const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+
+  // Check if approval is needed
+  const needsApproval = () => {
+    if (!amount || parseFloat(amount) <= 0) return false;
+    if (!currentAllowance) return true;
+    try {
+      const amountWei = parseUnits(amount, MEGA_DECIMALS);
+      return currentAllowance < amountWei;
+    } catch {
+      return true;
+    }
+  };
 
   // Reset state when modal opens
   useEffect(() => {
@@ -35,16 +116,28 @@ export function MintModal({ isOpen, onClose }) {
       setAmount('');
       setError('');
       setSelectedPercentage(null);
-      reset(); // Reset transaction state from previous transactions
+      setIsApproving(false);
+      setUseUnlimitedApproval(false);
+      reset();
+      resetApprove();
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, resetApprove]);
 
-  // Refetch balance when modal opens
+  // Refetch balance and allowance when modal opens
   useEffect(() => {
     if (isOpen && address) {
-      refetch();
+      refetchBalance();
+      refetchAllowance();
     }
-  }, [isOpen, address, refetch]);
+  }, [isOpen, address, refetchBalance, refetchAllowance]);
+
+  // Refetch allowance after successful approval
+  useEffect(() => {
+    if (isApproveSuccess) {
+      refetchAllowance();
+      setIsApproving(false);
+    }
+  }, [isApproveSuccess, refetchAllowance]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -53,19 +146,27 @@ export function MintModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  // Don't auto-close on success - let user share or close manually
-  // (Removed auto-close effect)
-
   // Handle transaction errors
   useEffect(() => {
     if (txError) {
-      // Don't show error if user rejected the transaction
       if (txError.message && txError.message.includes('User rejected')) {
         return;
       }
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
+
+  // Handle approval errors
+  useEffect(() => {
+    if (approveError) {
+      if (approveError.message && approveError.message.includes('User rejected')) {
+        setIsApproving(false);
+        return;
+      }
+      setError(approveError.message || 'Approval failed');
+      setIsApproving(false);
+    }
+  }, [approveError]);
 
   // Close on Escape key
   useEffect(() => {
@@ -78,16 +179,14 @@ export function MintModal({ isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  // Check if amount exceeds balance in real-time
+  // Check if amount exceeds balance
   const exceedsBalance = () => {
     if (!amount || parseFloat(amount) <= 0) return false;
-    if (balance?.value === undefined || balance?.value === null) return false;
+    if (megaBalance === undefined || megaBalance === null) return false;
     try {
-      const amountWei = parseEther(amount);
-      // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)
-      // This handles formatEther → parseEther precision loss
-      const tolerance = balance.value / BigInt(1000000000) || BigInt(1000000);
-      return amountWei > balance.value + tolerance;
+      const amountWei = parseUnits(amount, MEGA_DECIMALS);
+      const tolerance = megaBalance / BigInt(1000000000) || BigInt(1000000);
+      return amountWei > megaBalance + tolerance;
     } catch {
       return false;
     }
@@ -100,13 +199,37 @@ export function MintModal({ isOpen, onClose }) {
     } else if (error && error.includes('exceeds')) {
       setError('');
     }
-  }, [amount, balance]);
+  }, [amount, megaBalance]);
+
+  const handleApprove = async () => {
+    setError('');
+    setIsApproving(true);
+
+    try {
+      const approvalAmount = useUnlimitedApproval
+        ? maxUint256
+        : parseUnits(amount, MEGA_DECIMALS);
+
+      await writeApprove({
+        address: megaTokenAddress,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [CONTRACT_ADDRESS, approvalAmount],
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('User rejected')) {
+        setIsApproving(false);
+        return;
+      }
+      setError(err.message || 'Failed to approve');
+      setIsApproving(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Prevent submission if transaction is in progress or succeeded
     if (isPending || isConfirming || isSuccess) {
       return;
     }
@@ -126,10 +249,15 @@ export function MintModal({ isOpen, onClose }) {
       return;
     }
 
+    // Check if approval is needed
+    if (needsApproval()) {
+      await handleApprove();
+      return;
+    }
+
     try {
       await mint(amount);
     } catch (err) {
-      // Don't show error if user rejected the transaction
       if (err.message && err.message.includes('User rejected')) {
         return;
       }
@@ -138,13 +266,11 @@ export function MintModal({ isOpen, onClose }) {
   };
 
   const handlePercentageClick = (percentage) => {
-    if (balance?.value !== undefined && balance?.value !== null) {
-      const totalBalance = parseFloat(formatEther(balance.value));
+    if (megaBalance !== undefined && megaBalance !== null) {
+      const totalBalance = parseFloat(formatUnits(megaBalance, MEGA_DECIMALS));
       if (percentage === 1.0) {
-        // For MAX, use full balance without gas reserve
-        setAmount(formatEther(balance.value));
+        setAmount(formatUnits(megaBalance, MEGA_DECIMALS));
       } else {
-        // For percentages, use rounded value
         const newAmount = (totalBalance * percentage).toFixed(6);
         setAmount(newAmount);
       }
@@ -157,8 +283,8 @@ export function MintModal({ isOpen, onClose }) {
     const inputAmount = parseFloat(amount);
 
     if (isMintingPeriod) {
-      // During minting period: 1:1 ratio minus 1% fee
-      return inputAmount * 0.99;
+      // During minting period: 1000:1 ratio (1000 MEGA = 1 GIGA) minus 1% fee
+      return (inputAmount / 1000) * 0.99;
     } else {
       // After minting period: proportional to backing ratio minus 1% fee
       return inputAmount / backingRatio * 0.99;
@@ -167,8 +293,9 @@ export function MintModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const isLoading = isPending || isConfirming;
+  const isLoading = isPending || isConfirming || isApprovePending || isApproveConfirming;
   const showSuccessView = isSuccess && amount;
+  const showApprovalNeeded = needsApproval() && !isApproveSuccess && amount && parseFloat(amount) > 0;
 
   // Generate X share URL with prepopulated tweet
   const generateShareUrl = () => {
@@ -177,7 +304,6 @@ export function MintModal({ isOpen, onClose }) {
     return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
   };
 
-  // Open X share in pop-up window
   const handleShare = () => {
     const url = generateShareUrl();
     const width = 550;
@@ -189,6 +315,17 @@ export function MintModal({ isOpen, onClose }) {
       'Share on X',
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
     );
+  };
+
+  // Button text logic
+  const getButtonText = () => {
+    if (isApprovePending) return 'Waiting for approval';
+    if (isApproveConfirming) return 'Confirming approval';
+    if (isPending) return 'Waiting for confirmation';
+    if (isConfirming) return 'Confirming';
+    if (isSuccess && amount) return 'Success!';
+    if (showApprovalNeeded) return 'Approve MEGA';
+    return 'Deposit MEGA';
   };
 
   return (
@@ -244,7 +381,7 @@ export function MintModal({ isOpen, onClose }) {
                 onChange={(e) => {
                   setAmount(e.target.value);
                   setError('');
-                  setSelectedPercentage(null); // Clear selection on manual edit
+                  setSelectedPercentage(null);
                 }}
                 disabled={isLoading}
                 className={error ? 'error' : ''}
@@ -255,21 +392,21 @@ export function MintModal({ isOpen, onClose }) {
               <div className="balance-info disabled">
                 Balance: <strong>Loading...</strong>
               </div>
-            ) : isError ? (
+            ) : isError || !megaTokenAddress ? (
               <div className="balance-info disabled">
-                Balance: <strong>Error loading balance</strong>
+                Balance: <strong>{!megaTokenAddress ? 'Token not configured' : 'Error loading balance'}</strong>
               </div>
-            ) : balance?.value !== undefined && balance?.value !== null ? (
+            ) : megaBalance !== undefined && megaBalance !== null ? (
               <div className="balance-row">
                 <div className="balance-info-text">
-                  Balance: <strong><DisplayFormattedNumber num={formatEther(balance.value)} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
+                  Balance: <strong><DisplayFormattedNumber num={formatUnits(megaBalance, MEGA_DECIMALS)} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}</strong>
                 </div>
                 <div className="balance-shortcuts">
                   <button
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(0.25)}
-                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
                   >
                     25%
                   </button>
@@ -277,7 +414,7 @@ export function MintModal({ isOpen, onClose }) {
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(0.5)}
-                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
                   >
                     50%
                   </button>
@@ -285,7 +422,7 @@ export function MintModal({ isOpen, onClose }) {
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(1.0)}
-                    disabled={isLoading || parseFloat(formatEther(balance.value)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
                   >
                     MAX
                   </button>
@@ -307,13 +444,28 @@ export function MintModal({ isOpen, onClose }) {
             </div>
             <div className="info-row">
               <span>Exchange rate</span>
-              <span>{isMintingPeriod ? '1:1' : <>1:<DisplayFormattedNumber num={1 / backingRatio} significant={4} /></>}</span>
+              <span>{isMintingPeriod ? '1000:1' : <>1:<DisplayFormattedNumber num={1 / backingRatio} significant={4} /></>}</span>
             </div>
             <div className="info-row">
               <span>Fee</span>
               <span>1%</span>
             </div>
           </div>
+
+          {showApprovalNeeded && (
+            <label className="approval-toggle">
+              <input
+                type="checkbox"
+                checked={useUnlimitedApproval}
+                onChange={(e) => setUseUnlimitedApproval(e.target.checked)}
+                disabled={isLoading}
+              />
+              <span className="approval-toggle-text">
+                <span className="approval-toggle-label">Unlimited approval</span>
+                <span className="approval-toggle-hint">Skip approvals for future transactions (less secure)</span>
+              </span>
+            </label>
+          )}
 
           <div className="error-text-reserved">
             {error && <span className="error-text">{error}</span>}
@@ -340,10 +492,7 @@ export function MintModal({ isOpen, onClose }) {
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}
-                {isPending ? 'Waiting for approval' :
-                 isConfirming ? 'Confirming' :
-                 (isSuccess && amount) ? 'Success!' :
-                 'Deposit MEGA'}
+                {getButtonText()}
               </div>
             </button>
           )}

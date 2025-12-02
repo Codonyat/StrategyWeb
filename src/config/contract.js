@@ -1,4 +1,5 @@
 import { STRATEGY_ABI } from './abi';
+import contractConstants from './contract-constants.json';
 
 // Validate required environment variables
 const requiredEnvVars = {
@@ -76,15 +77,15 @@ export const CONTRACT_CONFIG = {
   strategyCoin: {
     symbol: 'GIGA',
     name: 'Giga Strategy',
+    decimals: 21,
   },
   nativeCoin: {
     symbol: 'MEGA',
     name: 'MegaETH',
+    decimals: 18,
   },
-  wrappedCoin: {
-    symbol: 'WMEGA',
-    name: 'Wrapped MEGA',
-  },
+  // MEGA ERC20 token address (from build-time constants)
+  megaTokenAddress: contractConstants.megaAddress || null,
 
   // External links (optional)
   links: {
@@ -99,6 +100,6 @@ export const CONTRACT_CONFIG = {
 export const CONTRACT_ADDRESS = CONTRACT_CONFIG.address;
 
 // Day duration based on network
-// Testnet (10143): 15 minutes = 900 seconds
-// Mainnet (143): 25 hours = 90000 seconds
-export const PSEUDO_DAY_SECONDS = chainId === 10143 ? 900 : 90000;
+// MegaETH Testnet (6342): 15 minutes = 900 seconds
+// MegaETH Mainnet: 25 hours = 90000 seconds
+export const PSEUDO_DAY_SECONDS = chainId === 6342 || chainId === 6343 ? 900 : 90000;

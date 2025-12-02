@@ -1,6 +1,10 @@
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
+
+// Token decimals
+const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals; // 21
+const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;   // 18
 
 export function useStrategyContract() {
   const { address } = useAccount();
@@ -10,34 +14,37 @@ export function useStrategyContract() {
   });
 
   /**
-   * Mint MONSTR by depositing MON
-   * @param {string} amount - Amount of MON to deposit (in ether units, e.g., "1.0")
+   * Mint GIGA by depositing MEGA (ERC20)
+   * NOTE: Requires prior approval of MEGA tokens to the contract
+   * @param {string} amount - Amount of MEGA to deposit (in ether units, e.g., "1.0")
    */
   const mint = async (amount) => {
     if (!address) {
       throw new Error('Wallet not connected');
     }
 
-    const value = parseEther(amount);
+    // MEGA uses 18 decimals
+    const collateralAmount = parseUnits(amount, MEGA_DECIMALS);
 
     return writeContract({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_CONFIG.abi,
       functionName: 'mint',
-      value, // Amount of MON to send
+      args: [collateralAmount], // No value - ERC20 transfer via safeTransferFrom
     });
   };
 
   /**
-   * Burn MONSTR to withdraw MON
-   * @param {string} amount - Amount of MONSTR to burn (in ether units, e.g., "100.0")
+   * Burn GIGA to withdraw MEGA
+   * @param {string} amount - Amount of GIGA to burn (in display units, e.g., "100.0")
    */
   const burn = async (amount) => {
     if (!address) {
       throw new Error('Wallet not connected');
     }
 
-    const tokenAmount = parseEther(amount);
+    // GIGA uses 21 decimals
+    const tokenAmount = parseUnits(amount, GIGA_DECIMALS);
 
     return writeContract({
       address: CONTRACT_ADDRESS,
@@ -78,34 +85,24 @@ export function useStrategyContract() {
   };
 
   /**
-   * Place a bid in the current auction
+   * Place a bid in the current auction using MEGA (ERC20)
+   * NOTE: Requires prior approval of MEGA tokens to the contract
    * @param {string} amount - Bid amount (in ether units)
-   * @param {boolean} useNativeMon - If true, bid with native MON instead of WMON
    */
-  const bid = async (amount, useNativeMon = false) => {
+  const bid = async (amount) => {
     if (!address) {
       throw new Error('Wallet not connected');
     }
 
-    const bidAmount = parseEther(amount);
+    // MEGA uses 18 decimals
+    const bidAmount = parseUnits(amount, MEGA_DECIMALS);
 
-    if (useNativeMon) {
-      // Bid with native MON - contract will wrap it
-      return writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_CONFIG.abi,
-        functionName: 'bid',
-        args: [bidAmount],
-        value: bidAmount,
-      });
-    }
-
-    // Bid with WMON (requires prior approval)
     return writeContract({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_CONFIG.abi,
       functionName: 'bid',
       args: [bidAmount],
+      // No value - ERC20 transfer via safeTransferFrom
     });
   };
 

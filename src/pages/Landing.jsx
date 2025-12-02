@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { formatEther, parseAbi } from 'viem';
-import { useAccount, useReadContract, useBalance } from 'wagmi';
+import { formatUnits, parseAbi } from 'viem';
+import { useAccount, useReadContract, useWriteContract, useChainId } from 'wagmi';
 import { MintModal } from '../components/MintModal';
 import { BurnModal } from '../components/BurnModal';
 import { useRealtimeTransactions } from '../hooks/useRealtimeTransactions';
@@ -14,8 +14,15 @@ import './Landing.css';
 // Simple ABI for balanceOf
 const parsedAbi = parseAbi(['function balanceOf(address) view returns (uint256)']);
 
+// Mock mint ABI for testnet MEGA
+const mockMintAbi = parseAbi(['function mint()']);
+
+// MEGA token address
+const megaTokenAddress = CONTRACT_CONFIG.megaTokenAddress;
+
 export default function Landing() {
   const { address } = useAccount();
+  const chainId = useChainId();
   const [showStrategy, setShowStrategy] = useState(false);
   const [hoverState, setHoverState] = useState(null); // 'deposit', 'withdraw', or null
   const [animationTimeout, setAnimationTimeout] = useState(null);
@@ -23,12 +30,15 @@ export default function Landing() {
   const [isBurnModalOpen, setIsBurnModalOpen] = useState(false);
 
   // Fetch user balances
-  // Get MON balance (native token)
-  const { data: monBalance } = useBalance({
-    address,
+  // Get MEGA balance (ERC20 token)
+  const { data: megaBalance } = useReadContract({
+    address: megaTokenAddress,
+    abi: parsedAbi,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
     chainId: CONTRACT_CONFIG.chainId,
     query: {
-      enabled: !!address,
+      enabled: !!address && !!megaTokenAddress,
       refetchInterval: 10000,
     },
   });
@@ -46,9 +56,22 @@ export default function Landing() {
     },
   });
 
-  // Format balances
-  const monValue = monBalance ? parseFloat(formatEther(monBalance.value)) : 0;
-  const monstrValue = monstrBalance ? parseFloat(formatEther(monstrBalance)) : 0;
+  // Format balances (MEGA uses 18 decimals, GIGA uses 21 decimals)
+  const megaValue = megaBalance ? parseFloat(formatUnits(megaBalance, CONTRACT_CONFIG.nativeCoin.decimals)) : 0;
+  const monstrValue = monstrBalance ? parseFloat(formatUnits(monstrBalance, CONTRACT_CONFIG.strategyCoin.decimals)) : 0;
+
+  // Mock MEGA mint for testnet (chainId 6343)
+  const { writeContract: mintMockMega, isPending: isMintingMockMega } = useWriteContract();
+  const isTestnet = chainId === 6343;
+
+  const handleMintMockMega = () => {
+    if (!megaTokenAddress) return;
+    mintMockMega({
+      address: megaTokenAddress,
+      abi: mockMintAbi,
+      functionName: 'mint',
+    });
+  };
 
   // Fetch recent transactions via WebSocket (real-time) or fallback to loading state
   const { transactions, loading: txLoading, connected } = useRealtimeTransactions(10);
@@ -153,13 +176,25 @@ export default function Landing() {
               <span className="balances-label">Your balances:</span>
               <div className="balance-item">
                 <img src="/coins/mega-icon.png" alt="MEGA" className="balance-icon" />
-                <span className="balance-value"><DisplayFormattedNumber num={monValue} significant={3} /> MEGA</span>
+                <span className="balance-value"><DisplayFormattedNumber num={megaValue} significant={3} /> MEGA</span>
               </div>
               <span className="balance-separator">·</span>
               <div className="balance-item">
                 <img src="/coins/giga-icon.png" alt="GIGA" className="balance-icon" />
                 <span className="balance-value"><DisplayFormattedNumber num={monstrValue} significant={3} /> GIGA</span>
               </div>
+              {isTestnet && megaTokenAddress && (
+                <>
+                  <span className="balance-separator">·</span>
+                  <button
+                    className="mock-mint-btn"
+                    onClick={handleMintMockMega}
+                    disabled={isMintingMockMega}
+                  >
+                    {isMintingMockMega ? 'Minting...' : 'Mint Mock MEGA'}
+                  </button>
+                </>
+              )}
             </div>
           )}
 
@@ -247,7 +282,7 @@ export default function Landing() {
                   // Map transaction types for display
                   const displayType = type === 'redeem' ? 'burn' :
                                      type === 'transfer' ? 'fee' : type;
-                  const formattedAmount = formatEther(BigInt(tx.stratAmount));
+                  const formattedAmount = formatUnits(BigInt(tx.tokenAmount), 21);
                   const sign = type === 'mint' ? '+' :
                               type === 'transfer' ? '' : '-';
 
@@ -290,7 +325,7 @@ export default function Landing() {
             <div className="step-content">
               <h3 className="step-title">Deposit MEGA to mint</h3>
               <p className="step-description">
-                <strong>Mint GIGA</strong> 1:1 during first 3 days
+                <strong>Mint GIGA</strong> at 1000:1 during first 3 days
               </p>
             </div>
           </div>

@@ -43,7 +43,8 @@ if (!rpcUrl) {
 // Minimal ABI for the functions we need
 const abi = [
   "function deploymentTime() view returns (uint256)",
-  "function MINTING_PERIOD() view returns (uint256)"
+  "function MINTING_PERIOD() view returns (uint256)",
+  "function mega() view returns (address)"
 ];
 
 const provider = new ethers.JsonRpcProvider(rpcUrl);
@@ -51,10 +52,12 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
 
 const deploymentTime = await contract.deploymentTime();
 const mintingPeriod = await contract.MINTING_PERIOD();
+const megaAddress = await contract.mega();
 
 const constants = {
   deploymentTime: deploymentTime.toString(),
-  MINTING_PERIOD: mintingPeriod.toString()
+  MINTING_PERIOD: mintingPeriod.toString(),
+  megaAddress: megaAddress
 };
 
 const outputPath = join(__dirname, '..', 'src', 'config', 'contract-constants.json');

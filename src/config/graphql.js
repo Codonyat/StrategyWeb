@@ -33,8 +33,8 @@ export const GET_RECENT_TRANSACTIONS = gql`
       id
       type
       user
-      monAmount
-      stratAmount
+      collateralAmount
+      tokenAmount
       fee
       timestamp
       txHash
@@ -81,8 +81,8 @@ export const GET_RECENT_AUCTION_PRIZES = gql`
       id
       day
       winner
-      stratAmount
-      monPaid
+      tokenAmount
+      nativePaid
       claimed
       claimTimestamp
       expired
@@ -122,8 +122,8 @@ export const GET_USER_PRIZES = gql`
       auctionWins(orderBy: day, orderDirection: desc) {
         id
         day
-        stratAmount
-        monPaid
+        tokenAmount
+        nativePaid
         claimed
         claimTimestamp
         expired

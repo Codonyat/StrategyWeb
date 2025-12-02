@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useReadContract, useAccount } from 'wagmi';
-import { formatEther, parseAbi } from 'viem';
+import { formatUnits, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { useGlobalContractData } from './useGlobalContractData';
 import { useSharedPrizeData } from './useSharedPrizeData';
@@ -83,11 +83,13 @@ export function useLotteryData() {
     const currentPool = feesPoolAmount * lotteryShare;
 
     // Extract latestValue from totalHolderBalance struct (excludes contracts)
+    // GIGA uses 21 decimals
+    const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals;
     const totalWeight = totalHolderBalance && totalHolderBalance[1]
-      ? parseFloat(formatEther(totalHolderBalance[1]))
+      ? parseFloat(formatUnits(totalHolderBalance[1], GIGA_DECIMALS))
       : 0;
 
-    const balance = userBalance ? parseFloat(formatEther(userBalance)) : 0;
+    const balance = userBalance ? parseFloat(formatUnits(userBalance, GIGA_DECIMALS)) : 0;
     const sharePercent = totalWeight > 0 && balance > 0 ? (balance / totalWeight) * 100 : 0;
 
     // Parse unclaimed prizes into history
@@ -103,7 +105,7 @@ export function useLotteryData() {
           lotteryHistory.push({
             day: dayNumber,
             winner,
-            amount: amount ? parseFloat(formatEther(amount)) : 0,
+            amount: amount ? parseFloat(formatUnits(amount, GIGA_DECIMALS)) : 0,
             status: 'unclaimed', // All prizes in the array are unclaimed
             isUserWinner: address && winner && winner.toLowerCase() === address.toLowerCase(),
           });

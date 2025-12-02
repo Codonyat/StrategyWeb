@@ -23,15 +23,15 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
-        // Proxy /api/subgraph to Goldsky in development
+        // Proxy /api/subgraph to subgraph provider (TheGraph, Goldsky, etc.) in development
         '/api/subgraph': {
-          target: env.GOLDSKY_SUBGRAPH_URL,
+          target: env.SUBGRAPH_URL,
           changeOrigin: true,
-          rewrite: (path) => '', // Remove /api/subgraph prefix, send directly to Goldsky
+          rewrite: (path) => '', // Remove /api/subgraph prefix, send directly to subgraph
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
               // Add authentication header using server-side env var
-              const token = env.GOLDSKY_API_TOKEN;
+              const token = env.SUBGRAPH_API_TOKEN;
               if (token) {
                 proxyReq.setHeader('Authorization', `Bearer ${token}`);
               }

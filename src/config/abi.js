@@ -278,7 +278,7 @@ export const STRATEGY_ABI = [
       }
     ],
     "outputs": [],
-    "stateMutability": "payable"
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -327,7 +327,7 @@ export const STRATEGY_ABI = [
         "internalType": "uint96"
       },
       {
-        "name": "monstrAmount",
+        "name": "auctionTokens",
         "type": "uint112",
         "internalType": "uint112"
       },
@@ -708,17 +708,68 @@ export const STRATEGY_ABI = [
   },
   {
     "type": "function",
-    "name": "mint",
+    "name": "mega",
     "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IERC20"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getMegaReserve",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "escrowedBidMega",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "mint",
+    "inputs": [
+      {
+        "name": "collateralAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "outputs": [],
-    "stateMutability": "payable"
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
     "name": "mintFeeFree",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "collateralAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "outputs": [],
-    "stateMutability": "payable"
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -917,7 +968,7 @@ export const STRATEGY_ABI = [
         "internalType": "uint256"
       },
       {
-        "name": "stratAmount",
+        "name": "tokenAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
@@ -942,13 +993,13 @@ export const STRATEGY_ABI = [
         "internalType": "address"
       },
       {
-        "name": "stratAmount",
+        "name": "tokenAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
       },
       {
-        "name": "monPaid",
+        "name": "nativePaid",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
@@ -1117,13 +1168,13 @@ export const STRATEGY_ABI = [
         "internalType": "address"
       },
       {
-        "name": "monAmount",
+        "name": "collateralAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
       },
       {
-        "name": "stratAmount",
+        "name": "tokenAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
@@ -1167,13 +1218,13 @@ export const STRATEGY_ABI = [
         "internalType": "address"
       },
       {
-        "name": "stratAmount",
+        "name": "tokenAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
       },
       {
-        "name": "monAmount",
+        "name": "collateralAmount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"

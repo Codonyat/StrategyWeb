@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { formatEther } from 'viem';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { useSharedPrizeData } from '../hooks/useSharedPrizeData';

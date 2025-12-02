@@ -88,6 +88,30 @@
   margin: 0 0.25rem;
 }
 
+/* Mock MEGA mint button (testnet only) */
+.mock-mint-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: 9999px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mock-mint-btn:hover:not(:disabled) {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+}
+
+.mock-mint-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .hero-content-grid {
   width: 100%;
   display: grid;

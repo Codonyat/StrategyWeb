@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useReadContract, useAccount } from 'wagmi';
-import { formatEther, parseAbi } from 'viem';
+import { formatUnits, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 
 // Standardized polling interval: 30 seconds
@@ -51,7 +51,9 @@ export function useSharedPrizeData() {
 
   // Memoized calculations
   const calculations = useMemo(() => {
-    const userClaimable = myClaimable ? parseFloat(formatEther(myClaimable)) : 0;
+    // GIGA uses 21 decimals
+    const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals;
+    const userClaimable = myClaimable ? parseFloat(formatUnits(myClaimable, GIGA_DECIMALS)) : 0;
     const hasUnclaimedPrizes = userClaimable > 0;
 
     // Extract arrays from allPrizes

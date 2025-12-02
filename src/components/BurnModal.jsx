@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { parseEther, formatEther } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
@@ -82,14 +82,17 @@ export function BurnModal({ isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
+  // GIGA uses 21 decimals
+  const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals;
+
   // Check if amount exceeds balance in real-time
   const exceedsBalance = () => {
     if (!amount || parseFloat(amount) <= 0) return false;
     if (tokenBalance === undefined || tokenBalance === null) return false;
     try {
-      const amountWei = parseEther(amount);
+      const amountWei = parseUnits(amount, GIGA_DECIMALS);
       // Allow for rounding errors up to 0.000001% (10^12 wei tolerance for typical balances)
-      // This handles formatEther → parseEther precision loss
+      // This handles formatUnits → parseUnits precision loss
       const tolerance = tokenBalance / BigInt(1000000000) || BigInt(1000000);
       return amountWei > tokenBalance + tolerance;
     } catch {
@@ -143,10 +146,10 @@ export function BurnModal({ isOpen, onClose }) {
 
   const handlePercentageClick = (percentage) => {
     if (tokenBalance !== undefined && tokenBalance !== null) {
-      const balance = parseFloat(formatEther(tokenBalance));
+      const balance = parseFloat(formatUnits(tokenBalance, GIGA_DECIMALS));
       // For MAX (100%), use full precision to avoid rounding errors
       const newAmount = percentage === 1.0
-        ? formatEther(tokenBalance)
+        ? formatUnits(tokenBalance, GIGA_DECIMALS)
         : (balance * percentage).toFixed(6);
       setAmount(newAmount);
       setSelectedPercentage(percentage * 100);
@@ -228,14 +231,14 @@ export function BurnModal({ isOpen, onClose }) {
             ) : tokenBalance !== undefined && tokenBalance !== null ? (
               <div className="balance-row">
                 <div className="balance-info-text">
-                  Balance: <strong><DisplayFormattedNumber num={formatEther(tokenBalance)} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}</strong>
+                  Balance: <strong><DisplayFormattedNumber num={formatUnits(tokenBalance, GIGA_DECIMALS)} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}</strong>
                 </div>
                 <div className="balance-shortcuts">
                   <button
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(0.25)}
-                    disabled={isLoading || parseFloat(formatEther(tokenBalance)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(tokenBalance, GIGA_DECIMALS)) === 0}
                   >
                     25%
                   </button>
@@ -243,7 +246,7 @@ export function BurnModal({ isOpen, onClose }) {
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(0.5)}
-                    disabled={isLoading || parseFloat(formatEther(tokenBalance)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(tokenBalance, GIGA_DECIMALS)) === 0}
                   >
                     50%
                   </button>
@@ -251,7 +254,7 @@ export function BurnModal({ isOpen, onClose }) {
                     type="button"
                     className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
                     onClick={() => handlePercentageClick(1.0)}
-                    disabled={isLoading || parseFloat(formatEther(tokenBalance)) === 0}
+                    disabled={isLoading || parseFloat(formatUnits(tokenBalance, GIGA_DECIMALS)) === 0}
                   >
                     MAX
                   </button>

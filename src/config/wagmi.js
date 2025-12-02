@@ -13,15 +13,20 @@ import {
 } from '@rainbow-me/rainbowkit/wallets';
 
 // Get public RPC URL for wallet chain definition
-const publicRpcUrl = CONTRACT_CONFIG.chainId === 6342
-  ? 'https://rpc.megaeth.com'
+const publicRpcUrl = CONTRACT_CONFIG.chainId === 6343
+  ? 'https://timothy.megaeth.com/rpc'
   : 'https://carrot.megaeth.com/rpc';
+
+// Native currency config (ETH is the gas token, MEGA is an ERC20)
+const nativeCurrency = CONTRACT_CONFIG.chainId === 6343
+  ? { name: 'MegaETH Testnet Ether', symbol: 'ETH', decimals: 18 }
+  : { name: 'MegaETH Ether', symbol: 'ETH', decimals: 18 };
 
 // Define custom MegaETH chain based on environment config
 const currentChain = {
   id: CONTRACT_CONFIG.chainId,
   name: CONTRACT_CONFIG.chainName,
-  nativeCurrency: { name: 'MEGA', symbol: 'MEGA', decimals: 18 },
+  nativeCurrency,
   rpcUrls: {
     default: { http: [publicRpcUrl] },
   },

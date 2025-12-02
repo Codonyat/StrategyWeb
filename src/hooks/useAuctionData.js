@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { formatEther } from 'viem';
+import { formatUnits } from 'viem';
+import { CONTRACT_CONFIG } from '../config/contract';
 import { useGlobalContractData } from './useGlobalContractData';
 import { useSharedPrizeData } from './useSharedPrizeData';
 
@@ -49,6 +50,8 @@ export function useAuctionData() {
     const isUserLeading = address && currentBidder && currentBidder.toLowerCase() === address.toLowerCase();
 
     // Parse unclaimed prizes into history
+    // GIGA uses 21 decimals
+    const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals;
     const auctionHistory = [];
     if (auctionWinners && auctionAmounts) {
       for (let i = 0; i < 7; i++) {
@@ -61,7 +64,7 @@ export function useAuctionData() {
           auctionHistory.push({
             day: dayNumber,
             winner,
-            amount: amount ? parseFloat(formatEther(amount)) : 0,
+            amount: amount ? parseFloat(formatUnits(amount, GIGA_DECIMALS)) : 0,
             status: 'unclaimed', // All prizes in the array are unclaimed
             isUserWinner: address && winner && winner.toLowerCase() === address.toLowerCase(),
           });
