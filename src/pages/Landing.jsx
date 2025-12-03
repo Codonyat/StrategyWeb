@@ -9,7 +9,11 @@ import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { DisplayFormattedNumber } from '../components/DisplayFormattedNumber';
 import { EnsAddress } from '../components/EnsAddress';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
+import contractConstants from '../config/contract-constants.json';
 import './Landing.css';
+
+// Calculate minting period in days from contract constants
+const mintingPeriodDays = Math.round(Number(contractConstants.MINTING_PERIOD) / 86400);
 
 // Simple ABI for balanceOf
 const parsedAbi = parseAbi(['function balanceOf(address) view returns (uint256)']);
@@ -325,16 +329,16 @@ export default function Landing() {
             <div className="step-content">
               <h3 className="step-title">Deposit MEGA to mint</h3>
               <p className="step-description">
-                <strong>Mint GIGA</strong> at 1000:1 during first 3 days
+                <strong>Mint GIGA</strong> at 1000:1 during first {mintingPeriodDays} days
               </p>
             </div>
           </div>
           <div className="step-card" tabIndex="0">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3 className="step-title">Supply fixed after 3 days</h3>
+              <h3 className="step-title">Supply fixed after {mintingPeriodDays} days</h3>
               <p className="step-description">
-                After 3 days, supply is locked and <strong>backing grows</strong> from fees
+                After {mintingPeriodDays} days, supply is locked and <strong>backing grows</strong> from fees
               </p>
             </div>
           </div>

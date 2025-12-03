@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { CONTRACT_CONFIG } from '../config/contract';
+import contractConstants from '../config/contract-constants.json';
 import './HowItWorks.css';
+
+// Calculate minting period in days from contract constants
+const mintingPeriodDays = Math.round(Number(contractConstants.MINTING_PERIOD) / 86400);
 
 export default function HowItWorks() {
   const [openQuestion, setOpenQuestion] = useState(null);
@@ -30,7 +34,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Minting is open for the first 3 days after deployment.</strong> During this minting period 1000 MEGA mints 1 GIGA at a 1000:1 ratio, before the 1% transfer fee is applied.
+                <strong>Minting is open for the first {mintingPeriodDays} days after deployment.</strong> During this minting period 1000 MEGA mints 1 GIGA at a 1000:1 ratio, before the 1% transfer fee is applied.
               </p>
               <p>
                 After the minting period ends, you can still mint GIGA at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn GIGA, this opens up supply capacity for new minting. You can also acquire GIGA on the secondary market.
