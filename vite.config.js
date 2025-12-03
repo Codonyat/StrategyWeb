@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => {
         '/api/mon-price': {
           target: 'https://api.g.alchemy.com',
           changeOrigin: true,
-          rewrite: (path) => '/prices/v1/tokens/by-symbol?symbols=MON',
+          rewrite: (path) => '/prices/v1/tokens/by-symbol?symbols=MEGA',
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
               // Extract API key from RPC_URL

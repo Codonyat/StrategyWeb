@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(
-      'https://api.g.alchemy.com/prices/v1/tokens/by-symbol?symbols=MON',
+      'https://api.g.alchemy.com/prices/v1/tokens/by-symbol?symbols=MEGA',
       {
         headers: {
           'Authorization': `Bearer ${ALCHEMY_API_KEY}`,
