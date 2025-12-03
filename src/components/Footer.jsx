@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, BookOpen, Github, Twitter, MessageCircle } from 'lucide-react';
+import { FileText, BookOpen, Github, Twitter, Send } from 'lucide-react';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { DisclaimerModal } from './DisclaimerModal';
 import './Footer.css';
@@ -77,7 +77,7 @@ export function Footer() {
             )}
             {CONTRACT_CONFIG.links.telegram !== '#' && (
               <a href={CONTRACT_CONFIG.links.telegram} target="_blank" rel="noopener noreferrer" className="footer-link">
-                <MessageCircle size={16} /> Telegram
+                <Send size={16} /> Telegram
               </a>
             )}
           </div>
