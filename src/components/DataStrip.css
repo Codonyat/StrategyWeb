@@ -10,6 +10,7 @@
   border-top: 1px solid rgba(255, 47, 143, 0.25);
   border-bottom: 1px solid rgba(49, 240, 255, 0.25);
   position: relative;
+  z-index: 100;
   backdrop-filter: blur(8px);
 }
 
@@ -70,6 +71,48 @@
   color: rgba(255, 255, 255, 0.15);
   font-weight: 400;
   padding: 0 0.35rem;
+}
+
+/* Tooltip styles */
+.ticker-item.has-tooltip {
+  position: relative;
+  cursor: help;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ticker-item.has-tooltip:focus {
+  outline: none;
+}
+
+.ticker-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #3a3a3a;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: #ffffff;
+  white-space: normal;
+  width: max-content;
+  max-width: 200px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  line-height: 1.4;
+  text-align: left;
+}
+
+/* Show tooltip on hover (desktop) and focus (mobile tap) */
+.ticker-item.has-tooltip:hover .ticker-tooltip,
+.ticker-item.has-tooltip:focus .ticker-tooltip,
+.ticker-item.has-tooltip:focus-within .ticker-tooltip {
+  opacity: 1;
 }
 
 /* Responsive */

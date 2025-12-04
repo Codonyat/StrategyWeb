@@ -44,6 +44,11 @@
 
 .capsule-segment.has-tooltip {
   cursor: help;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.capsule-segment.has-tooltip:focus {
+  outline: none;
 }
 
 .capsule-segment.disabled {
@@ -141,7 +146,10 @@
   margin-bottom: -1px;
 }
 
-.capsule-segment.has-tooltip:hover .segment-tooltip {
+/* Show tooltip on hover (desktop) and focus (mobile tap) */
+.capsule-segment.has-tooltip:hover .segment-tooltip,
+.capsule-segment.has-tooltip:focus .segment-tooltip,
+.capsule-segment.has-tooltip:focus-within .segment-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(4px);
 }

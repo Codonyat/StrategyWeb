@@ -3,7 +3,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
-import { useProtocolStats } from '../hooks/useProtocolStats';
+import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import './TransactionModal.css';
@@ -52,7 +52,10 @@ export function MintModal({ isOpen, onClose }) {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { mint, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
-  const { isMintingPeriod, backingRatio } = useProtocolStats();
+  const { isMintingPeriod, backingRatio, maxSupplyValue, supply } = useGlobalContractData();
+
+  // Calculate remaining mintable GIGA (only relevant after minting period)
+  const remainingMintable = !isMintingPeriod && maxSupplyValue > 0 ? maxSupplyValue - supply : 0;
 
   // Get MEGA token address
   const megaTokenAddress = CONTRACT_CONFIG.megaTokenAddress;
@@ -192,14 +195,29 @@ export function MintModal({ isOpen, onClose }) {
     }
   };
 
-  // Update error message when amount changes
+  // Check if minted output exceeds remaining mintable supply (only after minting period)
+  const exceedsRemainingMintable = () => {
+    if (isMintingPeriod) return false; // No limit during minting period
+    if (remainingMintable <= 0) return false; // Already at max
+    if (!amount || parseFloat(amount) <= 0) return false;
+
+    // Calculate what would be minted (before fee)
+    const inputAmount = parseFloat(amount);
+    const outputBeforeFee = inputAmount / backingRatio;
+
+    return outputBeforeFee > remainingMintable;
+  };
+
+  // Update error message when amount changes - prioritize remaining mintable over balance
   useEffect(() => {
-    if (exceedsBalance()) {
+    if (exceedsRemainingMintable()) {
+      setError(`Amount exceeds remaining mintable ${CONTRACT_CONFIG.strategyCoin.symbol}`);
+    } else if (exceedsBalance()) {
       setError(`Amount exceeds your ${CONTRACT_CONFIG.nativeCoin.symbol} balance`);
     } else if (error && error.includes('exceeds')) {
       setError('');
     }
-  }, [amount, megaBalance]);
+  }, [amount, megaBalance, remainingMintable, backingRatio, isMintingPeriod]);
 
   const handleApprove = async () => {
     setError('');
@@ -241,6 +259,11 @@ export function MintModal({ isOpen, onClose }) {
 
     if (!amount || parseFloat(amount) <= 0) {
       setError('Please enter a valid amount');
+      return;
+    }
+
+    if (exceedsRemainingMintable()) {
+      setError(`Amount exceeds remaining mintable ${CONTRACT_CONFIG.strategyCoin.symbol}`);
       return;
     }
 
@@ -450,6 +473,14 @@ export function MintModal({ isOpen, onClose }) {
               <span>Fee</span>
               <span>1%</span>
             </div>
+            {!isMintingPeriod && remainingMintable > 0 && (
+              <div className="info-row">
+                <span>Remaining mintable</span>
+                <span>
+                  <DisplayFormattedNumber num={remainingMintable} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}
+                </span>
+              </div>
+            )}
           </div>
 
           {showApprovalNeeded && (
@@ -488,7 +519,7 @@ export function MintModal({ isOpen, onClose }) {
             <button
               type="submit"
               className={`submit-button ${isLoading || (isSuccess && amount) ? 'loading' : ''}`}
-              disabled={isLoading || (isSuccess && amount) || !amount || parseFloat(amount) <= 0 || exceedsBalance()}
+              disabled={isLoading || (isSuccess && amount) || !amount || parseFloat(amount) <= 0 || exceedsRemainingMintable() || exceedsBalance()}
             >
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}

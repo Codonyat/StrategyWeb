@@ -13,6 +13,11 @@
 
 .status-chip.has-tooltip {
   cursor: help;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.status-chip.has-tooltip:focus {
+  outline: none;
 }
 
 .status-chip-tooltip {
@@ -72,7 +77,10 @@
   margin-bottom: -1px;
 }
 
-.status-chip.has-tooltip:hover .status-chip-tooltip {
+/* Show tooltip on hover (desktop) and focus (mobile tap) */
+.status-chip.has-tooltip:hover .status-chip-tooltip,
+.status-chip.has-tooltip:focus .status-chip-tooltip,
+.status-chip.has-tooltip:focus-within .status-chip-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(4px);
 }

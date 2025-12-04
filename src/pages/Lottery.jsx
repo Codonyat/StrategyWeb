@@ -166,7 +166,7 @@ export default function Lottery() {
                   <div className="info-row">
                     <span className="info-label">
                       Share of qualifiable supply
-                      <span className="info-tooltip" data-tooltip="Contract balances don't count toward lottery eligibility">i</span>
+                      <span className="info-tooltip" data-tooltip="Contract balances don't count toward lottery eligibility" tabIndex={0}>i</span>
                     </span>
                     <span className="info-value">
                       <DisplayFormattedNumber num={sharePercent} significant={3} />%

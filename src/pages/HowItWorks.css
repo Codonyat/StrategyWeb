@@ -14,14 +14,8 @@
   margin-bottom: 2.5rem;
 }
 
-.page-tagline {
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  text-align: center;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  margin: 0 0 var(--spacing-lg) 0;
+.how-it-works-page .page-tagline {
+  margin-bottom: var(--spacing-lg);
 }
 
 

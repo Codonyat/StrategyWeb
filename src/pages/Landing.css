@@ -955,6 +955,10 @@
     gap: var(--spacing-sm);
   }
 
+  .mint-action-wrapper {
+    width: 100%;
+  }
+
   .action-btn {
     width: 100%;
     min-width: unset;

@@ -247,7 +247,7 @@ export default function Landing() {
                     </button>
                     {!isMintingPeriod && remainingMintable > 0 && (
                       <span className="mintable-info">
-                        <DisplayFormattedNumber num={remainingMintable} significant={3} /> GIGA mintable
+                        <DisplayFormattedNumber num={remainingMintable} significant={3} /> GIGA remaining
                       </span>
                     )}
                   </div>

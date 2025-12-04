@@ -33,8 +33,10 @@ export function DataStrip() {
   // Use centralized global data (no RPC calls here!)
   const {
     supply,
+    maxSupplyValue,
     tvl,
     feesPoolAmount,
+    isMintingPeriod,
   } = useGlobalContractData();
 
   // Use shared prize data for lottery winner
@@ -75,27 +77,51 @@ export function DataStrip() {
   return (
     <div className="data-strip">
       <div className="data-strip-content">
-        <span className="ticker-item">
+        {!isMintingPeriod && (
+          <>
+            <span className="ticker-item">
+              <span className="ticker-label">Max supply</span>{' '}
+              <span className="ticker-value">
+                <DisplayFormattedNumber num={maxSupplyValue} significant={3} /> GIGA
+              </span>
+            </span>
+
+            <span className="ticker-separator">•</span>
+          </>
+        )}
+
+        <span className="ticker-item has-tooltip" tabIndex={0}>
           <span className="ticker-label">Supply</span>{' '}
           <span className="ticker-value">
             <DisplayFormattedNumber num={supply} significant={3} /> GIGA
           </span>
-        </span>
-
-        <span className="ticker-separator">•</span>
-
-        <span className="ticker-item">
-          <span className="ticker-label">Reserve</span>{' '}
-          <span className="ticker-value">
-            <DisplayFormattedNumber num={tvl} significant={3} /> MEGA
+          <span className="ticker-tooltip">
+            {isMintingPeriod
+              ? 'Total GIGA minted. Max supply will be set when minting phase ends.'
+              : 'Total GIGA in circulation. Minting is capped at max supply.'}
           </span>
         </span>
 
         <span className="ticker-separator">•</span>
 
-        <span className="ticker-item">
+        <span className="ticker-item has-tooltip" tabIndex={0}>
+          <span className="ticker-label">Reserve</span>{' '}
+          <span className="ticker-value">
+            <DisplayFormattedNumber num={tvl} significant={3} /> MEGA
+          </span>
+          <span className="ticker-tooltip">
+            MEGA backing all GIGA tokens. Grows from mint deposits, burn fees, and transfer fees. Sets the floor price for GIGA redemptions.
+          </span>
+        </span>
+
+        <span className="ticker-separator">•</span>
+
+        <span className="ticker-item has-tooltip" tabIndex={0}>
           <span className="ticker-label">Next draw</span>{' '}
           <span className="ticker-value">{timeUntilDraw}</span>
+          <span className="ticker-tooltip">
+            When the daily lottery winner is drawn and any active auction ends.
+          </span>
         </span>
 
         <span className="ticker-separator">•</span>
