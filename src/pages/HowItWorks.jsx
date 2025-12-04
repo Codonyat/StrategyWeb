@@ -29,6 +29,20 @@ export default function HowItWorks() {
           ),
         },
         {
+          id: 'giga-icon',
+          question: 'What does the GIGA icon represent?',
+          answer: (
+            <>
+              <p>
+                <strong>The GIGA icon is a playful nod to the tortoise and the hare fable.</strong> MegaETH's logo features an "M" with two dots underneath, resembling a rabbit to symbolize their ultra-fast blockchain.
+              </p>
+              <p>
+                We created a complementary "G" modified to look like a turtle. While GIGA isn't a blockchain, the turtle represents our philosophy: slow and steady wins the race. The backing ratio grows gradually over time through accumulated fees, steadily increasing the MEGA reserves behind each GIGA token.
+              </p>
+            </>
+          ),
+        },
+        {
           id: 'when-mint',
           question: 'When can I mint tokens?',
           answer: (
