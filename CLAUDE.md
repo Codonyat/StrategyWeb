@@ -3,7 +3,7 @@
 ## Development Rules
 - Prefer simplicity over complexity
 - **Keep CSS/HTML minimal**: Avoid verbose or redundant styles. Fix specific issues directly rather than adding layers of overrides.
-- Use relative paths for file operations (e.g., `src/config/abi.js`)
+- **File operations**: Use the Edit tool with relative paths (e.g., `src/pages/Landing.css`). Never use Bash/sed for file modifications.
 - Read queries: Use internal RPC from `.env` (work without wallet)
 - Write transactions: Use wallet's RPC (requires connection)
 - **Number formatting**: ALWAYS use 3 significant digits via `<DisplayFormattedNumber num={value} significant={3} />`. Exception: modals may use higher precision (e.g., 6) for transaction amounts and balances.
