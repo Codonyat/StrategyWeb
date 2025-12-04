@@ -211,16 +211,16 @@ sup {
 }
 
 .btn-success {
-  border-color: var(--color-success);
+  border-color: #00ff88;
 }
 
 .btn-success:hover::before {
-  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  background: linear-gradient(135deg, #00ff88, var(--color-secondary));
 }
 
 .btn-success:hover {
-  border-color: var(--color-success);
-  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.4);
+  border-color: #00ff88;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
 }
 
 .btn-error {

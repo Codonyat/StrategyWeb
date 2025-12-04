@@ -415,9 +415,9 @@
 }
 
 .success-message {
-  background: rgba(49, 240, 255, 0.1);
-  border: 1px solid rgba(49, 240, 255, 0.3);
-  color: var(--color-success);
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
 }
 
 /* Approval Toggle */
@@ -489,7 +489,7 @@
 .success-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-success);
+  color: #00ff88;
   line-height: 1.5;
 }
 
@@ -518,16 +518,16 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
+  background: linear-gradient(135deg, #00ff88, var(--color-secondary));
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
 }
 
 .submit-button:hover:not(:disabled) {
-  border-color: var(--color-success);
+  border-color: #00ff88;
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
 }
 
 .submit-button:hover:not(:disabled)::before {
@@ -645,7 +645,7 @@
 }
 
 .success-view .success-message strong {
-  color: var(--color-success);
+  color: #00ff88;
   font-weight: 700;
 }
 

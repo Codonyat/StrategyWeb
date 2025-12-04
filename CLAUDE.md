@@ -97,7 +97,7 @@ const deploymentTime = Number(contractConstants.deploymentTime);
 - Auto-close success after 2s
 
 ### Color Semantics
-- **Deposit/Mint**: Green gradients (`--color-success` → `--color-secondary`)
+- **Deposit/Mint**: Cyan gradients (`--color-success` → `--color-secondary`)
 - **Burn/Destructive**: Red gradients (`--color-primary` → `--color-secondary`)
 - **Neutral**: Purple (`--color-purple`)
 - **Input focus**: Neutral border (`--color-border-light`), NO colored glow
@@ -203,7 +203,7 @@ If a page needs custom styling, scope it with the page class:
 --color-primary: #ff3864        /* Pink/red - burns, errors */
 --color-secondary: #00d4ff      /* Cyan - accents */
 --color-purple: #8a2be2         /* Brand purple */
---color-success: #00ff88        /* Green - mints, gains */
+--color-success: #31F0FF        /* Cyan - mints, gains */
 --color-accent: #ffd700         /* Gold - warnings */
 
 /* Text */
@@ -218,10 +218,10 @@ If a page needs custom styling, scope it with the page class:
 ```
 
 **Usage:**
-- Green: Deposits, mints, success
+- Cyan (success): Deposits, mints, success
 - Red/Pink: Burns, withdrawals, errors
 - Purple: Brand elements, large numbers
-- Cyan: Links, info
+- Cyan (secondary): Links, info
 - Gold: Warnings, CTAs
 
 ### Typography
@@ -297,10 +297,10 @@ transform: translateY(-1px) scale(0.98)
 
 ### Glows
 ```css
-/* Green */ box-shadow: 0 0 12px rgba(0, 255, 136, 0.4)
+/* Success (cyan) */ box-shadow: 0 0 12px rgba(49, 240, 255, 0.4)
 /* Red */   box-shadow: 0 0 12px rgba(255, 56, 100, 0.4)
 /* Purple */ box-shadow: 0 0 12px rgba(138, 43, 226, 0.4)
-/* Cyan */  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4)
+/* Cyan (secondary) */  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4)
 ```
 
 ### Tooltips

@@ -41,9 +41,9 @@
   margin-bottom: var(--spacing-sm);
 }
 
-/* Landing-specific: Make hero-right wider than hero-left */
+/* Landing-specific grid gap */
 .landing-page .hero-content-grid {
-  grid-template-columns: 2fr 3fr; /* Left column smaller, right column wider */
+  grid-template-columns: 1fr 1fr; /* Equal width columns */
   gap: var(--spacing-xl); /* Increased gap: 3rem (48px) instead of default 2rem */
 }
 
@@ -377,18 +377,18 @@
 }
 
 .deposit-btn:hover {
-  border-color: var(--color-success) !important;
-  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.3) !important;
+  border-color: #00ff88 !important;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3) !important;
 }
 
 .deposit-btn:hover::before {
-  background: linear-gradient(135deg, var(--color-success), var(--color-secondary)) !important;
+  background: linear-gradient(135deg, #00ff88, var(--color-secondary)) !important;
   opacity: 0.1;
 }
 
 .deposit-btn:focus-visible {
-  outline-color: rgba(49, 240, 255, 0.6);
-  border-color: var(--color-success);
+  outline-color: rgba(0, 255, 136, 0.6);
+  border-color: #00ff88;
 }
 
 .withdraw-btn::before {
@@ -508,8 +508,8 @@
 }
 
 .transaction-row.mint .tx-indicator {
-  background: var(--color-success);
-  box-shadow: 0 0 8px rgba(49, 240, 255, 0.4);
+  background: #00ff88;
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
 }
 
 .transaction-row.burn .tx-indicator {
@@ -517,7 +517,11 @@
   box-shadow: 0 0 8px rgba(255, 47, 143, 0.4);
 }
 
-.transaction-row.transfer .tx-indicator,
+.transaction-row.transfer .tx-indicator {
+  background: var(--color-secondary);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
 .transaction-row.fee .tx-indicator {
   background: var(--color-secondary);
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
@@ -538,8 +542,8 @@
 }
 
 .transaction-row.mint:hover {
-  border-left-color: var(--color-success);
-  background: rgba(49, 240, 255, 0.03);
+  border-left-color: #00ff88;
+  background: rgba(0, 255, 136, 0.03);
 }
 
 .transaction-row.burn:hover {
@@ -547,7 +551,11 @@
   background: rgba(255, 47, 143, 0.03);
 }
 
-.transaction-row.transfer:hover,
+.transaction-row.transfer:hover {
+  border-left-color: var(--color-secondary);
+  background: rgba(0, 212, 255, 0.03);
+}
+
 .transaction-row.fee:hover {
   border-left-color: var(--color-secondary);
   background: rgba(0, 212, 255, 0.03);
@@ -568,14 +576,17 @@
 }
 
 .transaction-row.mint .tx-type {
-  color: var(--color-success);
+  color: #00ff88;
 }
 
 .transaction-row.burn .tx-type {
   color: var(--color-error);
 }
 
-.transaction-row.transfer .tx-type,
+.transaction-row.transfer .tx-type {
+  color: var(--color-secondary);
+}
+
 .transaction-row.fee .tx-type {
   color: var(--color-secondary);
 }
@@ -634,14 +645,17 @@
 }
 
 .transaction-row.mint .tx-amount {
-  color: var(--color-success);
+  color: #00ff88;
 }
 
 .transaction-row.burn .tx-amount {
   color: var(--color-error);
 }
 
-.transaction-row.transfer .tx-amount,
+.transaction-row.transfer .tx-amount {
+  color: var(--color-secondary);
+}
+
 .transaction-row.fee .tx-amount {
   color: var(--color-secondary);
 }
@@ -1062,8 +1076,8 @@
   0% {
     opacity: 0;
     transform: translateX(-20px);
-    background: rgba(49, 240, 255, 0.3);
-    box-shadow: 0 0 20px rgba(49, 240, 255, 0.4);
+    background: rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
   }
   20% {
     opacity: 1;
