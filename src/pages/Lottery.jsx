@@ -45,7 +45,7 @@ export default function Lottery() {
   const { lotteryHistory, loading: historyLoading, refetch: refetchHistory } = useLotteryPrizeHistory(7, 30000);
 
   const { timeRemaining } = useLotteryCountdown();
-  const { isMintingPeriod } = useProtocolStats();
+  const { isMintingPeriod, currentDay } = useProtocolStats();
 
   // Calculate total unclaimed in the 7-day ring
   const totalUnclaimed = lotteryHistory.reduce((sum, entry) => sum + entry.amount, 0);
@@ -307,7 +307,13 @@ export default function Lottery() {
                 ))
               ) : (
                 <div className="empty-history-row">
-                  <p>No lottery history yet. The first draw will happen after day 0.</p>
+                  {needsLotteryExecution ? (
+                    <p>Day {pendingDrawDay}'s draw is ready. Trigger the draw above to select a winner.</p>
+                  ) : currentDay > 0 ? (
+                    <p>Day {pendingDrawDay}'s draw is pending execution. Any transaction will trigger the winner selection.</p>
+                  ) : (
+                    <p>No lottery history yet. The first draw will happen after day 0.</p>
+                  )}
                 </div>
               )}
             </div>

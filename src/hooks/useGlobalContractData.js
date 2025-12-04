@@ -28,6 +28,7 @@ const parsedAbi = parseAbi([
   'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 auctionTokens, uint8 auctionDay)',
   'function balanceOf(address) view returns (uint256)',
   'function getMegaReserve() view returns (uint256)',
+  'function lastLotteryDay() view returns (uint32)',
 ]);
 
 /**
@@ -145,6 +146,20 @@ export function useGlobalContractData() {
     },
   });
 
+  // Get last lottery day (to detect pending lottery during minting)
+  const { data: lastLotteryDay, error: lastLotteryDayError, isLoading: lastLotteryDayLoading } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: parsedAbi,
+    functionName: 'lastLotteryDay',
+    chainId: CONTRACT_CONFIG.chainId,
+    query: {
+      enabled: !!CONTRACT_ADDRESS && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000',
+      refetchInterval: POLLING_INTERVAL,
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
   // Memoized calculations to prevent unnecessary re-renders
   const calculations = useMemo(() => {
     // TVL in MEGA (18 decimals)
@@ -184,8 +199,15 @@ export function useGlobalContractData() {
     const isAuctionStale = isAuctionActive && auctionDay > 0 && auctionDay < currentDayNumber - 1;
     const needsLotteryExecution = isAuctionActive && (auctionDay === 0 || auctionDay < currentDayNumber - 1);
 
-    // Estimated next auction pool is 50% of accumulated fees in FEES_POOL
-    const estimatedNextAuctionPool = feesPoolAmount * 0.5;
+    // Check if there's a pending lottery that will execute during minting period
+    // If lastLotteryDay < currentDayNumber - 1 (when currentDayNumber >= 1), lottery for previous day hasn't run
+    const lastLotteryDayNum = lastLotteryDay ? Number(lastLotteryDay) : 0;
+    const hasPendingLotteryDuringMinting = isMintingPeriod && currentDayNumber >= 1 && lastLotteryDayNum < currentDayNumber - 1;
+
+    // Estimated next auction pool:
+    // - During minting period with pending lottery: 0 (all fees go to lottery when executed)
+    // - Otherwise: 50% of accumulated fees
+    const estimatedNextAuctionPool = hasPendingLotteryDuringMinting ? 0 : feesPoolAmount * 0.5;
 
     return {
       tvl,
@@ -207,8 +229,9 @@ export function useGlobalContractData() {
       isAuctionStale,
       needsLotteryExecution,
       estimatedNextAuctionPool,
+      hasPendingLotteryDuringMinting,
     };
-  }, [megaReserve, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime]);
+  }, [megaReserve, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime, lastLotteryDay]);
 
   // Aggregate errors and loading states
   const hasError =
@@ -218,7 +241,8 @@ export function useGlobalContractData() {
     currentDayError ||
     feesPoolError ||
     lotteryPoolError ||
-    auctionError;
+    auctionError ||
+    lastLotteryDayError;
 
   const isLoading =
     totalSupplyLoading ||
@@ -227,7 +251,8 @@ export function useGlobalContractData() {
     currentDayLoading ||
     feesPoolLoading ||
     lotteryPoolLoading ||
-    auctionLoading;
+    auctionLoading ||
+    lastLotteryDayLoading;
 
   // Debug logging for errors
   if (typeof window !== 'undefined' && hasError) {
@@ -242,6 +267,7 @@ export function useGlobalContractData() {
         feesPool: feesPoolError?.message,
         lotteryPool: lotteryPoolError?.message,
         auction: auctionError?.message,
+        lastLotteryDay: lastLotteryDayError?.message,
       },
     });
   }

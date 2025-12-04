@@ -31,6 +31,7 @@ export default function Auctions() {
     isAuctionActive,
     isAuctionStale,
     needsLotteryExecution,
+    hasPendingLotteryDuringMinting,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -121,12 +122,20 @@ export default function Auctions() {
             <div className="today-auction-card">
               <h2 className="card-section-title">First auction preview</h2>
 
-              <div className="today-pool-display">
-                <span className="pool-label">Estimated lot</span>
-                <span className="pool-amount">
-                  <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
-                </span>
-              </div>
+              {hasPendingLotteryDuringMinting ? (
+                <div className="minting-info-content">
+                  <p className="minting-info-text">
+                    Current fees are pending lottery distribution. The first auction lot will be estimated after the lottery executes.
+                  </p>
+                </div>
+              ) : (
+                <div className="today-pool-display">
+                  <span className="pool-label">Estimated lot</span>
+                  <span className="pool-amount">
+                    <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
+                  </span>
+                </div>
+              )}
 
               <div className="countdown-display">
                 <span className="countdown-label">Auction starts in</span>

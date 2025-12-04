@@ -24,6 +24,7 @@ export function useAuctionData() {
     isAuctionStale,
     needsLotteryExecution,
     estimatedNextAuctionPool,
+    hasPendingLotteryDuringMinting,
     isLoading: globalLoading,
     hasError: globalError,
   } = useGlobalContractData();
@@ -98,6 +99,7 @@ export function useAuctionData() {
     isAuctionActive,
     isAuctionStale,
     needsLotteryExecution,
+    hasPendingLotteryDuringMinting,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
