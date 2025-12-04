@@ -1,11 +1,28 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { useSharedPrizeData } from '../hooks/useSharedPrizeData';
-import { useMonPrice } from '../hooks/useMonPrice';
+import { useNativePrice } from '../hooks/useNativePrice';
 import contractConstants from '../config/contract-constants.json';
 import { PSEUDO_DAY_SECONDS } from '../config/contract';
 import './DataStrip.css';
+
+const LOTTERY_GAP_SECONDS = 60; // 1 minute gap before lottery can execute
+
+// Pure function to calculate time until draw (no network calls)
+function calculateTimeUntilDraw() {
+  const now = Math.floor(Date.now() / 1000);
+  const deploymentTime = Number(contractConstants.deploymentTime);
+
+  const timeSinceDeployment = now - deploymentTime;
+  const timeUntilDayBoundary = PSEUDO_DAY_SECONDS - (timeSinceDeployment % PSEUDO_DAY_SECONDS);
+  const timeUntilNextDraw = timeUntilDayBoundary + LOTTERY_GAP_SECONDS;
+
+  const hours = Math.floor(timeUntilNextDraw / 3600);
+  const minutes = Math.floor((timeUntilNextDraw % 3600) / 60);
+
+  return `${hours}h ${minutes}m`;
+}
 
 /**
  * DataStrip component - now uses centralized data hooks.
@@ -23,48 +40,36 @@ export function DataStrip() {
   // Use shared prize data for lottery winner
   const { lotteryWinners, lotteryAmounts } = useSharedPrizeData();
 
-  // Get MON price from Alchemy
-  const { price: monPrice } = useMonPrice();
+  // Get native token price from Alchemy
+  const { price: nativePrice } = useNativePrice();
 
-  // Memoized calculations
-  const { timeUntilDraw, lastLotteryWinner } = useMemo(() => {
-    // Calculate time until next lottery draw
-    const calculateTimeUntilDraw = () => {
-      const now = Math.floor(Date.now() / 1000);
-      const deploymentTime = Number(contractConstants.deploymentTime);
+  // Live countdown timer - updates every minute (no network calls)
+  const [timeUntilDraw, setTimeUntilDraw] = useState(calculateTimeUntilDraw);
 
-      const timeSinceDeployment = now - deploymentTime;
-      const timeUntilNextDraw = PSEUDO_DAY_SECONDS - (timeSinceDeployment % PSEUDO_DAY_SECONDS);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeUntilDraw(calculateTimeUntilDraw());
+    }, 60000); // Update every minute
 
-      const hours = Math.floor(timeUntilNextDraw / 3600);
-      const minutes = Math.floor((timeUntilNextDraw % 3600) / 60);
+    return () => clearInterval(interval);
+  }, []);
 
-      return `${hours}h ${minutes}m`;
-    };
-
-    // Format address
+  // Memoized calculation for last lottery winner
+  const lastLotteryWinner = useMemo(() => {
     const formatAddress = (addr) => {
       if (!addr || addr === '0x0000000000000000000000000000000000000000') return 'None';
       return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
 
-    // Get last lottery winner
-    const getLastLotteryWinner = () => {
-      if (!lotteryWinners || !lotteryAmounts) return 'None';
+    if (!lotteryWinners || !lotteryAmounts) return 'None';
 
-      // Find the most recent non-zero winner
-      for (let i = 6; i >= 0; i--) {
-        if (lotteryWinners[i] !== '0x0000000000000000000000000000000000000000' && lotteryAmounts[i] > 0n) {
-          return formatAddress(lotteryWinners[i]);
-        }
+    // Find the most recent non-zero winner
+    for (let i = 6; i >= 0; i--) {
+      if (lotteryWinners[i] !== '0x0000000000000000000000000000000000000000' && lotteryAmounts[i] > 0n) {
+        return formatAddress(lotteryWinners[i]);
       }
-      return 'None';
-    };
-
-    return {
-      timeUntilDraw: calculateTimeUntilDraw(),
-      lastLotteryWinner: getLastLotteryWinner(),
-    };
+    }
+    return 'None';
   }, [lotteryWinners, lotteryAmounts]);
 
   return (
@@ -114,7 +119,7 @@ export function DataStrip() {
         <span className="ticker-item">
           <span className="ticker-label">MEGA price</span>{' '}
           <span className="ticker-value">
-            {monPrice !== null ? <><DisplayFormattedNumber num={monPrice} significant={3} /> USD</> : 'N/A'}
+            {nativePrice !== null ? <><DisplayFormattedNumber num={nativePrice} significant={3} /> USD</> : 'N/A'}
           </span>
         </span>
 

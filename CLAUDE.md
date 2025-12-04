@@ -54,7 +54,7 @@
 **Current routes:**
 - `/api/rpc` → Alchemy RPC (uses `RPC_URL`)
 - `/api/subgraph` → Subgraph GraphQL (uses `SUBGRAPH_URL`, `SUBGRAPH_API_TOKEN`) - works with TheGraph, Goldsky, etc.
-- `/api/mon-price` → Alchemy Price API (extracts key from `RPC_URL`)
+- `/api/native-price` → Alchemy Price API (extracts key from `RPC_URL`)
 
 ### Contract Constants
 **CRITICAL**: `deploymentTime` and `MINTING_PERIOD` are fetched at build time and saved to `contract-constants.json`. Never refetch at runtime.

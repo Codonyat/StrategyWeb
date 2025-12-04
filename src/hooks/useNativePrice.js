@@ -3,17 +3,17 @@ import { useState, useEffect, useCallback } from 'react';
 const POLLING_INTERVAL = 60000; // 60 seconds for price updates
 
 /**
- * Hook to fetch MON price from the serverless proxy.
+ * Hook to fetch native token price from the serverless proxy.
  * The actual Alchemy API call happens server-side to keep the key secure.
  */
-export function useMonPrice() {
+export function useNativePrice() {
   const [price, setPrice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchPrice = useCallback(async () => {
     try {
-      const response = await fetch('/api/mon-price');
+      const response = await fetch('/api/native-price');
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -39,7 +39,7 @@ export function useMonPrice() {
         setPrice(null);
       }
     } catch (err) {
-      console.error('Failed to fetch MON price:', err);
+      console.error('Failed to fetch native token price:', err);
       setError(err.message);
     } finally {
       setIsLoading(false);

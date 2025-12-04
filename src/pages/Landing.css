@@ -190,28 +190,28 @@
 }
 
 /* Hover-based animations */
-/* When hovering Deposit MON: Show MONSTR behind, fade it in, then fade out MON */
+/* When hovering Deposit: fade out MEGA, fade in GIGA */
 .coin-container.hover-deposit .coin-strategy {
   z-index: 1;
-  animation: revealEyeDeposit 1.2s ease forwards;
+  animation: fadeIn 0.8s ease forwards;
 }
 
 .coin-container.hover-deposit .coin-native {
   z-index: 2;
-  animation: fadeOutMON 1.2s ease forwards;
+  animation: fadeOut 0.8s ease forwards;
 }
 
-/* When hovering Burn MONSTR: Show MON (fade out MONSTR) */
+/* When hovering Burn: fade out GIGA, fade in MEGA */
 .coin-container.hover-withdraw .coin-native {
   opacity: 1;
   z-index: 2;
-  animation: fadeInMON 1.2s ease forwards;
+  animation: fadeIn 0.8s ease forwards;
 }
 
 .coin-container.hover-withdraw .coin-strategy {
   opacity: 0;
   z-index: 1;
-  animation: fadeOutMONSTR 1.2s ease forwards;
+  animation: fadeOut 0.8s ease forwards;
 }
 
 @keyframes fadeIn {
@@ -229,52 +229,6 @@
   }
   to {
     opacity: 0;
-  }
-}
-
-/* Burn MONSTR animation: MON fades in 0s-1.2s */
-@keyframes fadeInMON {
-  0% {
-    opacity: 0;
-  }
-  100% {  /* 1.2s - finishes fading in */
-    opacity: 1;
-  }
-}
-
-/* Burn MONSTR animation: MONSTR fades out 0s-0.8s */
-@keyframes fadeOutMONSTR {
-  0% {
-    opacity: 1;
-  }
-  66.67% {  /* 0.8s / 1.2s = 66.67% - finishes fading out */
-    opacity: 0;
-  }
-  100% {  /* 1.2s - stays at 0 */
-    opacity: 0;
-  }
-}
-
-/* Deposit MON animation: MON fades out 0s-1.2s */
-@keyframes fadeOutMON {
-  0% {
-    opacity: 1;
-  }
-  100% {  /* 1.2s - finishes fading out */
-    opacity: 0;
-  }
-}
-
-/* Deposit MON animation: MONSTR fades in 0s-0.8s */
-@keyframes revealEyeDeposit {
-  0% {
-    opacity: 0;
-  }
-  66.67% {  /* 0.8s / 1.2s = 66.67% - finishes fading in */
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
   }
 }
 

@@ -42,8 +42,8 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
-        // Proxy /api/mon-price to Alchemy Price API in development
-        '/api/mon-price': {
+        // Proxy /api/native-price to Alchemy Price API in development
+        '/api/native-price': {
           target: 'https://api.g.alchemy.com',
           changeOrigin: true,
           rewrite: (path) => '/prices/v1/tokens/by-symbol?symbols=MEGA',
