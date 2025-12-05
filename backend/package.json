@@ -1,7 +1,7 @@
 {
   "name": "strategy-websocket-backend",
   "version": "1.0.0",
-  "description": "WebSocket server for real-time MONSTR transaction updates",
+  "description": "WebSocket server for real-time transaction updates",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

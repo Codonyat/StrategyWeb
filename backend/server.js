@@ -22,25 +22,35 @@ const io = new Server(server, {
 });
 
 // Contract configuration
-const CONTRACT_ADDRESS = '0x4edF071a7dEe52fBE663DF7873994725ba91Cdc7';
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const FEES_POOL = '0x00000000000fee50000000AdD2E5500000000000';
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // Alchemy WebSocket URL
 const ALCHEMY_WSS = process.env.ALCHEMY_WSS_URL;
 
-if (!ALCHEMY_WSS) {
-  console.error('ERROR: ALCHEMY_WSS_URL environment variable is required');
+// Validate required environment variables
+const requiredEnvVars = {
+  ALCHEMY_WSS_URL: ALCHEMY_WSS,
+  CONTRACT_ADDRESS: CONTRACT_ADDRESS,
+};
+
+const missingVars = Object.entries(requiredEnvVars)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+if (missingVars.length > 0) {
+  console.error('ERROR: Missing required environment variables:', missingVars.join(', '));
   process.exit(1);
 }
 
-// Event ABIs
+// Event ABIs - must match Strategy.sol exactly
 const EVENTS = {
-  Minted: parseAbiItem('event Minted(address indexed to, uint256 monAmount, uint256 stratAmount, uint256 fee)'),
-  Redeemed: parseAbiItem('event Redeemed(address indexed from, uint256 stratAmount, uint256 monAmount, uint256 fee)'),
+  Minted: parseAbiItem('event Minted(address indexed to, uint256 collateralAmount, uint256 tokenAmount, uint256 fee)'),
+  Redeemed: parseAbiItem('event Redeemed(address indexed from, uint256 tokenAmount, uint256 collateralAmount, uint256 fee)'),
   Transfer: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)'),
   LotteryWon: parseAbiItem('event LotteryWon(address indexed winner, uint256 amount, uint256 day)'),
-  AuctionWon: parseAbiItem('event AuctionWon(address indexed winner, uint256 stratAmount, uint256 monPaid, uint256 day)'),
+  AuctionWon: parseAbiItem('event AuctionWon(address indexed winner, uint256 tokenAmount, uint256 nativePaid, uint256 day)'),
   BidPlaced: parseAbiItem('event BidPlaced(address indexed bidder, uint256 amount, uint256 day)'),
 };
 
@@ -156,8 +166,8 @@ function handleMintedEvents(logs) {
       id: `${txHash}-${log.logIndex}`,
       type: 'MINT',
       user,
-      monAmount: log.args.monAmount.toString(),
-      stratAmount: log.args.stratAmount.toString(),
+      collateralAmount: log.args.collateralAmount.toString(),
+      tokenAmount: log.args.tokenAmount.toString(),
       fee,
       timestamp,
       txHash,
@@ -170,8 +180,8 @@ function handleMintedEvents(logs) {
         id: `${txHash}-${log.logIndex}-fee`,
         type: 'TRANSFER',
         user,
-        monAmount: '0',
-        stratAmount: fee,
+        collateralAmount: '0',
+        tokenAmount: fee,
         fee: '0',
         timestamp,
         txHash,
@@ -191,8 +201,8 @@ function handleRedeemedEvents(logs) {
       id: `${txHash}-${log.logIndex}`,
       type: 'REDEEM',
       user: log.args.from,
-      monAmount: log.args.monAmount.toString(),
-      stratAmount: log.args.stratAmount.toString(),
+      tokenAmount: log.args.tokenAmount.toString(),
+      collateralAmount: log.args.collateralAmount.toString(),
       fee: log.args.fee.toString(),
       timestamp,
       txHash,
@@ -215,8 +225,8 @@ function handleFeeTransferEvents(logs) {
       id: `${txHash}-${log.logIndex}`,
       type: 'TRANSFER',
       user: from,
-      monAmount: '0',
-      stratAmount: log.args.value.toString(),
+      collateralAmount: '0',
+      tokenAmount: log.args.value.toString(),
       fee: '0',
       timestamp: Math.floor(Date.now() / 1000),
       txHash,
@@ -246,8 +256,8 @@ function handleAuctionWonEvents(logs) {
       id: `${log.transactionHash}-${log.logIndex}`,
       type: 'AUCTION_WON',
       winner: log.args.winner,
-      stratAmount: log.args.stratAmount.toString(),
-      monPaid: log.args.monPaid.toString(),
+      tokenAmount: log.args.tokenAmount.toString(),
+      nativePaid: log.args.nativePaid.toString(),
       day: log.args.day.toString(),
       timestamp: Math.floor(Date.now() / 1000),
       txHash: log.transactionHash,
@@ -342,9 +352,10 @@ app.get('/', (req, res) => {
 /**
  * Start server
  */
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log('Contract:', CONTRACT_ADDRESS);
   console.log('Allowed origins:', allowedOrigins);
   setupWebSocket();
 });

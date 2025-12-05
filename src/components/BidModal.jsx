@@ -3,6 +3,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { useStrategyContract } from '../hooks/useStrategyContract';
+import { useGlobalContractData } from '../hooks/useGlobalContractData';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { DisplayFormattedNumber } from './DisplayFormattedNumber';
 import './TransactionModal.css';
@@ -51,6 +52,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { bid, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
+  const { backingRatio } = useGlobalContractData();
 
   // Get MEGA token address
   const megaTokenAddress = CONTRACT_CONFIG.megaTokenAddress;
@@ -404,6 +406,14 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
                 <DisplayFormattedNumber num={auctionPool} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}
               </span>
             </div>
+            {backingRatio > 0 && (
+              <div className="info-row">
+                <span>Backing value</span>
+                <span>
+                  <DisplayFormattedNumber num={auctionPool * backingRatio} significant={3} /> {CONTRACT_CONFIG.nativeCoin.symbol}
+                </span>
+              </div>
+            )}
             <div className="info-row">
               <span>Minimum bid</span>
               <span>
