@@ -15,7 +15,7 @@ export function BurnModal({ isOpen, onClose }) {
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { burn, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
+  const { burn, isPending, isConfirming, isSuccess, isConfirmError, error: txError, confirmError, reset } = useStrategyContract();
   const { backingRatio, isMintingPeriod } = useProtocolStats();
 
   // Get MONSTR balance
@@ -70,6 +70,13 @@ export function BurnModal({ isOpen, onClose }) {
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
+
+  // Handle transaction confirmation errors (reverts, etc.)
+  useEffect(() => {
+    if (isConfirmError) {
+      setError(confirmError?.message || 'Transaction failed on-chain');
+    }
+  }, [isConfirmError, confirmError]);
 
   // Close on Escape key
   useEffect(() => {
@@ -166,7 +173,7 @@ export function BurnModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const isLoading = isPending || isConfirming;
+  const isLoading = isPending || (isConfirming && !isConfirmError);
   const showSuccessView = isSuccess && amount;
 
   return (
@@ -316,6 +323,7 @@ export function BurnModal({ isOpen, onClose }) {
               <div className="button-content">
                 {isLoading && <span className="spinner"></span>}
                 {isPending ? 'Waiting for approval' :
+                 isConfirmError ? 'Transaction Failed' :
                  isConfirming ? 'Confirming' :
                  (isSuccess && amount) ? 'Success!' :
                  `Burn ${CONTRACT_CONFIG.strategyCoin.symbol}`}

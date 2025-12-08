@@ -51,7 +51,7 @@ export function MintModal({ isOpen, onClose }) {
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { mint, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
+  const { mint, isPending, isConfirming, isSuccess, isConfirmError, error: txError, confirmError, reset } = useStrategyContract();
   const { isMintingPeriod, backingRatio, maxSupplyValue, supply } = useGlobalContractData();
 
   // Calculate remaining mintable GIGA (only relevant after minting period)
@@ -158,6 +158,13 @@ export function MintModal({ isOpen, onClose }) {
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
+
+  // Handle transaction confirmation errors (reverts, etc.)
+  useEffect(() => {
+    if (isConfirmError) {
+      setError(confirmError?.message || 'Transaction failed on-chain');
+    }
+  }, [isConfirmError, confirmError]);
 
   // Handle approval errors
   useEffect(() => {
@@ -316,7 +323,7 @@ export function MintModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const isLoading = isPending || isConfirming || isApprovePending || isApproveConfirming;
+  const isLoading = isPending || (isConfirming && !isConfirmError) || isApprovePending || isApproveConfirming;
   const showSuccessView = isSuccess && amount;
   const showApprovalNeeded = needsApproval() && !isApproveSuccess && amount && parseFloat(amount) > 0;
 
@@ -345,6 +352,7 @@ export function MintModal({ isOpen, onClose }) {
     if (isApprovePending) return 'Waiting for approval';
     if (isApproveConfirming) return 'Confirming approval';
     if (isPending) return 'Waiting for confirmation';
+    if (isConfirmError) return 'Transaction Failed';
     if (isConfirming) return 'Confirming';
     if (isSuccess && amount) return 'Success!';
     if (showApprovalNeeded) return 'Approve MEGA';

@@ -9,9 +9,14 @@ const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;   // 18
 export function useStrategyContract() {
   const { address } = useAccount();
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const { isLoading: isConfirming, isSuccess: isReceiptSuccess, isError: isReceiptError, error: confirmError, data: receipt } = useWaitForTransactionReceipt({
     hash,
   });
+
+  // Transaction succeeded only if receipt was fetched AND status is 'success'
+  const isSuccess = isReceiptSuccess && receipt?.status === 'success';
+  // Transaction failed if receipt fetch failed OR transaction reverted
+  const isConfirmError = isReceiptError || (isReceiptSuccess && receipt?.status === 'reverted');
 
   /**
    * Mint GIGA by depositing MEGA (ERC20)
@@ -118,7 +123,9 @@ export function useStrategyContract() {
     isPending,
     isConfirming,
     isSuccess,
+    isConfirmError,
     error,
+    confirmError,
     hash,
     reset,
   };

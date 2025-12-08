@@ -19,13 +19,16 @@ export default function Auctions() {
   const {
     auctionPool,
     currentBid,
+    currentBidRaw,
     minBid,
+    minBidRaw,
     currentBidder,
     auctionDay,
     backingValue,
     isUserLeading,
     auctionHistory,
     estimatedAuctionPool,
+    nextLotAccumulating,
     isMintingPeriod,
     isLastMintingDay,
     isAuctionActive,
@@ -226,18 +229,9 @@ export default function Auctions() {
                       </div>
                     </div>
 
-                    {isUserLeading && (
-                      <div className="winning-banner">
-                        <span className="winning-icon">🏆</span>
-                        You are currently winning
-                      </div>
-                    )}
-
-                    {!isUserLeading && (
-                      <button className="bid-btn" onClick={handlePlaceBid}>
-                        Place bid
-                      </button>
-                    )}
+                    <button className="bid-btn" onClick={handlePlaceBid}>
+                      {isUserLeading ? 'Increase bid' : 'Place bid'}
+                    </button>
                   </>
                 )}
               </>
@@ -282,11 +276,22 @@ export default function Auctions() {
               </>
             ) : (
               <>
-                <div className="today-pool-display">
-                  <span className="pool-label">Today's lot</span>
-                  <span className="pool-amount">
-                    <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
-                  </span>
+                <div className="dual-pool-display">
+                  <div className="pool-column current">
+                    <span className="pool-label">Today's lot</span>
+                    <span className="pool-amount">
+                      <span className="pool-value"><DisplayFormattedNumber num={auctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
+                    </span>
+                  </div>
+                  <div className="pool-column next">
+                    <span className="pool-label has-tooltip">
+                      Accumulating
+                      <span className="pool-tooltip">Fees collecting today. Tomorrow's auction lot will be 50% of this pool.</span>
+                    </span>
+                    <span className="pool-amount">
+                      <span className="pool-value">~<DisplayFormattedNumber num={nextLotAccumulating} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
+                    </span>
+                  </div>
                 </div>
 
                 <div className="auction-info-rows">
@@ -409,6 +414,9 @@ export default function Auctions() {
         isOpen={showBidModal}
         onClose={() => setShowBidModal(false)}
         minBid={minBid}
+        minBidRaw={minBidRaw}
+        currentBid={currentBid}
+        currentBidRaw={currentBidRaw}
         auctionPool={auctionPool}
       />
 

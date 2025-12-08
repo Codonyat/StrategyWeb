@@ -14,7 +14,9 @@ export function useAuctionData() {
     currentDayNumber,
     auctionPool,
     currentBid,
+    currentBidRaw,
     minBid,
+    minBidRaw,
     currentBidder,
     auctionDay,
     feesPoolAmount,
@@ -85,16 +87,22 @@ export function useAuctionData() {
   const hasError = globalError || prizeError;
   const isLoading = globalLoading || prizeLoading;
 
+  // Next lot is 50% of current accumulated fees
+  const nextLotAccumulating = feesPoolAmount * 0.5;
+
   return {
     auctionPool,
     currentBid,
+    currentBidRaw,
     minBid,
+    minBidRaw,
     currentBidder,
     auctionDay,
     backingValue: calculations.backingValue,
     isUserLeading: calculations.isUserLeading,
     auctionHistory: calculations.auctionHistory,
     estimatedAuctionPool: calculations.estimatedAuctionPool,
+    nextLotAccumulating,
     isMintingPeriod,
     isLastMintingDay,
     isAuctionActive,

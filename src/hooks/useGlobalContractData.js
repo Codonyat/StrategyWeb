@@ -25,7 +25,7 @@ const parsedAbi = parseAbi([
   'function maxSupplyEver() view returns (uint256)',
   'function getCurrentDay() view returns (uint256)',
   'function currentLotteryPool() view returns (uint256)',
-  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 auctionTokens, uint8 auctionDay)',
+  'function currentAuction() view returns (address currentBidder, uint96 currentBid, uint96 minBid, uint112 auctionTokens, uint32 auctionDay)',
   'function balanceOf(address) view returns (uint256)',
   'function getMegaReserve() view returns (uint256)',
   'function lastLotteryDay() view returns (uint32)',
@@ -184,11 +184,22 @@ export function useGlobalContractData() {
 
     // Process auction data
     // auctionTokens (index 3) is in GIGA (21 decimals)
+    console.log('currentAuction raw:', currentAuction);
     const auctionPool = currentAuction && currentAuction[3] ? parseFloat(formatUnits(currentAuction[3], GIGA_DECIMALS)) : 0;
     // currentBid and minBid (indices 1, 2) are in MEGA (18 decimals)
-    const currentBid = currentAuction && currentAuction[1] ? parseFloat(formatUnits(currentAuction[1], MEGA_DECIMALS)) : 0;
-    const minBid = currentAuction && currentAuction[2] ? parseFloat(formatUnits(currentAuction[2], MEGA_DECIMALS)) : 0;
+    // Keep both display values (float) and raw values (BigInt) to avoid precision loss
+    const currentBidRaw = currentAuction && currentAuction[1] ? currentAuction[1] : BigInt(0);
+    const storedMinBidRaw = currentAuction && currentAuction[2] ? currentAuction[2] : BigInt(0);
+    const currentBid = currentBidRaw ? parseFloat(formatUnits(currentBidRaw, MEGA_DECIMALS)) : 0;
     const currentBidder = currentAuction ? currentAuction[0] : null;
+
+    // Calculate effective minBid: if there's a current bid, minimum is 110% of it (10% increment)
+    // Otherwise use the stored minBid (50% of backing value for first bid)
+    const effectiveMinBidRaw = currentBidRaw > BigInt(0)
+      ? (currentBidRaw * BigInt(110)) / BigInt(100)
+      : storedMinBidRaw;
+    const minBidRaw = effectiveMinBidRaw;
+    const minBid = minBidRaw ? parseFloat(formatUnits(minBidRaw, MEGA_DECIMALS)) : 0;
     const auctionDay = currentAuction && currentAuction[4] !== undefined ? Number(currentAuction[4]) : 0;
 
     // Check last lottery day to determine if lottery needs execution
@@ -228,7 +239,9 @@ export function useGlobalContractData() {
       lotteryPoolAmount,
       auctionPool,
       currentBid,
+      currentBidRaw,
       minBid,
+      minBidRaw,
       currentBidder,
       auctionDay,
       isAuctionStale,

@@ -42,7 +42,7 @@ const ERC20_ABI = [
 // MEGA uses 18 decimals
 const MEGA_DECIMALS = CONTRACT_CONFIG.nativeCoin.decimals;
 
-export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
+export function BidModal({ isOpen, onClose, minBid, minBidRaw, currentBid, currentBidRaw, auctionPool }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [selectedPercentage, setSelectedPercentage] = useState(null);
@@ -51,7 +51,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
   const inputRef = useRef(null);
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { bid, isPending, isConfirming, isSuccess, error: txError, reset } = useStrategyContract();
+  const { bid, isPending, isConfirming, isSuccess, isConfirmError, error: txError, confirmError, reset } = useStrategyContract();
   const { backingRatio } = useGlobalContractData();
 
   // Get MEGA token address
@@ -155,6 +155,13 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
       setError(txError.message || 'Transaction failed');
     }
   }, [txError]);
+
+  // Handle transaction confirmation errors (reverts, etc.)
+  useEffect(() => {
+    if (isConfirmError) {
+      setError(confirmError?.message || 'Transaction failed on-chain');
+    }
+  }, [isConfirmError, confirmError]);
 
   // Handle approval errors
   useEffect(() => {
@@ -271,22 +278,41 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     }
   };
 
-  const handlePercentageClick = (percentage) => {
-    if (megaBalance !== undefined && megaBalance !== null) {
-      const totalBalance = parseFloat(formatUnits(megaBalance, MEGA_DECIMALS));
-      if (percentage === 1.0) {
-        setAmount(formatUnits(megaBalance, MEGA_DECIMALS));
+  const handleShortcutClick = (type) => {
+    if (type === 'min') {
+      // Use raw BigInt value and add small buffer (1000 wei) to ensure we exceed minBid
+      // This avoids floating-point precision loss
+      if (minBidRaw && minBidRaw > BigInt(0)) {
+        const minWithBuffer = minBidRaw + BigInt(1000);
+        setAmount(formatUnits(minWithBuffer, MEGA_DECIMALS));
       } else {
-        const newAmount = (totalBalance * percentage).toFixed(6);
-        setAmount(newAmount);
+        // Fallback to float calculation if raw not available
+        const roundedMin = (Math.ceil(minBid * 1000000) + 1) / 1000000;
+        setAmount(roundedMin.toString());
       }
-      setSelectedPercentage(percentage * 100);
+      setSelectedPercentage('min');
+    } else if (type === 'double') {
+      // Double the current bid using raw BigInt for precision
+      if (currentBidRaw && currentBidRaw > BigInt(0)) {
+        const doubled = currentBidRaw * BigInt(2) + BigInt(1000);
+        setAmount(formatUnits(doubled, MEGA_DECIMALS));
+      } else {
+        // Fallback to float calculation if raw not available
+        const roundedDouble = (Math.ceil(currentBid * 2 * 1000000) + 1) / 1000000;
+        setAmount(roundedDouble.toString());
+      }
+      setSelectedPercentage('double');
+    } else if (type === 'max') {
+      if (megaBalance !== undefined && megaBalance !== null) {
+        setAmount(formatUnits(megaBalance, MEGA_DECIMALS));
+        setSelectedPercentage('max');
+      }
     }
   };
 
   if (!isOpen) return null;
 
-  const isLoading = isPending || isConfirming || isApprovePending || isApproveConfirming;
+  const isLoading = isPending || (isConfirming && !isConfirmError) || isApprovePending || isApproveConfirming;
   const showSuccessView = isSuccess && amount;
   const showApprovalNeeded = needsApproval() && !isApproveSuccess && amount && parseFloat(amount) > 0;
 
@@ -295,6 +321,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
     if (isApprovePending) return 'Waiting for approval';
     if (isApproveConfirming) return 'Confirming approval';
     if (isPending) return 'Waiting for confirmation';
+    if (isConfirmError) return 'Transaction Failed';
     if (isConfirming) return 'Confirming';
     if (isSuccess && amount) return 'Success!';
     if (showApprovalNeeded) return `Approve ${CONTRACT_CONFIG.nativeCoin.symbol}`;
@@ -368,27 +395,27 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
                 <div className="balance-shortcuts">
                   <button
                     type="button"
-                    className={`shortcut-btn ${selectedPercentage === 25 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(0.25)}
-                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
+                    className={`shortcut-btn ${selectedPercentage === 'min' ? 'selected' : ''}`}
+                    onClick={() => handleShortcutClick('min')}
+                    disabled={isLoading || !minBid || minBid <= 0}
                   >
-                    25%
+                    Min
                   </button>
                   <button
                     type="button"
-                    className={`shortcut-btn ${selectedPercentage === 50 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(0.5)}
-                    disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
+                    className={`shortcut-btn ${selectedPercentage === 'double' ? 'selected' : ''}`}
+                    onClick={() => handleShortcutClick('double')}
+                    disabled={isLoading || !currentBid || currentBid <= 0}
                   >
-                    50%
+                    2x
                   </button>
                   <button
                     type="button"
-                    className={`shortcut-btn ${selectedPercentage === 100 ? 'selected' : ''}`}
-                    onClick={() => handlePercentageClick(1.0)}
+                    className={`shortcut-btn ${selectedPercentage === 'max' ? 'selected' : ''}`}
+                    onClick={() => handleShortcutClick('max')}
                     disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
                   >
-                    MAX
+                    Max
                   </button>
                 </div>
               </div>

@@ -37,7 +37,8 @@
       "WebFetch(domain:www.alchemy.com)",
       "Bash(tree:*)",
       "Bash(npx vite build)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:megaeth-testnet-v2.blockscout.com)"
     ],
     "deny": [],
     "ask": []

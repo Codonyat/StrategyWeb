@@ -132,12 +132,65 @@
   padding: 0;
 }
 
+/* Dual Pool Display - side by side */
+.dual-pool-display {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: 0;
+}
+
+.pool-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.pool-column.current {
+  /* Emphasize current lot */
+}
+
+.pool-column.next {
+  /* Slightly muted for next lot */
+  opacity: 0.7;
+}
+
 .pool-label {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
+}
+
+.pool-label.has-tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.pool-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: #3a3a3a;
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  max-width: 200px;
+  line-height: 1.4;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  white-space: normal;
+  z-index: 100;
+}
+
+.pool-label.has-tooltip:hover .pool-tooltip {
+  display: block;
 }
 
 .pool-amount {
@@ -237,17 +290,20 @@
 }
 
 .status-badge.winning {
-  background: var(--color-success);
-  color: var(--color-background);
+  background: rgba(49, 240, 255, 0.1);
+  border: 1px solid rgba(49, 240, 255, 0.3);
+  color: var(--color-success);
 }
 
 .status-badge.outbid {
-  background: rgba(255, 47, 143, 0.2);
+  background: rgba(255, 47, 143, 0.1);
+  border: 1px solid rgba(255, 47, 143, 0.3);
   color: var(--color-primary);
 }
 
 .status-badge.no-bid {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--color-text-secondary);
 }
 
@@ -292,24 +348,6 @@
   transition: width 1s linear;
 }
 
-/* Winning Banner */
-.winning-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(49, 240, 255, 0.1);
-  border: 1px solid rgba(49, 240, 255, 0.3);
-  border-radius: var(--radius-md);
-  color: var(--color-success);
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.winning-icon {
-  font-size: 1.25rem;
-}
-
 /* Buttons */
 .claim-btn,
 .bid-btn {
@@ -352,7 +390,7 @@
 }
 
 .bid-btn::before {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
 }
 
 .claim-btn:hover:not(:disabled)::before,
@@ -367,9 +405,9 @@
 }
 
 .bid-btn:hover:not(:disabled) {
-  border-color: var(--color-primary);
+  border-color: var(--color-success);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 47, 143, 0.3);
+  box-shadow: 0 10px 30px rgba(49, 240, 255, 0.3);
 }
 
 .claim-btn:disabled,
@@ -578,8 +616,9 @@
 
 .you-badge {
   padding: 0.125rem 0.5rem;
-  background: var(--color-success);
-  color: var(--color-background);
+  background: rgba(49, 240, 255, 0.1);
+  border: 1px solid rgba(49, 240, 255, 0.3);
+  color: var(--color-success);
   border-radius: 9999px;
   font-size: 0.65rem;
   font-weight: 700;
@@ -809,6 +848,53 @@
 
   .minting-message-text {
     font-size: 0.9rem;
+  }
+
+  /* Stack dual pool on mobile with secondary line style */
+  .dual-pool-display {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .pool-column.next {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+    opacity: 0.6;
+  }
+
+  .pool-column.next .pool-label {
+    font-size: 0.7rem;
+  }
+
+  .pool-column.next .pool-label.has-tooltip {
+    border-bottom: 1px dotted var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .pool-column.next .pool-label::after {
+    content: ':';
+  }
+
+  /* Show tooltip on tap (via :active) on mobile */
+  .pool-column.next .pool-tooltip {
+    bottom: auto;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .pool-column.next .pool-label.has-tooltip:active .pool-tooltip {
+    display: block;
+  }
+
+  .pool-column.next .pool-amount {
+    font-size: 0.9rem;
+  }
+
+  .pool-column.next .pool-icon {
+    width: 16px;
+    height: 16px;
   }
 
   .auction-info-rows {
