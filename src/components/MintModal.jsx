@@ -455,7 +455,7 @@ export function MintModal({ isOpen, onClose }) {
                     onClick={() => handlePercentageClick(1.0)}
                     disabled={isLoading || parseFloat(formatUnits(megaBalance, MEGA_DECIMALS)) === 0}
                   >
-                    MAX
+                    Max
                   </button>
                 </div>
               </div>

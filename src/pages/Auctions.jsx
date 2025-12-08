@@ -230,7 +230,7 @@ export default function Auctions() {
                     </div>
 
                     <button className="bid-btn" onClick={handlePlaceBid}>
-                      {isUserLeading ? 'Increase bid' : 'Place bid'}
+                      {isUserLeading ? 'Increase Bid' : 'Place Bid'}
                     </button>
                   </>
                 )}

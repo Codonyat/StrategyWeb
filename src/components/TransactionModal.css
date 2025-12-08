@@ -258,7 +258,6 @@
   padding: 0.25rem 0.625rem;
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.02em;
   background: transparent;
   border: 1px solid var(--color-border);
@@ -500,7 +499,6 @@
   padding: 1rem 2rem;
   font-size: 1rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.02em;
   background: var(--color-background-card);
   border: 2px solid var(--color-border-light);

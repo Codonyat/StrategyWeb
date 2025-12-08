@@ -263,7 +263,7 @@ export function BurnModal({ isOpen, onClose }) {
                     onClick={() => handlePercentageClick(1.0)}
                     disabled={isLoading || parseFloat(formatUnits(tokenBalance, GIGA_DECIMALS)) === 0}
                   >
-                    MAX
+                    Max
                   </button>
                 </div>
               </div>

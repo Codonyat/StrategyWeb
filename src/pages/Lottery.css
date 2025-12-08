@@ -679,7 +679,6 @@
   color: var(--color-text-primary);
   position: relative;
   overflow: hidden;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
