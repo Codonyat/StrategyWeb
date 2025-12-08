@@ -403,7 +403,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
             <div className="info-row">
               <span>Potential winnings</span>
               <span>
-                <DisplayFormattedNumber num={auctionPool} significant={6} /> {CONTRACT_CONFIG.strategyCoin.symbol}
+                <DisplayFormattedNumber num={auctionPool} significant={3} /> {CONTRACT_CONFIG.strategyCoin.symbol}
               </span>
             </div>
             {backingRatio > 0 && (
@@ -417,7 +417,7 @@ export function BidModal({ isOpen, onClose, minBid, auctionPool }) {
             <div className="info-row">
               <span>Minimum bid</span>
               <span>
-                <DisplayFormattedNumber num={minBid} significant={6} /> {CONTRACT_CONFIG.nativeCoin.symbol}
+                <DisplayFormattedNumber num={minBid} significant={3} /> {CONTRACT_CONFIG.nativeCoin.symbol}
               </span>
             </div>
             <div className="info-row">

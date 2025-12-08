@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useReadContract } from 'wagmi';
 import { formatUnits, parseAbi } from 'viem';
 import { CONTRACT_CONFIG, CONTRACT_ADDRESS, PSEUDO_DAY_SECONDS } from '../config/contract';
@@ -48,7 +48,7 @@ export function useGlobalContractData() {
   }, []);
 
   // Get total supply of MONSTR tokens
-  const { data: totalSupply, error: totalSupplyError, isLoading: totalSupplyLoading } = useReadContract({
+  const { data: totalSupply, error: totalSupplyError, isLoading: totalSupplyLoading, refetch: refetchTotalSupply } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'totalSupply',
@@ -62,7 +62,7 @@ export function useGlobalContractData() {
   });
 
   // Get max supply cap
-  const { data: maxSupply, error: maxSupplyError, isLoading: maxSupplyLoading } = useReadContract({
+  const { data: maxSupply, error: maxSupplyError, isLoading: maxSupplyLoading, refetch: refetchMaxSupply } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'maxSupplyEver',
@@ -76,7 +76,7 @@ export function useGlobalContractData() {
   });
 
   // Get MEGA reserve (TVL) - uses getMegaReserve() which excludes escrowed bid amounts
-  const { data: megaReserve, error: balanceError, isLoading: balanceLoading } = useReadContract({
+  const { data: megaReserve, error: balanceError, isLoading: balanceLoading, refetch: refetchMegaReserve } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'getMegaReserve',
@@ -90,7 +90,7 @@ export function useGlobalContractData() {
   });
 
   // Get current day
-  const { data: currentDay, error: currentDayError, isLoading: currentDayLoading } = useReadContract({
+  const { data: currentDay, error: currentDayError, isLoading: currentDayLoading, refetch: refetchCurrentDay } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'getCurrentDay',
@@ -104,7 +104,7 @@ export function useGlobalContractData() {
   });
 
   // Get FEES_POOL balance (where fees accumulate)
-  const { data: feesPoolBalance, error: feesPoolError, isLoading: feesPoolLoading } = useReadContract({
+  const { data: feesPoolBalance, error: feesPoolError, isLoading: feesPoolLoading, refetch: refetchFeesPool } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'balanceOf',
@@ -119,7 +119,7 @@ export function useGlobalContractData() {
   });
 
   // Get lottery pool
-  const { data: lotteryPool, error: lotteryPoolError, isLoading: lotteryPoolLoading } = useReadContract({
+  const { data: lotteryPool, error: lotteryPoolError, isLoading: lotteryPoolLoading, refetch: refetchLotteryPool } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'currentLotteryPool',
@@ -133,7 +133,7 @@ export function useGlobalContractData() {
   });
 
   // Get current auction data
-  const { data: currentAuction, error: auctionError, isLoading: auctionLoading } = useReadContract({
+  const { data: currentAuction, error: auctionError, isLoading: auctionLoading, refetch: refetchAuction } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'currentAuction',
@@ -147,7 +147,7 @@ export function useGlobalContractData() {
   });
 
   // Get last lottery day (to detect pending lottery during minting)
-  const { data: lastLotteryDay, error: lastLotteryDayError, isLoading: lastLotteryDayLoading } = useReadContract({
+  const { data: lastLotteryDay, error: lastLotteryDayError, isLoading: lastLotteryDayLoading, refetch: refetchLastLotteryDay } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: parsedAbi,
     functionName: 'lastLotteryDay',
@@ -191,17 +191,22 @@ export function useGlobalContractData() {
     const currentBidder = currentAuction ? currentAuction[0] : null;
     const auctionDay = currentAuction && currentAuction[4] !== undefined ? Number(currentAuction[4]) : 0;
 
+    // Check last lottery day to determine if lottery needs execution
+    // lastLotteryDay is directly updated by executeLottery(), so it's the reliable indicator
+    const lastLotteryDayNum = lastLotteryDay ? Number(lastLotteryDay) : 0;
+
     // Auction staleness detection:
     // - auctionDay is the day whose fees are being auctioned (set as currentDay - 1 when auction starts)
     // - A valid current auction has auctionDay == currentDayNumber - 1
     // - If auctionDay < currentDayNumber - 1, the auction is stale (from a previous day)
     // - If auctionDay == 0 and we're past minting, no auction has started yet
     const isAuctionStale = isAuctionActive && auctionDay > 0 && auctionDay < currentDayNumber - 1;
-    const needsLotteryExecution = isAuctionActive && (auctionDay === 0 || auctionDay < currentDayNumber - 1);
+
+    // Use lastLotteryDay to determine if lottery needs execution (more reliable than auctionDay)
+    // The lottery for day N-1 should have run, so lastLotteryDay should be >= currentDayNumber - 1
+    const needsLotteryExecution = isAuctionActive && lastLotteryDayNum < currentDayNumber - 1;
 
     // Check if there's a pending lottery that will execute during minting period
-    // If lastLotteryDay < currentDayNumber - 1 (when currentDayNumber >= 1), lottery for previous day hasn't run
-    const lastLotteryDayNum = lastLotteryDay ? Number(lastLotteryDay) : 0;
     const hasPendingLotteryDuringMinting = isMintingPeriod && currentDayNumber >= 1 && lastLotteryDayNum < currentDayNumber - 1;
 
     // Estimated next auction pool:
@@ -254,6 +259,18 @@ export function useGlobalContractData() {
     auctionLoading ||
     lastLotteryDayLoading;
 
+  // Combined refetch function to refresh all contract data
+  const refetch = useCallback(() => {
+    refetchTotalSupply();
+    refetchMaxSupply();
+    refetchMegaReserve();
+    refetchCurrentDay();
+    refetchFeesPool();
+    refetchLotteryPool();
+    refetchAuction();
+    refetchLastLotteryDay();
+  }, [refetchTotalSupply, refetchMaxSupply, refetchMegaReserve, refetchCurrentDay, refetchFeesPool, refetchLotteryPool, refetchAuction, refetchLastLotteryDay]);
+
   // Debug logging for errors
   if (typeof window !== 'undefined' && hasError) {
     console.error('Global Contract Data Errors:', {
@@ -297,5 +314,8 @@ export function useGlobalContractData() {
       lotteryPoolError ||
       auctionError
     ) : null,
+
+    // Refetch function
+    refetch,
   };
 }

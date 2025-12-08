@@ -39,6 +39,7 @@ export default function Lottery() {
     needsLotteryExecution,
     pendingDrawDay,
     isLoading,
+    refetch: refetchLotteryData,
   } = useLotteryData();
 
   // Get lottery prize history from subgraph (with claim status)
@@ -114,8 +115,8 @@ export default function Lottery() {
 
   useEffect(() => {
     if (claimError && claimStatus === 'claiming') {
-      setClaimStatus('error');
-      setTimeout(() => setClaimStatus('idle'), 5000);
+      // Reset to idle - don't show error state for user rejections
+      setClaimStatus('idle');
     }
   }, [claimError, claimStatus]);
 
@@ -124,14 +125,15 @@ export default function Lottery() {
     if (isDrawConfirmed && drawStatus === 'drawing') {
       setDrawStatus('success');
       refetchHistory();
+      refetchLotteryData(); // Refresh global contract data to update needsLotteryExecution
       setTimeout(() => setDrawStatus('idle'), 3000);
     }
-  }, [isDrawConfirmed, drawStatus, refetchHistory]);
+  }, [isDrawConfirmed, drawStatus, refetchHistory, refetchLotteryData]);
 
   useEffect(() => {
     if (drawError && drawStatus === 'drawing') {
-      setDrawStatus('error');
-      setTimeout(() => setDrawStatus('idle'), 5000);
+      // Reset to idle - don't show error state for user rejections
+      setDrawStatus('idle');
     }
   }, [drawError, drawStatus]);
 
@@ -219,8 +221,6 @@ export default function Lottery() {
                     ? 'Drawing...'
                     : drawStatus === 'success'
                     ? 'Winner drawn!'
-                    : drawStatus === 'error'
-                    ? 'Try again'
                     : 'Draw winner'}
                 </button>
               </div>
@@ -295,8 +295,6 @@ export default function Lottery() {
                             ? 'Claiming...'
                             : claimStatus === 'success'
                             ? '✓ Claimed!'
-                            : claimStatus === 'error'
-                            ? 'Try again'
                             : 'Claim'}
                         </button>
                       ) : (

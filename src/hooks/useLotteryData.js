@@ -26,7 +26,7 @@ export function useLotteryData() {
   const { address } = useAccount();
 
   // Use centralized global data (eliminates duplicate calls)
-  const { feesPoolAmount, needsLotteryExecution, currentDayNumber } = useGlobalContractData();
+  const { feesPoolAmount, needsLotteryExecution, currentDayNumber, refetch: refetchGlobalData } = useGlobalContractData();
 
   // Use shared prize data (eliminates duplicate calls)
   const {
@@ -154,5 +154,6 @@ export function useLotteryData() {
     isLoading,
     hasError,
     error: dayError || holderBalanceError || balanceError,
+    refetch: refetchGlobalData,
   };
 }

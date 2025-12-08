@@ -75,8 +75,8 @@ export default function Auctions() {
   }
 
   if (claimError && claimStatus === 'claiming') {
-    setClaimStatus('error');
-    setTimeout(() => setClaimStatus('idle'), 5000);
+    // Reset to idle - don't show error state for user rejections
+    setClaimStatus('idle');
   }
 
   const handlePlaceBid = () => {
@@ -386,8 +386,6 @@ export default function Auctions() {
                             ? 'Claiming...'
                             : claimStatus === 'success'
                             ? '✓ Claimed!'
-                            : claimStatus === 'error'
-                            ? 'Try again'
                             : 'Claim'}
                         </button>
                       ) : (

@@ -27,6 +27,7 @@ export function useAuctionData() {
     hasPendingLotteryDuringMinting,
     isLoading: globalLoading,
     hasError: globalError,
+    refetch: refetchGlobalData,
   } = useGlobalContractData();
 
   // Use shared prize data (eliminates duplicate calls)
@@ -105,5 +106,6 @@ export function useAuctionData() {
     isLoading,
     hasError,
     error: hasError ? 'Error loading auction data' : null,
+    refetch: refetchGlobalData,
   };
 }
