@@ -5,15 +5,8 @@
  * keeping the API key secure on the server side.
  *
  * Environment Variables Required:
- * - RPC_URL: The Alchemy RPC endpoint (contains API key)
+ * - ALCHEMY_API_KEY: The Alchemy API key
  */
-
-// Extract API key from RPC URL (format: https://...alchemy.com/v2/{API_KEY})
-function extractAlchemyApiKey(rpcUrl) {
-  if (!rpcUrl) return null;
-  const match = rpcUrl.match(/\/v2\/([a-zA-Z0-9_-]+)$/);
-  return match ? match[1] : null;
-}
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -31,11 +24,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use GET.' });
   }
 
-  const ALCHEMY_API_KEY = extractAlchemyApiKey(process.env.RPC_URL);
+  const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
-  // Validate API key extraction
   if (!ALCHEMY_API_KEY) {
-    console.error('Could not extract Alchemy API key from RPC_URL');
+    console.error('ALCHEMY_API_KEY environment variable not set');
     return res.status(500).json({ error: 'API key not configured' });
   }
 

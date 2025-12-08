@@ -286,7 +286,7 @@ export default function Auctions() {
                   <div className="pool-column next">
                     <span className="pool-label has-tooltip">
                       Accumulating
-                      <span className="pool-tooltip">Fees collecting today. Tomorrow's auction lot will be 50% of this pool.</span>
+                      <span className="pool-tooltip">Fees collecting today for tomorrow's auction.</span>
                     </span>
                     <span className="pool-amount">
                       <span className="pool-value">~<DisplayFormattedNumber num={nextLotAccumulating} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>

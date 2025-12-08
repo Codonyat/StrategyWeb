@@ -49,10 +49,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => '/prices/v1/tokens/by-symbol?symbols=MEGA',
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              // Extract API key from RPC_URL
-              const rpcUrl = env.RPC_URL || '';
-              const match = rpcUrl.match(/\/v2\/([a-zA-Z0-9_-]+)$/);
-              const apiKey = match ? match[1] : '';
+              const apiKey = env.ALCHEMY_API_KEY;
               if (apiKey) {
                 proxyReq.setHeader('Authorization', `Bearer ${apiKey}`);
               }
