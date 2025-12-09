@@ -48,7 +48,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Minting is open for the first {mintingPeriodDays} days after deployment.</strong> During this minting period 1000 MEGA mints 1 GIGA at a 1000:1 ratio, before the 1% transfer fee is applied.
+                <strong>Minting is open for the first {mintingPeriodDays} days after deployment.</strong> During this minting period 1000 MEGA mints 1 GIGA at a 1:1000 ratio, before the 1% transfer fee is applied.
               </p>
               <p>
                 After the minting period ends, you can still mint GIGA at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn GIGA, this opens up supply capacity for new minting. You can also acquire GIGA on the secondary market.

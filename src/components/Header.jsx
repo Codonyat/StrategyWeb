@@ -50,7 +50,7 @@ export function Header() {
             <>
               <StatusCapsule
                 leftLabel="Backing"
-                leftValue={isMintingPeriod ? "1:1000" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
+                leftValue={isMintingPeriod ? "1:1000" : `1:${Math.floor(backingRatio)}`}
                 leftTooltip={
                   <>
                     Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
@@ -58,7 +58,7 @@ export function Header() {
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
                 rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
-                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1000:1 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
+                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1000 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
                 fixedWidth={isMintingPeriod && isMintingActive}
               />
               </>
@@ -160,7 +160,7 @@ export function Header() {
             <div className="nav-mobile-stats">
               <StatusCapsule
                 leftLabel="Backing"
-                leftValue={isMintingPeriod ? "1:1000" : <>1:<DisplayFormattedNumber num={backingRatio} significant={3} /></>}
+                leftValue={isMintingPeriod ? "1:1000" : `1:${Math.floor(backingRatio)}`}
                 leftTooltip={
                   <>
                     Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
@@ -168,7 +168,7 @@ export function Header() {
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
                 rightValue={isMintingPeriod && isMintingActive ? timeRemaining : "N/A"}
-                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1000:1 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
+                rightTooltip={isMintingPeriod && isMintingActive ? "Initial minting period with 1:1000 ratio. After this ends, supply becomes fixed - new minting only possible when GIGA is burned to free up backing." : "Exchange rate between GIGA and MEGA. Coming soon."}
                 fixedWidth={isMintingPeriod && isMintingActive}
               />
             </div>

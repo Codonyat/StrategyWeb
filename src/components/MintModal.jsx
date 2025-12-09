@@ -313,7 +313,7 @@ export function MintModal({ isOpen, onClose }) {
     const inputAmount = parseFloat(amount);
 
     if (isMintingPeriod) {
-      // During minting period: 1000:1 ratio (1000 MEGA = 1 GIGA) minus 1% fee
+      // During minting period: 1:1000 ratio (1 GIGA = 1000 MEGA) minus 1% fee
       return (inputAmount / 1000) * 0.99;
     } else {
       // After minting period: proportional to backing ratio minus 1% fee
@@ -475,7 +475,7 @@ export function MintModal({ isOpen, onClose }) {
             </div>
             <div className="info-row">
               <span>Exchange rate</span>
-              <span>{isMintingPeriod ? '1000:1' : <>1:<DisplayFormattedNumber num={1 / backingRatio} significant={4} /></>}</span>
+              <span>{isMintingPeriod ? '1:1000' : `1:${Math.floor(backingRatio)}`}</span>
             </div>
             <div className="info-row">
               <span>Fee</span>

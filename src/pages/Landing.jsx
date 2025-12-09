@@ -329,7 +329,7 @@ export default function Landing() {
             <div className="step-content">
               <h3 className="step-title">Deposit MEGA to mint</h3>
               <p className="step-description">
-                <strong>Mint GIGA</strong> at 1000:1 during first {mintingPeriodDays} days
+                <strong>Mint GIGA</strong> at 1:1000 during first {mintingPeriodDays} days
               </p>
             </div>
           </div>
