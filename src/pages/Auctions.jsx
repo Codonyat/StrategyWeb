@@ -34,7 +34,7 @@ export default function Auctions() {
     isAuctionActive,
     isAuctionStale,
     needsLotteryExecution,
-    hasPendingLotteryDuringMinting,
+    hasPendingLotteryBeforeAuctions,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,
@@ -112,7 +112,7 @@ export default function Auctions() {
             <h2 className="card-section-title">Bidding starts soon</h2>
             <div className="minting-info-content">
               <p className="minting-info-text">
-                Auctions begin after the minting period ends. Each day, 50% of daily fees will be converted to GIGA and auctioned to the highest bidder.
+                Auctions begin after day 1. Each day, 50% of daily fees will be converted to GIGA and auctioned to the highest bidder.
               </p>
               <p className="minting-info-text">
                 Bids are placed in MEGA or WMEGA, allowing you to acquire GIGA below its backing value.
@@ -120,12 +120,12 @@ export default function Auctions() {
             </div>
           </div>
 
-          {/* Right: Estimated auction lot card - only shown on last minting day */}
+          {/* Right: Estimated auction lot card - only shown on day 1 */}
           {isLastMintingDay ? (
             <div className="today-auction-card">
               <h2 className="card-section-title">First auction preview</h2>
 
-              {hasPendingLotteryDuringMinting ? (
+              {hasPendingLotteryBeforeAuctions ? (
                 <div className="minting-info-content">
                   <p className="minting-info-text">
                     Current fees are pending lottery distribution. The first auction lot will be estimated after the lottery executes.
@@ -153,7 +153,7 @@ export default function Auctions() {
               <h2 className="card-section-title">Coming soon</h2>
               <div className="minting-info-content">
                 <p className="minting-info-text">
-                  The first auction preview will be available on the last day of the minting period.
+                  The first auction preview will be available on day 1.
                 </p>
               </div>
             </div>

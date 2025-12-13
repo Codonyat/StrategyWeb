@@ -4,6 +4,11 @@ import { formatUnits } from 'viem';
 import { CONTRACT_CONFIG } from '../config/contract';
 import { useGlobalContractData } from './useGlobalContractData';
 import { useSharedPrizeData } from './useSharedPrizeData';
+import contractConstants from '../config/contract-constants.json';
+
+// Lottery percent from contract (e.g., 20 = 20% to lottery, rest to auction)
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT) / 100;
+const AUCTION_PERCENT = 1 - LOTTERY_PERCENT;
 
 export function useAuctionData() {
   const { address } = useAccount();
@@ -26,7 +31,7 @@ export function useAuctionData() {
     isAuctionStale,
     needsLotteryExecution,
     estimatedNextAuctionPool,
-    hasPendingLotteryDuringMinting,
+    hasPendingLotteryBeforeAuctions,
     isLoading: globalLoading,
     hasError: globalError,
     refetch: refetchGlobalData,
@@ -44,7 +49,7 @@ export function useAuctionData() {
 
   // Memoized calculations
   const calculations = useMemo(() => {
-    // Use estimatedNextAuctionPool from global data (50% of FEES_POOL)
+    // Use estimatedNextAuctionPool from global data (80% of FEES_POOL - auction gets 80%, lottery gets 20%)
     const estimatedAuctionPool = estimatedNextAuctionPool;
 
     // Calculate backing value (what the MONSTR is worth)
@@ -87,8 +92,8 @@ export function useAuctionData() {
   const hasError = globalError || prizeError;
   const isLoading = globalLoading || prizeLoading;
 
-  // Next lot is 50% of current accumulated fees
-  const nextLotAccumulating = feesPoolAmount * 0.5;
+  // Next lot is AUCTION_PERCENT of current accumulated fees (lottery gets LOTTERY_PERCENT)
+  const nextLotAccumulating = feesPoolAmount * AUCTION_PERCENT;
 
   return {
     auctionPool,
@@ -108,7 +113,7 @@ export function useAuctionData() {
     isAuctionActive,
     isAuctionStale,
     needsLotteryExecution,
-    hasPendingLotteryDuringMinting,
+    hasPendingLotteryBeforeAuctions,
     userClaimable,
     hasUnclaimedPrizes,
     isLoading,

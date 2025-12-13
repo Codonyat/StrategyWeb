@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useReadContract, useAccount } from 'wagmi';
 import { formatUnits, parseAbi } from 'viem';
-import { CONTRACT_CONFIG, CONTRACT_ADDRESS, PSEUDO_DAY_SECONDS } from '../config/contract';
+import { CONTRACT_CONFIG, CONTRACT_ADDRESS } from '../config/contract';
 import { useGlobalContractData } from './useGlobalContractData';
 import { useSharedPrizeData } from './useSharedPrizeData';
 import contractConstants from '../config/contract-constants.json';
@@ -9,11 +9,8 @@ import contractConstants from '../config/contract-constants.json';
 // Standardized polling interval: 30 seconds
 const POLLING_INTERVAL = 30000;
 
-// Minting period constants
-const DEPLOYMENT_TIME = Number(contractConstants.deploymentTime);
-const MINTING_PERIOD = Number(contractConstants.MINTING_PERIOD);
-const MINTING_END_TIME = DEPLOYMENT_TIME + MINTING_PERIOD;
-const LOTTERY_GAP_SECONDS = 60; // 1 minute gap before lottery can execute
+// Lottery percent from contract (e.g., 20 = 20% to lottery, 80% to auction)
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT) / 100;
 
 // Parse the human-readable ABI once
 const parsedAbi = parseAbi([
@@ -84,14 +81,16 @@ export function useLotteryData() {
   // Memoized calculations
   const calculations = useMemo(() => {
     // Calculate lottery's share of fees pool
-    // The share depends on when the NEXT draw will execute, not current time
-    // Next draw happens at: deploymentTime + ((currentDay + 1) * PSEUDO_DAY_SECONDS) + 60
-    const nextDrawTime = DEPLOYMENT_TIME + ((currentDayNumber + 1) * PSEUDO_DAY_SECONDS) + LOTTERY_GAP_SECONDS;
-    const nextDrawDuringMinting = nextDrawTime <= MINTING_END_TIME;
+    // Lottery and auctions start after day 1, so:
+    // - Day 0: No lottery/auction yet (fees accumulate)
+    // - Day 1+: 20% to lottery, 80% to auction (LOTTERY_PERCENT = 20 in contract)
+    // The share depends on when the NEXT draw will execute (next day)
+    const nextDay = currentDayNumber + 1;
+    const nextDayHasLottery = nextDay >= 1;
 
-    // During minting period: 100% of fees go to lottery
-    // After minting period: 50% to lottery, 50% to auction
-    const lotteryShare = nextDrawDuringMinting ? 1.0 : 0.5;
+    // Before day 1: fees accumulate (show full pool as "potential")
+    // Day 1+: LOTTERY_PERCENT to lottery, rest to auction
+    const lotteryShare = nextDayHasLottery ? LOTTERY_PERCENT : 1.0;
     const currentPool = feesPoolAmount * lotteryShare;
 
     // Extract latestValue from totalHolderBalance struct (excludes contracts)

@@ -44,6 +44,7 @@ if (!rpcUrl) {
 const abi = [
   "function deploymentTime() view returns (uint256)",
   "function MINTING_PERIOD() view returns (uint256)",
+  "function LOTTERY_PERCENT() view returns (uint256)",
   "function mega() view returns (address)"
 ];
 
@@ -52,11 +53,13 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
 
 const deploymentTime = await contract.deploymentTime();
 const mintingPeriod = await contract.MINTING_PERIOD();
+const lotteryPercent = await contract.LOTTERY_PERCENT();
 const megaAddress = await contract.mega();
 
 const constants = {
   deploymentTime: deploymentTime.toString(),
   MINTING_PERIOD: mintingPeriod.toString(),
+  LOTTERY_PERCENT: lotteryPercent.toString(),
   megaAddress: megaAddress
 };
 

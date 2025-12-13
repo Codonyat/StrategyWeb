@@ -14,6 +14,11 @@ const POLLING_INTERVAL = 30000;
 const DEPLOYMENT_TIME = Number(contractConstants.deploymentTime);
 const MINTING_PERIOD = Number(contractConstants.MINTING_PERIOD);
 const MINTING_END_TIME = DEPLOYMENT_TIME + MINTING_PERIOD;
+// First 24 hours - backing ratio is fixed at 1:1 (to avoid inflation attack)
+const ONE_DAY_END_TIME = DEPLOYMENT_TIME + 86400; // 24 hours in seconds
+// Lottery percent from contract (e.g., 20 = 20% to lottery, rest to auction)
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT) / 100;
+const AUCTION_PERCENT = 1 - LOTTERY_PERCENT;
 
 // Token decimals
 const GIGA_DECIMALS = CONTRACT_CONFIG.strategyCoin.decimals; // 21
@@ -174,10 +179,12 @@ export function useGlobalContractData() {
     const currentDayNumber = currentDay ? Number(currentDay) : 0;
     // Calculate which day is the last day of minting period
     const mintingEndDay = Math.floor(MINTING_PERIOD / PSEUDO_DAY_SECONDS);
-    // On the minting end day, show preview UI for entire day (even after minting time passes)
-    const isLastMintingDay = currentDayNumber === mintingEndDay;
-    // Auctions can only happen starting the day AFTER minting ends
-    const isAuctionActive = currentDayNumber > mintingEndDay;
+    // On day 1, show preview UI for auctions (auctions start after day 1)
+    const isLastMintingDay = currentDayNumber === 1;
+    // Auctions can only happen starting AFTER day 1
+    const isAuctionActive = currentDayNumber > 1;
+    // Backing ratio is fixed at 1:1 for the first 24 hours (to avoid inflation attack), then becomes dynamic
+    const isBackingFixed = currentTime < ONE_DAY_END_TIME;
     // Pool amounts in GIGA (21 decimals)
     const feesPoolAmount = feesPoolBalance ? parseFloat(formatUnits(feesPoolBalance, GIGA_DECIMALS)) : 0;
     const lotteryPoolAmount = lotteryPool ? parseFloat(formatUnits(lotteryPool, GIGA_DECIMALS)) : 0;
@@ -217,13 +224,13 @@ export function useGlobalContractData() {
     // The lottery for day N-1 should have run, so lastLotteryDay should be >= currentDayNumber - 1
     const needsLotteryExecution = isAuctionActive && lastLotteryDayNum < currentDayNumber - 1;
 
-    // Check if there's a pending lottery that will execute during minting period
-    const hasPendingLotteryDuringMinting = isMintingPeriod && currentDayNumber >= 1 && lastLotteryDayNum < currentDayNumber - 1;
+    // Check if there's a pending lottery that will execute before auctions start
+    const hasPendingLotteryBeforeAuctions = currentDayNumber <= 1 && lastLotteryDayNum < currentDayNumber - 1;
 
     // Estimated next auction pool:
-    // - During minting period with pending lottery: 0 (all fees go to lottery when executed)
-    // - Otherwise: 50% of accumulated fees
-    const estimatedNextAuctionPool = hasPendingLotteryDuringMinting ? 0 : feesPoolAmount * 0.5;
+    // - Before auctions start (day 0-1): 0
+    // - Otherwise: AUCTION_PERCENT of accumulated fees (lottery gets LOTTERY_PERCENT)
+    const estimatedNextAuctionPool = !isAuctionActive ? 0 : feesPoolAmount * AUCTION_PERCENT;
 
     return {
       tvl,
@@ -231,6 +238,7 @@ export function useGlobalContractData() {
       maxSupplyValue,
       backingRatio,
       isMintingPeriod,
+      isBackingFixed,
       isAtMaxSupply,
       isLastMintingDay,
       isAuctionActive,
@@ -247,7 +255,7 @@ export function useGlobalContractData() {
       isAuctionStale,
       needsLotteryExecution,
       estimatedNextAuctionPool,
-      hasPendingLotteryDuringMinting,
+      hasPendingLotteryBeforeAuctions,
     };
   }, [megaReserve, totalSupply, maxSupply, currentDay, feesPoolBalance, lotteryPool, currentAuction, currentTime, lastLotteryDay]);
 

@@ -14,7 +14,7 @@ import './Header.css';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { tvl, supply, backingRatio, isMintingPeriod, isLoading, hasError, error } = useProtocolStats();
+  const { tvl, supply, backingRatio, isMintingPeriod, isBackingFixed, isLoading, hasError, error } = useProtocolStats();
   const { timeRemaining, isActive: isMintingActive } = useMintingCountdown();
 
   const navItems = [
@@ -50,10 +50,10 @@ export function Header() {
             <>
               <StatusCapsule
                 leftLabel="Backing"
-                leftValue={isMintingPeriod ? "1:1000" : `1:${Math.floor(backingRatio)}`}
+                leftValue={isBackingFixed ? "1:1000" : `1:${Math.floor(backingRatio)}`}
                 leftTooltip={
                   <>
-                    Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
+                    Backing ratio: <strong>1 GIGA = {isBackingFixed ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
                   </>
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
@@ -160,10 +160,10 @@ export function Header() {
             <div className="nav-mobile-stats">
               <StatusCapsule
                 leftLabel="Backing"
-                leftValue={isMintingPeriod ? "1:1000" : `1:${Math.floor(backingRatio)}`}
+                leftValue={isBackingFixed ? "1:1000" : `1:${Math.floor(backingRatio)}`}
                 leftTooltip={
                   <>
-                    Backing ratio: <strong>1 GIGA = {isMintingPeriod ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
+                    Backing ratio: <strong>1 GIGA = {isBackingFixed ? "1000" : <DisplayFormattedNumber num={backingRatio} significant={3} />} MEGA</strong>. Each GIGA can be redeemed for this amount of MEGA from the reserve.
                   </>
                 }
                 rightLabel={isMintingPeriod && isMintingActive ? "Minting ends in" : "Exchange"}
