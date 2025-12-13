@@ -9,7 +9,10 @@ import { useLotteryCountdown } from '../hooks/useLotteryCountdown';
 import { useProtocolStats } from '../hooks/useProtocolStats';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
+import contractConstants from '../config/contract-constants.json';
 import './Lottery.css';
+
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT);
 
 // Helper to truncate address for desktop
 const truncateAddress = (addr) => {
@@ -329,7 +332,7 @@ export default function Lottery() {
               <div className="step-content">
                 <h3 className="step-title">Fees accumulate</h3>
                 <p className="step-description">
-                  1% transfer fee is collected in the fees pool.
+                  {LOTTERY_PERCENT}% of the 1% transfer fee goes to the lottery pool.
                 </p>
               </div>
             </div>

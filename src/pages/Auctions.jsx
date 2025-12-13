@@ -8,7 +8,11 @@ import { useAuctionData } from '../hooks/useAuctionData';
 import { useAuctionCountdown } from '../hooks/useAuctionCountdown';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIG } from '../config/contract';
 import { STRATEGY_ABI } from '../config/abi';
+import contractConstants from '../config/contract-constants.json';
 import './Auctions.css';
+
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT);
+const AUCTION_PERCENT = 100 - LOTTERY_PERCENT;
 
 export default function Auctions() {
   const { address } = useAccount();
@@ -112,52 +116,33 @@ export default function Auctions() {
             <h2 className="card-section-title">Bidding starts soon</h2>
             <div className="minting-info-content">
               <p className="minting-info-text">
-                Auctions begin after day 1. Each day, 50% of daily fees will be converted to GIGA and auctioned to the highest bidder.
+                Auctions begin after day 1. Each day, {AUCTION_PERCENT}% of collected fees are auctioned to the highest bidder.
               </p>
               <p className="minting-info-text">
-                Bids are placed in MEGA or WMEGA, allowing you to acquire GIGA below its backing value.
+                Bids are placed in MEGA, allowing you to acquire GIGA below its backing value.
               </p>
             </div>
           </div>
 
-          {/* Right: Estimated auction lot card - only shown on day 1 */}
-          {isLastMintingDay ? (
-            <div className="today-auction-card">
-              <h2 className="card-section-title">First auction preview</h2>
+          {/* Right: First auction preview - shows accumulating fees before auctions start */}
+          <div className="today-auction-card">
+            <h2 className="card-section-title">First auction preview</h2>
 
-              {hasPendingLotteryBeforeAuctions ? (
-                <div className="minting-info-content">
-                  <p className="minting-info-text">
-                    Current fees are pending lottery distribution. The first auction lot will be estimated after the lottery executes.
-                  </p>
-                </div>
-              ) : (
-                <div className="today-pool-display">
-                  <span className="pool-label">Estimated lot</span>
-                  <span className="pool-amount">
-                    <span className="pool-value"><DisplayFormattedNumber num={estimatedAuctionPool} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
-                  </span>
-                </div>
-              )}
+            <div className="today-pool-display">
+              <span className="pool-label">Fees accumulating</span>
+              <span className="pool-amount">
+                <span className="pool-value"><DisplayFormattedNumber num={nextLotAccumulating} significant={3} /> <img src="/coins/giga-icon.png" alt="GIGA" className="pool-icon" /><span className="pool-symbol">GIGA</span></span>
+              </span>
+            </div>
 
-              <div className="countdown-display">
-                <span className="countdown-label">Auction starts in</span>
-                <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
-                <div className="countdown-progress">
-                  <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
-                </div>
+            <div className="countdown-display">
+              <span className="countdown-label">Auction starts in</span>
+              <span className="countdown-value">{isLoading ? '...' : timeRemaining}</span>
+              <div className="countdown-progress">
+                <div className="countdown-progress-bar" style={{ width: '65%' }}></div>
               </div>
             </div>
-          ) : (
-            <div className="today-auction-card">
-              <h2 className="card-section-title">Coming soon</h2>
-              <div className="minting-info-content">
-                <p className="minting-info-text">
-                  The first auction preview will be available on day 1.
-                </p>
-              </div>
-            </div>
-          )}
+          </div>
           </div>
         </div>
         </section>
@@ -430,7 +415,7 @@ export default function Auctions() {
               <div className="step-content">
                 <h3 className="step-title">Fees accumulate</h3>
                 <p className="step-description">
-                  1% transfer fee fills the fees pool.
+                  {AUCTION_PERCENT}% of the 1% transfer fee goes to the auction pool.
                 </p>
               </div>
             </div>
@@ -439,7 +424,7 @@ export default function Auctions() {
               <div className="step-content">
                 <h3 className="step-title">Daily GIGA auction</h3>
                 <p className="step-description">
-                  Yesterday's fees are converted to GIGA and auctioned.
+                  Each day's fees in GIGA are auctioned off.
                 </p>
               </div>
             </div>
@@ -448,7 +433,7 @@ export default function Auctions() {
               <div className="step-content">
                 <h3 className="step-title">Highest bid wins</h3>
                 <p className="step-description">
-                  Bids are placed in MEGA/WMEGA. Highest bid at day end receives the GIGA.
+                  Bids are placed in MEGA. Highest bid at day end receives the GIGA.
                 </p>
               </div>
             </div>

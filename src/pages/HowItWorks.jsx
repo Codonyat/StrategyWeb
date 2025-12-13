@@ -5,6 +5,8 @@ import './HowItWorks.css';
 
 // Calculate minting period in days from contract constants
 const mintingPeriodDays = Math.round(Number(contractConstants.MINTING_PERIOD) / 86400);
+const LOTTERY_PERCENT = Number(contractConstants.LOTTERY_PERCENT);
+const AUCTION_PERCENT = 100 - LOTTERY_PERCENT;
 
 export default function HowItWorks() {
   const [openQuestion, setOpenQuestion] = useState(null);
@@ -48,7 +50,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Minting is open for the first {mintingPeriodDays} days after deployment.</strong> During this minting period 1000 MEGA mints 1 GIGA at a 1:1000 ratio, before the 1% transfer fee is applied.
+                <strong>Minting is open for the first {mintingPeriodDays} days after deployment.</strong> During the first 24 hours, 1000 MEGA mints 1 GIGA at a fixed 1:1000 ratio. After the first 24 hours, minting uses the current backing ratio.
               </p>
               <p>
                 After the minting period ends, you can still mint GIGA at the current backing ratio, but only if the total supply is below the maximum supply cap (set at the end of the minting period). When holders burn GIGA, this opens up supply capacity for new minting. You can also acquire GIGA on the secondary market.
@@ -100,7 +102,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>There is a 1% fee on mint, burn, and transfers of GIGA.</strong> These fees are routed into the protocol and split between the lottery pool and the auction pool. The auction mechanism converts collected fees back into MEGA by auctioning GIGA tokens to bidders, thereby increasing the net amount of MEGA in the reserve and strengthening the backing ratio.
+                <strong>There is a 1% fee on mint, burn, and transfers of GIGA.</strong> These fees are routed into the protocol and split {LOTTERY_PERCENT}% to the lottery pool and {AUCTION_PERCENT}% to the auction pool. The auction mechanism converts collected fees back into MEGA by auctioning GIGA tokens to bidders, thereby increasing the net amount of MEGA in the reserve and strengthening the backing ratio.
               </p>
             </>
           ),
@@ -136,7 +138,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Each day the protocol snapshots GIGA holder balances.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. Only regular wallet addresses participate—smart contracts are excluded from lottery draws. The winner can claim that day's lottery pool, which is funded by a share of protocol fees.
+                <strong>Starting from day 1, the protocol snapshots GIGA holder balances each day.</strong> Using on-chain randomness, one holder is chosen at random, weighted by their balance. Only regular wallet addresses participate—smart contracts are excluded from lottery draws. The winner can claim that day's lottery pool, which receives {LOTTERY_PERCENT}% of protocol fees.
               </p>
             </>
           ),
@@ -147,7 +149,7 @@ export default function HowItWorks() {
           answer: (
             <>
               <p>
-                <strong>Another share of protocol fees is converted to GIGA and auctioned once per day.</strong> Users bid with MEGA or WMEGA. At the end of the day the highest bid wins the pool of GIGA. Losing bidders keep their MEGA.
+                <strong>Starting from day 1, {AUCTION_PERCENT}% of protocol fees are auctioned once per day.</strong> Users bid with MEGA. At the end of the day the highest bid wins the pool of GIGA. Losing bidders keep their MEGA.
               </p>
             </>
           ),
@@ -159,17 +161,6 @@ export default function HowItWorks() {
             <>
               <p>
                 <strong>Lottery and auction prizes can be claimed for 7 days.</strong> After that window closes unclaimed prizes are sent to the treasury address defined in the contract.
-              </p>
-            </>
-          ),
-        },
-        {
-          id: 'auction-bidding',
-          question: 'Can I bid with MEGA or WMEGA?',
-          answer: (
-            <>
-              <p>
-                <strong>You can bid with either MEGA or WMEGA.</strong> The contract accepts both. WMEGA support allows the contract to pull bids safely with <code>transferFrom</code> and prevents certain denial-of-service issues. MEGA support provides direct convenience for bidders.
               </p>
             </>
           ),

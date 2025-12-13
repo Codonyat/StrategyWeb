@@ -329,16 +329,16 @@ export default function Landing() {
             <div className="step-content">
               <h3 className="step-title">Deposit MEGA to mint</h3>
               <p className="step-description">
-                <strong>Mint GIGA</strong> at 1:1000 during first {mintingPeriodDays} days
+                <strong>Mint GIGA</strong> at 1:1000 for first 24h, then at backing ratio
               </p>
             </div>
           </div>
           <div className="step-card" tabIndex="0">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3 className="step-title">Supply fixed after {mintingPeriodDays} days</h3>
+              <h3 className="step-title">Backing grows from day 1</h3>
               <p className="step-description">
-                After {mintingPeriodDays} days, supply is locked and <strong>backing grows</strong> from fees
+                <strong>Backing ratio increases</strong> as fees accumulate from auctions
               </p>
             </div>
           </div>
